@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Two-Person Chat</title>
+    <!-- Include MQTT library for real-time serverless communication -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #setup-container, #chat-container { background: white; width: 100%; max-width: 450px; height: 85vh; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+        #chat-container { display: none; }
+        .header { background: #007bff; color: white; padding: 15px; font-size: 1.2rem; font-weight: bold; text-align: center; }
+        .form-group { padding: 20px; display: flex; flex-direction: column; gap: 15px; justify-content: center; height: 100%; }
+        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; }
+        input:focus { border-color: #007bff; }
+        button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #efeae2; }
+        .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+        .msg.me { background: #d9fdd3; align-self: flex-end; color: #111b21; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .msg.them { background: white; align-self: flex-start; color: #111b21; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .msg.system { background: #fff3cd; color: #856404; align-self: center; font-size: 0.8rem; max-width: 90%; text-align: center; box-shadow: none; }
+        #input-area { display: flex; padding: 10px; background: #f0f2f5; gap: 10px; border-top: 1px solid #e0e0e0; }
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 15px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN 1: LOGIN / SETUP -->
+    <div id="setup-container">
+        <div class="header">Join Chat Room</div>
+        <div class="form-group">
+            <input type="text" id="username" placeholder="Enter your name" required>
+            <input type="text" id="room-id" placeholder="Enter a secret Room ID (e.g., room123)" required>
+            <button onclick="connectToChat()">Start Chatting</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: ACTIVE CHAT -->
+    <div id="chat-container">
+        <div class="header" id="chat-room-title">Room: None</div>
+        <div id="messages"></div>
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let client;
+        let myUsername = "";
+        let currentRoom = "";
+        // Generating a unique ID so the app knows which messages belong to you
+        const myClientId = 'user_' + Math.random().toString(36).substr(2, 9); 
+
+        function connectToChat() {
+            myUsername = document.getElementById('username').value.trim();
+            currentRoom = document.getElementById('room-id').value.trim();
+
+            if (!myUsername || !currentRoom) {
+                alert("Please fill in both your name and a Room ID!");
+                return;
+            }
+
+            logSystemMessage("Connecting to secure server...");
+
+            // Connecting to a free, public MQTT broker over secure WebSockets
+            client = mqtt.connect('wss://://hivemq.com');
+
+            client.on('connect', () => {
+                // Switch screens
+                document.getElementById('setup-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'flex';
+                document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
+                
+                // Subscribe to your secret room topic
+                const topic = `simplechat/rooms/${currentRoom}`;
+                client.subscribe(topic);
+
+                logSystemMessage(`Joined room successfully! Tell your friend to join room ID: "${currentRoom}"`);
+            });
+
+            client.on('message', (topic, payload) => {
+                const data = JSON.parse(payload.toString());
+                displayMessage(data);
+            });
+
+            client.on('error', (err) => {
+                alert("Connection error. Try changing your Room ID or refreshing.");
+                console.error(err);
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const messagePayload = {
+                senderId: myClientId,
+                senderName: myUsername,
+                message: text
+            };
+
+            const topic = `simplechat/rooms/${currentRoom}`;
+            // Publish the message to the room
+            client.publish(topic, JSON.stringify(messagePayload));
+            
+            input.value = "";
+            input.focus();
+        }
+
+        function displayMessage(data) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            
+            messageElement.classList.add('msg');
+            if (data.senderId === myClientId) {
+                messageElement.classList.add('me');
+                messageElement.innerText = data.message;
+            } else {
+                messageElement.classList.add('them');
+                messageElement.innerText = `${data.senderName}: ${data.message}`;
+            }
+
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to latest text
+        }
+
+        function logSystemMessage(text) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('msg', 'system');
+            messageElement.innerText = text;
+            messagesDiv.appendChild(messageElement);
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
