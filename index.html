@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persistent Two-Person Chat</title>
-    <!-- Self-contained fallback script delivery -->
-    <script src="https://jsdelivr.net"></script>
+    <!-- Stable client engine delivery layer -->
+    <script src="https://cloudflare.com"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -55,7 +55,7 @@
         const CLOUDFLARE_WORKER_URL = "/messages";
 
         async function connectToChat() {
-            // .trim() automatically removes any accidental spacing errors at start or end!
+            // Removes accidental spacing errors at start or end automatically
             myUsername = document.getElementById('username').value.trim();
             currentRoom = document.getElementById('room-id').value.trim();
 
@@ -64,19 +64,20 @@
                 return;
             }
 
+            // Instantly load the chat room panel layout
             document.getElementById('setup-container').style.display = 'none';
             document.getElementById('chat-container').style.display = 'flex';
             document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
 
             logSystemMessage("Connecting to cloud database...");
 
-            // 1. Fetch History safely from Cloudflare
+            // 1. Fetch History from Cloudflare D1 database safely
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}?room=${encodeURIComponent(currentRoom)}`);
                 const textData = await response.text();
                 
                 if (textData.trim().startsWith("<")) {
-                    throw new Error("Folder structural configuration error detected.");
+                    throw new Error("Folder setup structural check needed.");
                 }
 
                 const history = JSON.parse(textData);
@@ -84,19 +85,15 @@
                     history.forEach(data => displayMessage(data));
                 }
             } catch (err) {
-                console.error("Database issue:", err);
-                logSystemMessage(`⚠️ Storage Alert: ${err.message}`);
+                console.error("Database connection issue:", err);
+                logSystemMessage(`⚠️ Storage Status: ${err.message}`);
             }
 
-            // 2. Clear real-time connection checks
+            // 2. Initializing live network communication streams
             try {
                 logSystemMessage("Syncing live communication streams...");
                 
-                // Absolute global public safety port connection configurations
-                if (typeof mqtt === 'undefined') {
-                    throw new Error("The required text-streaming component is blocked by your browser. Please try turning off your extension Ad-Blocker for this page.");
-                }
-
+                // Utilizing secure WebSocket protocol layer configurations
                 client = mqtt.connect('wss://://hivemq.com');
 
                 client.on('connect', () => {
@@ -120,7 +117,7 @@
                     }
                 });
             } catch (mqttErr) {
-                logSystemMessage(`Initialization error: ${mqttErr.message}`);
+                logSystemMessage(`Component status notice: ${mqttErr.message}`);
             }
         }
 
@@ -135,15 +132,17 @@
                 message: text
             };
 
+            // Display your own text instantly
             displayMessage(messagePayload);
 
             const topic = `simplechat/rooms/${currentRoom}`;
             if (client && client.connected) {
                 client.publish(topic, JSON.stringify(messagePayload));
             } else {
-                logSystemMessage("⚠️ Stream currently disconnected.");
+                logSystemMessage("⚠️ Message local submission: Streaming server link offline.");
             }
 
+            // Send message data log to your Cloudflare database
             try {
                 await fetch(CLOUDFLARE_WORKER_URL, {
                     method: 'POST',
@@ -156,7 +155,7 @@
                     })
                 });
             } catch (err) {
-                console.error("Cloud tracking database update issue:", err);
+                console.error("Database update transaction issue:", err);
             }
             
             input.value = "";
@@ -177,7 +176,7 @@
             }
 
             messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scrolls window down
         }
 
         function logSystemMessage(text) {
@@ -186,10 +185,11 @@
             messageElement.classList.add('msg', 'system');
             messageElement.innerText = text;
             messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scrolls notification text
         }
 
         function checkEnter(event) {
+            // Evaluates if user hits Enter to submit text block strings
             if (event.key === 'Enter') sendMessage();
         }
     </script>
