@@ -51,7 +51,6 @@
         let currentRoom = "";
         const myClientId = 'user_' + Math.random().toString(36).substr(2, 9); 
 
-        // Native relative routing for Cloudflare Pages Functions
         const CLOUDFLARE_WORKER_URL = "/messages";
 
         async function connectToChat() {
@@ -63,36 +62,51 @@
                 return;
             }
 
-            logSystemMessage("Loading chat history from cloud...");
+            // Instantly transition user interface to prevent frozen screen states
+            document.getElementById('setup-container').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'flex';
+            document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
 
-            // 1. Fetch offline history from Cloudflare D1 via Pages Function
+            logSystemMessage("Loading history from database cloud...");
+
+            // 1. Safe Fetch History Implementation
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}?room=${encodeURIComponent(currentRoom)}`);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || `HTTP Status ${response.status}`);
+                }
                 const history = await response.json();
-                history.forEach(data => displayMessage(data));
+                if (Array.isArray(history)) {
+                    history.forEach(data => displayMessage(data));
+                }
             } catch (err) {
-                console.error("Failed to load history:", err);
-                logSystemMessage("Failed to load cloud history. Starting fresh session.");
+                console.error("Database status issue:", err);
+                logSystemMessage(`⚠️ Cloud Storage Status Notice: ${err.message}. (Live messaging still available)`);
             }
 
-            // 2. Open live channel using secure SSL WebSocket port 8044
-            client = mqtt.connect('wss://://hivemq.com');
+            // 2. Open live communication channel over port 8000 WebSockets fallback
+            logSystemMessage("Connecting to real-time network layer...");
+            client = mqtt.connect('ws://://hivemq.com');
 
             client.on('connect', () => {
-                document.getElementById('setup-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'flex';
-                document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
-                
                 const topic = `simplechat/rooms/${currentRoom}`;
                 client.subscribe(topic);
-                logSystemMessage(`Connected live! Room is ready.`);
+                logSystemMessage(`🚀 Connected live! Room "${currentRoom}" is open.`);
+            });
+
+            client.on('error', (e) => {
+                logSystemMessage(`MQTT connection error: ${e.message}`);
             });
 
             client.on('message', (topic, payload) => {
-                const data = JSON.parse(payload.toString());
-                // Only show live message if it came from the other person
-                if (data.senderId !== myClientId) {
-                    displayMessage(data);
+                try {
+                    const data = JSON.parse(payload.toString());
+                    if (data.senderId !== myClientId) {
+                        displayMessage(data);
+                    }
+                } catch(e) {
+                    console.error("Payload parse error:", e);
                 }
             });
         }
@@ -108,14 +122,15 @@
                 message: text
             };
 
-            // Display locally immediately
             displayMessage(messagePayload);
 
-            // 1. Send live over WebSockets to your friend
             const topic = `simplechat/rooms/${currentRoom}`;
-            client.publish(topic, JSON.stringify(messagePayload));
+            if (client && client.connected) {
+                client.publish(topic, JSON.stringify(messagePayload));
+            } else {
+                logSystemMessage("⚠️ Cannot distribute message: Offline from streaming channel.");
+            }
 
-            // 2. Save permanently to Cloudflare D1 database via Pages Function
             try {
                 await fetch(CLOUDFLARE_WORKER_URL, {
                     method: 'POST',
@@ -128,7 +143,7 @@
                     })
                 });
             } catch (err) {
-                console.error("Failed to backup message to database:", err);
+                console.error("Cloud storage update error:", err);
             }
             
             input.value = "";
@@ -158,6 +173,7 @@
             messageElement.classList.add('msg', 'system');
             messageElement.innerText = text;
             messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         function checkEnter(event) {
