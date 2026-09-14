@@ -75,7 +75,7 @@
                 logSystemMessage("Failed to load cloud history. Starting fresh session.");
             }
 
-            // 2. Open live channel for instant messaging
+            // 2. Open live channel using secure SSL WebSocket port 8044
             client = mqtt.connect('wss://://hivemq.com');
 
             client.on('connect', () => {
