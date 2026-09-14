@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persistent Two-Person Chat</title>
-    <script src="https://unpkg.com"></script>
+    <script src="https://cloudflare.com"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -62,53 +62,59 @@
                 return;
             }
 
-            // Instantly transition user interface to prevent frozen screen states
+            // Immediately switch layout tabs to keep screen interactive
             document.getElementById('setup-container').style.display = 'none';
             document.getElementById('chat-container').style.display = 'flex';
             document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
 
-            logSystemMessage("Loading history from database cloud...");
+            logSystemMessage("Connecting to cloud database...");
 
-            // 1. Safe Fetch History Implementation
+            // 1. Fetch History from Cloudflare
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}?room=${encodeURIComponent(currentRoom)}`);
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || `HTTP Status ${response.status}`);
+                const textData = await response.text();
+                
+                if (textData.trim().startsWith("<")) {
+                    throw new Error("Folder structural configuration error detected.");
                 }
-                const history = await response.json();
+
+                const history = JSON.parse(textData);
                 if (Array.isArray(history)) {
                     history.forEach(data => displayMessage(data));
                 }
             } catch (err) {
-                console.error("Database status issue:", err);
-                logSystemMessage(`⚠️ Cloud Storage Status Notice: ${err.message}. (Live messaging still available)`);
+                console.error("Database issue:", err);
+                logSystemMessage(`⚠️ Storage Alert: ${err.message}`);
             }
 
-            // 2. Open live communication channel over port 8000 WebSockets fallback
-            logSystemMessage("Connecting to real-time network layer...");
-            client = mqtt.connect('ws://://hivemq.com');
+            // 2. Open encrypted streaming real-time layers via port 443 fallback
+            try {
+                logSystemMessage("Syncing live communication streams...");
+                client = mqtt.connect('wss://://hivemq.com');
 
-            client.on('connect', () => {
-                const topic = `simplechat/rooms/${currentRoom}`;
-                client.subscribe(topic);
-                logSystemMessage(`🚀 Connected live! Room "${currentRoom}" is open.`);
-            });
+                client.on('connect', () => {
+                    const topic = `simplechat/rooms/${currentRoom}`;
+                    client.subscribe(topic);
+                    logSystemMessage(`🚀 Connected live! Room "${currentRoom}" is active.`);
+                });
 
-            client.on('error', (e) => {
-                logSystemMessage(`MQTT connection error: ${e.message}`);
-            });
+                client.on('error', (e) => {
+                    logSystemMessage(`Live stream layer alert: ${e.message}`);
+                });
 
-            client.on('message', (topic, payload) => {
-                try {
-                    const data = JSON.parse(payload.toString());
-                    if (data.senderId !== myClientId) {
-                        displayMessage(data);
+                client.on('message', (topic, payload) => {
+                    try {
+                        const data = JSON.parse(payload.toString());
+                        if (data.senderId !== myClientId) {
+                            displayMessage(data);
+                        }
+                    } catch(e) {
+                        console.error(e);
                     }
-                } catch(e) {
-                    console.error("Payload parse error:", e);
-                }
-            });
+                });
+            } catch (mqttErr) {
+                logSystemMessage(`Initialization error: ${mqttErr.message}`);
+            }
         }
 
         async function sendMessage() {
@@ -128,7 +134,7 @@
             if (client && client.connected) {
                 client.publish(topic, JSON.stringify(messagePayload));
             } else {
-                logSystemMessage("⚠️ Cannot distribute message: Offline from streaming channel.");
+                logSystemMessage("⚠️ Stream currently disconnected.");
             }
 
             try {
@@ -143,7 +149,7 @@
                     })
                 });
             } catch (err) {
-                console.error("Cloud storage update error:", err);
+                console.error("Cloud tracking database update issue:", err);
             }
             
             input.value = "";
