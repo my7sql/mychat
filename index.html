@@ -100,6 +100,13 @@
         }
         input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
         
+        /* Hide arrows for number inputs */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
         .btn { 
             background: #075e54; 
             color: white; 
@@ -207,9 +214,9 @@
             <div class="header-bar">Sign In</div>
             <div class="form-content">
                 <h2>Welcome Back</h2>
-                <p class="subtitle">Enter your registered phone number & 3-digit PIN</p>
-                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10">
-                <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3">
+                <p class="subtitle">Enter your registered 10-digit phone & 3-digit PIN</p>
+                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Login to Chat</button>
                 <div class="link-text">Don't have an account? <span onclick="switchScreen('register-screen')">Register here</span></div>
@@ -223,9 +230,9 @@
                 <h2>New Profile</h2>
                 <p class="subtitle">Set up your secure messaging identity</p>
                 <input type="text" id="reg-name" placeholder="Full Name (Case-Insensitive)">
-                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10">
-                <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3">
-                <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="error-msg" id="reg-error"></div>
                 <button class="btn" onclick="handleRegister()">Complete Registration</button>
                 <div class="link-text">Already registered? <span onclick="switchScreen('login-screen')">Sign In</span></div>
@@ -259,7 +266,6 @@
         let currentUser = null;
         let lastDisplayedDate = "";
 
-        // Auto transition from welcome screen after 2.5 seconds
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const savedUser = localStorage.getItem('axtres_user');
@@ -291,7 +297,6 @@
             }
         }
 
-        // --- REGISTER HANDLER ---
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
@@ -303,11 +308,11 @@
                 errDiv.innerText = "Please fill in all fields.";
                 return;
             }
-            if (phone.length !== 10 || isNaN(phone)) {
+            if (phone.length !== 10) {
                 errDiv.innerText = "Phone number must be exactly 10 digits.";
                 return;
             }
-            if (pin.length !== 3 || isNaN(pin)) {
+            if (pin.length !== 3) {
                 errDiv.innerText = "PIN must be exactly 3 digits.";
                 return;
             }
@@ -332,7 +337,6 @@
             }
         }
 
-        // --- LOGIN HANDLER ---
         async function handleLogin() {
             const phone = document.getElementById('login-phone').value.trim();
             const pin = document.getElementById('login-pin').value.trim();
@@ -352,7 +356,7 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Login failed");
 
-                currentUser = data.user; // Contains name, phone
+                currentUser = data.user;
                 localStorage.setItem('axtres_user', JSON.stringify(currentUser));
                 enterChatRoom();
             } catch (err) {
@@ -367,7 +371,6 @@
             switchScreen('login-screen');
         }
 
-        // --- ENTER CHAT ROOM ---
         async function enterChatRoom() {
             switchScreen('chat-screen');
             document.getElementById('user-display-info').innerText = `Logged in as: ${currentUser.name} (${currentUser.phone})`;
@@ -378,7 +381,6 @@
 
             logSystem("Connecting to secure database...");
 
-            // Fetch History
             try {
                 const res = await fetch(`${MESSAGES_API}?room=global_room`);
                 const history = await res.json();
@@ -389,7 +391,6 @@
                 logSystem("⚠️ Could not load offline history.");
             }
 
-            // Connect MQTT Live Stream
             try {
                 logSystem("Establishing live messaging stream...");
                 mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
@@ -402,7 +403,6 @@
                 mqttClient.on('message', (topic, payload) => {
                     try {
                         const data = JSON.parse(payload.toString());
-                        // If message is from someone else, trigger push notification if backgrounded
                         if (data.senderPhone !== currentUser.phone) {
                             displayMessage(data);
                             if (document.hidden && Notification.permission === "granted") {
@@ -431,15 +431,12 @@
                 created_at: timeNow
             };
 
-            // Display locally instantly
             displayMessage(messagePayload);
 
-            // Publish via MQTT
             if (mqttClient && mqttClient.connected) {
                 mqttClient.publish('axtres/global_chat', JSON.stringify(messagePayload));
             }
 
-            // Save to D1 database via POST
             try {
                 await fetch(MESSAGES_API, {
                     method: 'POST',
@@ -462,7 +459,6 @@
         function displayMessage(data) {
             const messagesDiv = document.getElementById('messages-container');
             
-            // Date separator check
             const msgDate = data.created_at ? new Date(data.created_at).toLocaleDateString() : new Date().toLocaleDateString();
             const todayStr = new Date().toLocaleDateString();
             const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
