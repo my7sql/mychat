@@ -46,7 +46,6 @@
         .btn-secondary { background: #205081; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .btn-secondary:hover { background: #183d63; }
         
-        /* Professional Install PWA Button */
         .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
         .btn-install:hover { opacity: 0.9; }
 
@@ -102,7 +101,6 @@
                 
                 <button class="btn" onclick="handleRegister()">Complete Registration</button>
                 
-                <!-- Professional PWA Install Trigger -->
                 <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
@@ -119,7 +117,6 @@
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Log In to Chats</button>
 
-                <!-- Professional PWA Install Trigger -->
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
@@ -164,7 +161,6 @@
         let knownMessages = new Set();
         let deferredPrompt = null;
 
-        // Capture PWA installation prompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -204,6 +200,12 @@
                     switchScreen('login-screen');
                 }
             }, 800);
+        });
+
+        // Instant sync when user refocuses app/tab on mobile
+        window.addEventListener('focus', () => {
+            if (currentRoomId) pollChatMessages(false);
+            if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
         });
 
         function switchScreen(screenId) {
@@ -306,11 +308,14 @@
         async function openContactsScreen() {
             switchScreen('contacts-screen');
             document.getElementById('my-name-display').innerText = currentUser.name;
-            if (syncInterval) clearInterval(syncInterval);
+            
+            startContactsPolling();
+        }
 
-            await fetchContacts();
+        function startContactsPolling() {
             if (contactsInterval) clearInterval(contactsInterval);
-            contactsInterval = setInterval(fetchContacts, 4000);
+            fetchContacts();
+            contactsInterval = setInterval(fetchContacts, 2000); // 2-second contact refresh
         }
 
         async function fetchContacts() {
@@ -351,9 +356,13 @@
             messagesDiv.innerHTML = "";
             knownMessages.clear();
 
-            pollChatMessages(true);
+            startChatPolling();
+        }
+
+        function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
-            syncInterval = setInterval(() => pollChatMessages(false), 2000);
+            pollChatMessages(true);
+            syncInterval = setInterval(() => pollChatMessages(false), 1000); // Ultra-fast 1-second sync to eliminate lag
         }
 
         function backToContacts() {
