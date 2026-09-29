@@ -18,7 +18,7 @@
 
         .card { 
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
-            width: 100%; max-width: 420px; height: 90vh; max-height: 800px; 
+            width: 100%; max-width: 420px; height: 92vh; max-height: 820px; 
             border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
             display: flex; flex-direction: column; overflow: hidden; position: relative; 
         }
@@ -31,25 +31,24 @@
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .header-bar { background: #075e54; color: white; padding: 16px 20px; font-size: 1.15rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
-        .form-content { padding: 20px 25px; display: flex; flex-direction: column; gap: 10px; justify-content: center; flex: 1; overflow-y: auto; }
-        .form-content h2 { color: #075e54; font-size: 1.4rem; margin-bottom: 2px; }
-        .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 2px; }
+        .form-content { padding: 18px 25px; display: flex; flex-direction: column; gap: 8px; justify-content: center; flex: 1; overflow-y: auto; }
+        .form-content h2 { color: #075e54; font-size: 1.35rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.82rem; margin-bottom: 2px; }
 
-        input { padding: 11px 16px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
         input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
 
-        .btn { background: #075e54; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
-        .btn-secondary { background: #205081; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
         .btn-secondary:hover { background: #183d63; }
         
-        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
-        .btn-install:hover { opacity: 0.9; }
+        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
 
-        .switch-text { text-align: center; font-size: 0.85rem; color: #666; margin-top: 4px; }
+        .switch-text { text-align: center; font-size: 0.82rem; color: #666; margin-top: 2px; }
         .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
         .switch-text a:hover { text-decoration: underline; }
 
@@ -61,17 +60,32 @@
 
         #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
         .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
+        
         .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
         .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
         .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        
+        /* Emergency Highlight Styles */
+        .msg.emergency-alert { background: #ffdad6 !important; border: 1.5px solid #ba1a1a !important; color: #410002 !important; }
+        .emergency-badge { font-size: 0.65rem; background: #ba1a1a; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
+
         .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
+
+        /* Emergency Panic Mode Toggle Toolbar */
+        .emergency-toolbar { background: #ffebee; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #ffcdd2; font-size: 0.82rem; font-weight: 600; color: #c62828; }
+        .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #d32f2f; }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
         #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
         #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
-        .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; }
-        .success-msg { color: #2e7d32; font-size: 0.8rem; text-align: center; }
+        .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
+        .success-msg { color: #2e7d32; font-size: 0.78rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -92,6 +106,7 @@
                 <p class="subtitle">Notifications are <b>mandatory</b> for emergency alerts.</p>
                 <input type="text" id="reg-name" placeholder="Your Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="email" id="reg-email" placeholder="Gmail Address (Optional for Email Backup)">
                 
                 <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications (Required)</button>
                 <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
@@ -143,8 +158,18 @@
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
             <div id="messages-container"></div>
+            
+            <!-- Manual Emergency Panic Mode Toggle Bar -->
+            <div class="emergency-toolbar">
+                <span>🚨 Emergency Mode (Panic Toggle)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="emergency-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
             <div id="input-toolbar">
-                <input type="text" id="message-input" placeholder="Type emergency message..." onkeypress="checkEnter(event)">
+                <input type="text" id="message-input" placeholder="Type message or emergency help..." onkeypress="checkEnter(event)">
                 <button id="send-btn" onclick="sendMessage()">&#9658;</button>
             </div>
         </div>
@@ -202,7 +227,6 @@
             }, 800);
         });
 
-        // Instant sync when user refocuses app/tab on mobile
         window.addEventListener('focus', () => {
             if (currentRoomId) pollChatMessages(false);
             if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
@@ -233,13 +257,14 @@
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
             const errDiv = document.getElementById('reg-error');
             const succDiv = document.getElementById('reg-success');
             errDiv.innerText = "";
             succDiv.innerText = "";
 
             if (!name || !phone) {
-                errDiv.innerText = "Please fill in all fields.";
+                errDiv.innerText = "Please fill in required fields.";
                 return;
             }
             if (phone.length !== 10) {
@@ -255,7 +280,7 @@
                 const res = await fetch(`${USERS_API}?action=register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, device_id: getDeviceId() })
+                    body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Registration failed");
@@ -308,14 +333,13 @@
         async function openContactsScreen() {
             switchScreen('contacts-screen');
             document.getElementById('my-name-display').innerText = currentUser.name;
-            
             startContactsPolling();
         }
 
         function startContactsPolling() {
             if (contactsInterval) clearInterval(contactsInterval);
             fetchContacts();
-            contactsInterval = setInterval(fetchContacts, 2000); // 2-second contact refresh
+            contactsInterval = setInterval(fetchContacts, 2000);
         }
 
         async function fetchContacts() {
@@ -351,6 +375,7 @@
 
             document.getElementById('chat-room-title').innerText = recipient.name;
             switchScreen('chat-screen');
+            document.getElementById('emergency-toggle').checked = false; // Reset toggle
 
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
@@ -362,7 +387,7 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 1000); // Ultra-fast 1-second sync to eliminate lag
+            syncInterval = setInterval(() => pollChatMessages(false), 1000);
         }
 
         function backToContacts() {
@@ -384,7 +409,8 @@
                         const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
                         if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
                             if (Notification.permission === "granted") {
-                                new Notification(`🚨 Emergency Alert from ${activeRecipient.name}`, { body: msg.message });
+                                const alertTitle = msg.is_emergency ? `🚨 CRITICAL EMERGENCY from ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
+                                new Notification(alertTitle, { body: msg.message });
                             }
                         }
                         knownMessages.add(uniqueKey);
@@ -403,14 +429,20 @@
 
                         const msgEl = document.createElement('div');
                         msgEl.className = 'msg';
+                        if (msg.is_emergency === 1) {
+                            msgEl.classList.add('emergency-alert');
+                        }
+
                         const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        let emergencyBadgeHTML = msg.is_emergency === 1 ? `<span class="emergency-badge">🚨 EMERGENCY</span><br>` : '';
 
                         if (msg.senderPhone === currentUser.phone) {
                             msgEl.classList.add('me');
-                            msgEl.innerHTML = `${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${emergencyBadgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         } else {
                             msgEl.classList.add('them');
-                            msgEl.innerHTML = `${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${emergencyBadgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         }
 
                         messagesDiv.appendChild(msgEl);
@@ -425,6 +457,7 @@
         async function sendMessage() {
             const input = document.getElementById('message-input');
             const text = input.value.trim();
+            const isManualEmergency = document.getElementById('emergency-toggle').checked ? 1 : 0;
             if (!text || !currentRoomId) return;
 
             const timeNow = new Date().toISOString();
@@ -440,6 +473,7 @@
                         sender_id: currentUser.phone,
                         sender_name: currentUser.name,
                         message: text,
+                        is_emergency: isManualEmergency,
                         created_at: timeNow
                     })
                 });
