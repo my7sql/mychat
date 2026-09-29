@@ -3,45 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Axtres Diagnostic Test</title>
+    <title>Axtres Secure Messenger</title>
     <style>
-        body { font-family: sans-serif; background: #111; color: #fff; padding: 40px; text-align: center; }
-        .box { background: #222; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; border: 1px solid #444; }
-        h2 { color: #4CAF50; }
-        pre { background: #000; padding: 10px; text-align: left; overflow-x: auto; color: #ff5555; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { 
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364); 
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            color: #333; 
+            overflow: hidden; 
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px); 
+            width: 100%; 
+            max-width: 420px; 
+            height: 88vh; 
+            max-height: 780px; 
+            border-radius: 20px; 
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .screen.active { display: flex; }
+
+        #welcome-screen { 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 30px; 
+            background: linear-gradient(135deg, #075e54, #128c7e); 
+            color: white; 
+        }
+        #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
+        #welcome-screen p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 30px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .header-bar { 
+            background: #075e54; 
+            color: white; 
+            padding: 16px 20px; 
+            font-size: 1.15rem; 
+            font-weight: 600; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
+        .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
+
+        .form-content { 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            justify-content: center; 
+            flex: 1; 
+            overflow-y: auto; 
+        }
+        .form-content h2 { color: #075e54; font-size: 1.5rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 6px; }
+
+        input { 
+            padding: 12px 16px; 
+            border: 1.5px solid #ddd; 
+            border-radius: 10px; 
+            font-size: 0.95rem; 
+            outline: none; 
+            transition: all 0.2s; 
+            background: #fafafa; 
+        }
+        input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .btn { 
+            background: #075e54; 
+            color: white; 
+            border: none; 
+            padding: 13px; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: background 0.2s, transform 0.1s; 
+        }
+        .btn:hover { background: #054c44; }
+        .btn:active { transform: scale(0.98); }
+
+        .notif-toggle-btn {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1.5px dashed #a5d6a7;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .notif-toggle-btn:hover { background: #c8e6c9; }
+        .notif-toggle-btn.enabled { background: #c8e6c9; color: #1b5e20; border-style: solid; cursor: default; }
+
+        .link-text { text-align: center; margin-top: 8px; font-size: 0.85rem; color: #666; }
+        .link-text span { color: #075e54; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+        #messages-container { 
+            flex: 1; 
+            padding: 15px 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            background: #efeae2; 
+            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); 
+            background-size: 15px 15px; 
+        }
+
+        .date-separator { 
+            align-self: center; 
+            background: #e1f3fb; 
+            color: #54656f; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            margin: 10px 0; 
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); 
+            text-transform: uppercase; 
+        }
+
+        .msg { 
+            max-width: 78%; 
+            padding: 8px 12px 6px 12px; 
+            border-radius: 7.5px; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            word-wrap: break-word; 
+            position: relative; 
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); 
+        }
+        .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
+        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        .msg.system { background: #e1f3fb; color: #0277bd; align-self: center; font-size: 0.8rem; max-width: 90%; text-align: center; box-shadow: none; border-radius: 6px; }
+        
+        .msg-sender { font-size: 0.75rem; font-weight: 700; color: #075e54; margin-bottom: 2px; }
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; display: inline-block; }
+
+        #input-toolbar { 
+            display: flex; 
+            padding: 10px 15px; 
+            background: #f0f2f5; 
+            gap: 10px; 
+            align-items: center; 
+            border-top: 1px solid #e0e0e0; 
+        }
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
+        #send-btn { 
+            background: #075e54; 
+            color: white; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 1.1rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+        #send-btn:hover { background: #054c44; }
+
+        .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; min-height: 16px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Axtres Status: Online</h2>
-        <p>If you see this box, HTML rendering is working correctly!</p>
-        <hr style="margin: 20px 0; border-color: #444;">
-        <p>Testing Backend API Connection...</p>
-        <div id="api-status" style="font-weight: bold; margin-top: 10px;">Connecting...</div>
-        <pre id="error-log"></pre>
+
+    <div class="card">
+        <!-- 1. WELCOME SPLASH SCREEN -->
+        <div id="welcome-screen" class="screen active">
+            <h1>Axtres Chat</h1>
+            <p>Secure WhatsApp-Style Global Messenger</p>
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 2. LOGIN SCREEN -->
+        <div id="login-screen" class="screen">
+            <div class="header-bar">Sign In</div>
+            <div class="form-content">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Enter your registered details</p>
+                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div id="login-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
+                    🔔 Enable Push Notifications
+                </div>
+
+                <div class="error-msg" id="login-error"></div>
+                <button class="btn" onclick="handleLogin()">Login to Chat</button>
+                <div class="link-text">Don't have an account? <span onclick="switchScreen('register-screen')">Register here</span></div>
+            </div>
+        </div>
+
+        <!-- 3. REGISTER SCREEN -->
+        <div id="register-screen" class="screen">
+            <div class="header-bar">Create Account</div>
+            <div class="form-content">
+                <h2>New Profile</h2>
+                <p class="subtitle">Set up your secure identity</p>
+                <input type="text" id="reg-name" placeholder="Full Name">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div id="reg-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
+                    🔔 Enable Push Notifications
+                </div>
+
+                <div class="error-msg" id="reg-error"></div>
+                <button class="btn" onclick="handleRegister()">Complete Registration</button>
+                <div class="link-text">Already registered? <span onclick="switchScreen('login-screen')">Sign In</span></div>
+            </div>
+        </div>
+
+        <!-- 4. CHAT ROOM SCREEN -->
+        <div id="chat-screen" class="screen">
+            <div class="header-bar">
+                <div>
+                    <div id="room-title">Axtres Global Chat</div>
+                    <span id="user-display-info"></span>
+                </div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div id="messages-container"></div>
+            <div id="input-toolbar">
+                <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        async function testBackend() {
-            try {
-                const res = await fetch('/messages');
-                const text = await res.text();
-                if (res.ok) {
-                    document.getElementById('api-status').style.color = "#4CAF50";
-                    document.getElementById('api-status').innerText = "SUCCESS! Connected to Cloudflare D1 Database.";
-                    document.getElementById('error-log').innerText = "Database Response:\n" + text;
+        const API_BASE = "/users";
+        const MESSAGES_API = "/messages";
+        let currentUser = null;
+        let lastDisplayedDate = "";
+        let syncInterval = null;
+        let knownMessages = new Set();
+
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('axtres_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('axtres_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            getDeviceId();
+            setTimeout(() => {
+                const savedUser = localStorage.getItem('axtres_user');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    enterChatRoom();
                 } else {
-                    document.getElementById('api-status').style.color = "#ff5555";
-                    document.getElementById('api-status').innerText = "API Error (Status " + res.status + ")";
-                    document.getElementById('error-log').innerText = text;
+                    switchScreen('login-screen');
                 }
-            } catch (err) {
-                document.getElementById('api-status').style.color = "#ff5555";
-                document.getElementById('api-status').innerText = "Network / Fetch Failed";
-                document.getElementById('error-log').innerText = err.toString();
+            }, 800);
+
+            updateNotificationButtons();
+        });
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            updateNotificationButtons();
+        }
+
+        function updateNotificationButtons() {
+            const btns = [document.getElementById('reg-notif-btn'), document.getElementById('login-notif-btn')];
+            btns.forEach(btn => {
+                if (!btn) return;
+                if (Notification.permission === "granted") {
+                    btn.innerText = "✅ Push Notifications Enabled";
+                    btn.classList.add('enabled');
+                } else {
+                    btn.innerText = "🔔 Enable Push Notifications";
+                    btn.classList.remove('enabled');
+                }
+            });
+        }
+
+        async function requestNotificationPermission() {
+            const permission = await Notification.requestPermission();
+            updateNotificationButtons();
+            if (permission === "granted") {
+                new Notification("Axtres Chat", { body: "Push notifications enabled successfully!" });
+            } else {
+                alert("Permission denied or dismissed. Please enable notifications in your browser settings.");
             }
         }
-        testBackend();
+
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const pin = document.getElementById('reg-pin').value.trim();
+            const pinConfirm = document.getElementById('reg-pin-confirm').value.trim();
+            const errDiv = document.getElementById('reg-error');
+
+            if (!name || !phone || !pin || !pinConfirm) {
+                errDiv.innerText = "Please fill in all fields.";
+                return;
+            }
+            if (phone.length !== 10) {
+                errDiv.innerText = "Phone number must be 10 digits.";
+                return;
+            }
+            if (pin.length !== 3) {
+                errDiv.innerText = "PIN must be 3 digits.";
+                return;
+            }
+            if (pin !== pinConfirm) {
+                errDiv.innerText = "PINs do not match.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}?action=register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, pin, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Registration failed");
+
+                alert("Registration successful! Please sign in.");
+                switchScreen('login-screen');
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const pin = document.getElementById('login-pin').value.trim();
+            const errDiv = document.getElementById('login-error');
+
+            if (!phone || !pin) {
+                errDiv.innerText = "Please enter phone and PIN.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}?action=login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, pin, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Login failed");
+
+                currentUser = data.user;
+                localStorage.setItem('axtres_user', JSON.stringify(currentUser));
+                enterChatRoom();
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('axtres_user');
+            currentUser = null;
+            if (syncInterval) clearInterval(syncInterval);
+            switchScreen('login-screen');
+        }
+
+        async function enterChatRoom() {
+            switchScreen('chat-screen');
+            document.getElementById('user-display-info').innerText = `${currentUser.name} (${currentUser.phone})`;
+            
+            const messagesDiv = document.getElementById('messages-container');
+            messagesDiv.innerHTML = "";
+            lastDisplayedDate = "";
+            knownMessages.clear();
+
+            await pollMessages(true);
+
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = setInterval(() => pollMessages(false), 2000);
+        }
+
+        async function pollMessages(isInitial) {
+            try {
+                const res = await fetch(MESSAGES_API);
+                const history = await res.json();
+                if (Array.isArray(history)) {
+                    history.forEach(msg => {
+                        const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
+                        if (!knownMessages.has(uniqueKey)) {
+                            knownMessages.add(uniqueKey);
+                            
+                            if (!isInitial && msg.senderPhone !== currentUser.phone) {
+                                if (Notification.permission === "granted") {
+                                    new Notification(`New message from ${msg.senderName}`, { body: msg.message });
+                                }
+                            }
+                            displayMessage(msg);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Polling error:", e);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const timeNow = new Date().toISOString();
+            const messagePayload = {
+                senderPhone: currentUser.phone,
+                senderName: currentUser.name,
+                message: text,
+                created_at: timeNow
+            };
+
+            const uniqueKey = `${messagePayload.senderPhone}-${messagePayload.created_at}-${messagePayload.message}`;
+            knownMessages.add(uniqueKey);
+            displayMessage(messagePayload);
+
+            input.value = "";
+            input.focus();
+
+            try {
+                await fetch(MESSAGES_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        room_id: 'global_room',
+                        sender_id: currentUser.phone,
+                        sender_name: currentUser.name,
+                        message: text
+                    })
+                });
+            } catch (err) {
+                console.error("Failed to save message", err);
+            }
+        }
+
+        function displayMessage(data) {
+            const messagesDiv = document.getElementById('messages-container');
+            
+            const msgDate = data.created_at ? new Date(data.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+            const todayStr = new Date().toLocaleDateString();
+            const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
+
+            if (dateLabel !== lastDisplayedDate) {
+                lastDisplayedDate = dateLabel;
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date-separator';
+                dateDiv.innerText = dateLabel;
+                messagesDiv.appendChild(dateDiv);
+            }
+
+            const msgEl = document.createElement('div');
+            msgEl.className = 'msg';
+
+            const timeStr = data.created_at ? new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (data.senderPhone === currentUser.phone) {
+                msgEl.classList.add('me');
+                msgEl.innerHTML = `${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
+            } else {
+                msgEl.classList.add('them');
+                msgEl.innerHTML = `<div class="msg-sender">${escapeHtml(data.senderName)}</div>${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
+            }
+
+            messagesDiv.appendChild(msgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function checkEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+            return text.replace(/[\n&<>"']/g, function(m) { return map[m] || m; });
+        }
     </script>
 </body>
 </html>
