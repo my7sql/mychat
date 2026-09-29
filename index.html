@@ -417,9 +417,8 @@
                 const res = await fetch(MESSAGES_API);
                 const history = await res.json();
                 if (Array.isArray(history)) {
-                    messagesDiv = document.getElementById('messages-container');
+                    const messagesDiv = document.getElementById('messages-container');
                     
-                    // Re-render full list cleanly to group dates and avoid duplicates
                     messagesDiv.innerHTML = "";
                     let lastDateLabel = "";
 
@@ -433,7 +432,6 @@
                         }
                         knownMessages.add(uniqueKey);
 
-                        // Format Date Label grouping
                         const msgDate = msg.created_at ? new Date(msg.created_at).toLocaleDateString() : new Date().toLocaleDateString();
                         const todayStr = new Date().toLocaleDateString();
                         const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
@@ -474,6 +472,7 @@
             const text = input.value.trim();
             if (!text) return;
 
+            const timeNow = new Date().toISOString();
             input.value = "";
             input.focus();
 
@@ -485,10 +484,11 @@
                         room_id: 'global_room',
                         sender_id: currentUser.phone,
                         sender_name: currentUser.name,
-                        message: text
+                        message: text,
+                        created_at: timeNow
                     })
                 });
-                await pollMessages(false); // Immediately sync and render cleanly
+                await pollMessages(false);
             } catch (err) {
                 console.error("Failed to send message", err);
             }
