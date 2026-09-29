@@ -1,6 +1,5 @@
 export async function onRequest(context) {
   const { request, env } = context;
-  const url = new URL(request.url);
   const DB = env.DB || env.chat;
 
   const corsHeaders = {
@@ -35,12 +34,11 @@ export async function onRequest(context) {
 
   if (request.method === "GET") {
     try {
-      // Fetch ALL messages for the global space to prevent room_id mismatch issues across devices
       const { results } = await DB.prepare(
         "SELECT sender_id AS senderPhone, sender_name AS senderName, message, created_at FROM messages ORDER BY id ASC"
       ).all();
 
-      return new Response(JSON.stringify(results), {
+      return new Response(JSON.stringify(results || []), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (e) {
@@ -55,6 +53,13 @@ export async function onRequest(context) {
     try {
       const data = await request.json();
       const { room_id, sender_id, sender_name, message } = data;
+
+      if (!message || !sender_id) {
+        return new Response(JSON.stringify({ error: "Missing message data" }), { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        });
+      }
 
       await DB.prepare(
         "INSERT INTO messages (room_id, sender_id, sender_name, message) VALUES (?, ?, ?, ?)"
