@@ -322,6 +322,8 @@
             updateNotificationButtons();
             if (permission === "granted") {
                 new Notification("Axtres Chat", { body: "Notifications are now active!" });
+            } else {
+                alert("Permission denied or dismissed. Please enable notifications in your browser site settings.");
             }
         }
 
@@ -410,13 +412,13 @@
             logSystem("Connecting to secure database...");
 
             try {
-                const res = await fetch(`${MESSAGES_API}?room=global_room`);
+                const res = await fetch(MESSAGES_API);
                 const history = await res.json();
                 if (Array.isArray(history)) {
                     history.forEach(msg => displayMessage(msg));
                 }
             } catch (e) {
-                logSystem("⚠️️ Could not load offline history.");
+                logSystem("⚠️ Could not load offline history.");
             }
 
             try {
@@ -433,8 +435,10 @@
                         const data = JSON.parse(payload.toString());
                         if (data.senderPhone !== currentUser.phone) {
                             displayMessage(data);
-                            if (document.hidden && Notification.permission === "granted") {
-                                new Notification(data.senderName, { body: data.message });
+                            
+                            // Trigger notification whenever a message comes from another user
+                            if (Notification.permission === "granted") {
+                                new Notification(`New message from ${data.senderName}`, { body: data.message });
                             }
                         }
                     } catch (err) {
