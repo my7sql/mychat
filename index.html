@@ -6,252 +6,104 @@
     <title>Axtres Secure Messenger</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
         body { 
             background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364); 
             background-size: 400% 400%; 
             animation: gradientShift 15s ease infinite; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            color: #333; 
-            overflow: hidden; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; color: #333; overflow: hidden; 
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .card { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(10px); 
-            width: 100%; 
-            max-width: 420px; 
-            height: 88vh; 
-            max-height: 780px; 
-            border-radius: 20px; 
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            position: relative;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            width: 100%; max-width: 420px; height: 88vh; max-height: 780px; 
+            border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; flex-direction: column; overflow: hidden; position: relative; 
         }
 
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .screen.active { display: flex; }
 
-        #welcome-screen { 
-            justify-content: center; 
-            align-items: center; 
-            text-align: center; 
-            padding: 30px; 
-            background: linear-gradient(135deg, #075e54, #128c7e); 
-            color: white; 
-        }
+        #welcome-screen { justify-content: center; align-items: center; text-align: center; padding: 30px; background: linear-gradient(135deg, #075e54, #128c7e); color: white; }
         #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
-        #welcome-screen p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 30px; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .header-bar { 
-            background: #075e54; 
-            color: white; 
-            padding: 16px 20px; 
-            font-size: 1.15rem; 
-            font-weight: 600; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        }
+        .header-bar { background: #075e54; color: white; padding: 16px 20px; font-size: 1.15rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
-        .form-content { 
-            padding: 25px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            justify-content: center; 
-            flex: 1; 
-            overflow-y: auto; 
-        }
+        .form-content { padding: 25px; display: flex; flex-direction: column; gap: 14px; justify-content: center; flex: 1; }
         .form-content h2 { color: #075e54; font-size: 1.5rem; margin-bottom: 2px; }
         .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 6px; }
 
-        input { 
-            padding: 12px 16px; 
-            border: 1.5px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 0.95rem; 
-            outline: none; 
-            transition: all 0.2s; 
-            background: #fafafa; 
-        }
+        input { padding: 12px 16px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
         input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
-        
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .btn { 
-            background: #075e54; 
-            color: white; 
-            border: none; 
-            padding: 13px; 
-            border-radius: 10px; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: background 0.2s, transform 0.1s; 
-        }
+        .btn { background: #075e54; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
-        .btn:active { transform: scale(0.98); }
 
-        .notif-toggle-btn {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1.5px dashed #a5d6a7;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            transition: background 0.2s;
-        }
-        .notif-toggle-btn:hover { background: #c8e6c9; }
-        .notif-toggle-btn.enabled { background: #c8e6c9; color: #1b5e20; border-style: solid; cursor: default; }
+        /* Contacts List */
+        #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
+        .contact-phone { font-size: 0.85rem; color: #667781; }
 
-        .link-text { text-align: center; margin-top: 8px; font-size: 0.85rem; color: #666; }
-        .link-text span { color: #075e54; font-weight: 600; cursor: pointer; text-decoration: underline; }
-
-        #messages-container { 
-            flex: 1; 
-            padding: 15px 20px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 6px; 
-            background: #efeae2; 
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); 
-            background-size: 15px 15px; 
-        }
-
-        .date-separator { 
-            align-self: center; 
-            background: #e1f3fb; 
-            color: #54656f; 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            padding: 5px 12px; 
-            border-radius: 6px; 
-            margin: 10px 0; 
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); 
-            text-transform: uppercase; 
-        }
-
-        .msg { 
-            max-width: 78%; 
-            padding: 8px 12px 6px 12px; 
-            border-radius: 7.5px; 
-            font-size: 0.95rem; 
-            line-height: 1.4; 
-            word-wrap: break-word; 
-            position: relative; 
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); 
-        }
+        /* Chat Room */
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
+        .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
+        .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
         .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
         .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
-        
-        .msg-sender { font-size: 0.75rem; font-weight: 700; color: #075e54; margin-bottom: 2px; }
-        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; display: inline-block; }
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
 
-        #input-toolbar { 
-            display: flex; 
-            padding: 10px 15px; 
-            background: #f0f2f5; 
-            gap: 10px; 
-            align-items: center; 
-            border-top: 1px solid #e0e0e0; 
-        }
+        #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
         #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
-        #send-btn { 
-            background: #075e54; 
-            color: white; 
-            border: none; 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 50%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-            font-size: 1.1rem; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-        }
-        #send-btn:hover { background: #054c44; }
-
-        .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; min-height: 16px; }
+        #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
+        .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+        .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <!-- 1. WELCOME SPLASH SCREEN -->
+        <!-- 1. SPLASH -->
         <div id="welcome-screen" class="screen active">
             <h1>Axtres Chat</h1>
-            <p>Secure WhatsApp-Style Global Messenger</p>
+            <p>Secure 1-on-1 Messenger</p>
             <div class="spinner"></div>
         </div>
 
-        <!-- 2. LOGIN SCREEN -->
+        <!-- 2. LOGIN SCREEN (Passwordless) -->
         <div id="login-screen" class="screen">
-            <div class="header-bar">Sign In</div>
+            <div class="header-bar">Quick Sign In</div>
             <div class="form-content">
-                <h2>Welcome Back</h2>
-                <p class="subtitle">Enter your registered details</p>
+                <h2>Welcome</h2>
+                <p class="subtitle">Enter your details to start chatting instantly</p>
+                <input type="text" id="login-name" placeholder="Your Full Name">
                 <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                
-                <div id="login-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
-                    🔔 Enable Push Notifications
-                </div>
-
                 <div class="error-msg" id="login-error"></div>
-                <button class="btn" onclick="handleLogin()">Login to Chat</button>
-                <div class="link-text">Don't have an account? <span onclick="switchScreen('register-screen')">Register here</span></div>
+                <button class="btn" onclick="handleLogin()">Start Messaging</button>
             </div>
         </div>
 
-        <!-- 3. REGISTER SCREEN -->
-        <div id="register-screen" class="screen">
-            <div class="header-bar">Create Account</div>
-            <div class="form-content">
-                <h2>New Profile</h2>
-                <p class="subtitle">Set up your secure identity</p>
-                <input type="text" id="reg-name" placeholder="Full Name">
-                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                
-                <div id="reg-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
-                    🔔 Enable Push Notifications
-                </div>
-
-                <div class="error-msg" id="reg-error"></div>
-                <button class="btn" onclick="handleRegister()">Complete Registration</button>
-                <div class="link-text">Already registered? <span onclick="switchScreen('login-screen')">Sign In</span></div>
+        <!-- 3. CONTACTS LIST SCREEN -->
+        <div id="contacts-screen" class="screen">
+            <div class="header-bar">
+                <div>Chats (<span id="my-name-display"></span>)</div>
+                <span onclick="handleLogout()">Sign Out</span>
             </div>
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a friend to start a private chat:</div>
+            <div id="contacts-container"></div>
         </div>
 
         <!-- 4. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
             <div class="header-bar">
-                <div>
-                    <div id="room-title">Axtres Global Chat</div>
-                    <span id="user-display-info"></span>
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="backToContacts()">&#8592;</span>
+                    <div id="chat-room-title">Chat</div>
                 </div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
@@ -264,10 +116,13 @@
     </div>
 
     <script>
-        const API_BASE = "/users";
+        const USERS_API = "/users";
         const MESSAGES_API = "/messages";
         let currentUser = null;
+        let activeRecipient = null;
+        let currentRoomId = null;
         let syncInterval = null;
+        let contactsInterval = null;
         let knownMessages = new Set();
 
         function getDeviceId() {
@@ -285,107 +140,44 @@
                 const savedUser = localStorage.getItem('axtres_user');
                 if (savedUser) {
                     currentUser = JSON.parse(savedUser);
-                    enterChatRoom();
+                    openContactsScreen();
                 } else {
                     switchScreen('login-screen');
                 }
             }, 800);
-
-            updateNotificationButtons();
         });
 
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
-            updateNotificationButtons();
-        }
-
-        function updateNotificationButtons() {
-            const btns = [document.getElementById('reg-notif-btn'), document.getElementById('login-notif-btn')];
-            btns.forEach(btn => {
-                if (!btn) return;
-                if (Notification.permission === "granted") {
-                    btn.innerText = "✅ Push Notifications Enabled";
-                    btn.classList.add('enabled');
-                } else {
-                    btn.innerText = "🔔 Enable Push Notifications";
-                    btn.classList.remove('enabled');
-                }
-            });
-        }
-
-        async function requestNotificationPermission() {
-            const permission = await Notification.requestPermission();
-            updateNotificationButtons();
-            if (permission === "granted") {
-                new Notification("Axtres Chat", { body: "Push notifications enabled successfully!" });
-            } else {
-                alert("Permission denied or dismissed. Please enable notifications in your browser settings.");
-            }
-        }
-
-        async function handleRegister() {
-            const name = document.getElementById('reg-name').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const pin = document.getElementById('reg-pin').value.trim();
-            const pinConfirm = document.getElementById('reg-pin-confirm').value.trim();
-            const errDiv = document.getElementById('reg-error');
-
-            if (!name || !phone || !pin || !pinConfirm) {
-                errDiv.innerText = "Please fill in all fields.";
-                return;
-            }
-            if (phone.length !== 10) {
-                errDiv.innerText = "Phone number must be 10 digits.";
-                return;
-            }
-            if (pin.length !== 3) {
-                errDiv.innerText = "PIN must be 3 digits.";
-                return;
-            }
-            if (pin !== pinConfirm) {
-                errDiv.innerText = "PINs do not match.";
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_BASE}?action=register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, pin, device_id: getDeviceId() })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Registration failed");
-
-                alert("Registration successful! Please sign in.");
-                switchScreen('login-screen');
-            } catch (err) {
-                errDiv.innerText = err.message;
-            }
         }
 
         async function handleLogin() {
+            const name = document.getElementById('login-name').value.trim();
             const phone = document.getElementById('login-phone').value.trim();
-            const pin = document.getElementById('login-pin').value.trim();
             const errDiv = document.getElementById('login-error');
 
-            if (!phone || !pin) {
-                errDiv.innerText = "Please enter phone and PIN.";
+            if (!name || !phone) {
+                errDiv.innerText = "Please enter your name and phone number.";
+                return;
+            }
+            if (phone.length !== 10) {
+                errDiv.innerText = "Phone number must be exactly 10 digits.";
                 return;
             }
 
             try {
-                const res = await fetch(`${API_BASE}?action=login`, {
+                const res = await fetch(USERS_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, pin, device_id: getDeviceId() })
+                    body: JSON.stringify({ name, phone, device_id: getDeviceId() })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Login failed");
 
                 currentUser = data.user;
                 localStorage.setItem('axtres_user', JSON.stringify(currentUser));
-                enterChatRoom();
+                openContactsScreen();
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -395,39 +187,84 @@
             localStorage.removeItem('axtres_user');
             currentUser = null;
             if (syncInterval) clearInterval(syncInterval);
+            if (contactsInterval) clearInterval(contactsInterval);
             switchScreen('login-screen');
         }
 
-        async function enterChatRoom() {
+        async function openContactsScreen() {
+            switchScreen('contacts-screen');
+            document.getElementById('my-name-display').innerText = currentUser.name;
+            if (syncInterval) clearInterval(syncInterval);
+
+            await fetchContacts();
+            if (contactsInterval) clearInterval(contactsInterval);
+            contactsInterval = setInterval(fetchContacts, 4000);
+        }
+
+        async function fetchContacts() {
+            try {
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}`);
+                const contacts = await res.json();
+                const container = document.getElementById('contacts-container');
+                container.innerHTML = "";
+
+                if (!Array.isArray(contacts) || contacts.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other users found yet.<br>Ask a friend to open the app and sign in!</div>`;
+                    return;
+                }
+
+                contacts.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div></div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    item.onclick = () => startChatWith(c);
+                    container.appendChild(item);
+                });
+            } catch (e) {
+                console.error("Error fetching contacts:", e);
+            }
+        }
+
+        function startChatWith(recipient) {
+            activeRecipient = recipient;
+            if (contactsInterval) clearInterval(contactsInterval);
+
+            // Generate a deterministic unique room ID combining both phone numbers sorted alphabetically
+            const sortedPhones = [currentUser.phone, recipient.phone].sort();
+            currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
+
+            document.getElementById('chat-room-title').innerText = recipient.name;
             switchScreen('chat-screen');
-            document.getElementById('user-display-info').innerText = `${currentUser.name} (${currentUser.phone})`;
-            
+
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
             knownMessages.clear();
 
-            await pollMessages(true);
-
+            pollChatMessages(true);
             if (syncInterval) clearInterval(syncInterval);
-            syncInterval = setInterval(() => pollMessages(false), 2000);
+            syncInterval = setInterval(() => pollChatMessages(false), 2000);
         }
 
-        async function pollMessages(isInitial) {
+        function backToContacts() {
+            if (syncInterval) clearInterval(syncInterval);
+            openContactsScreen();
+        }
+
+        async function pollChatMessages(isInitial) {
+            if (!currentRoomId) return;
             try {
-                const res = await fetch(MESSAGES_API);
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}`);
                 const history = await res.json();
                 if (Array.isArray(history)) {
                     const messagesDiv = document.getElementById('messages-container');
-                    
                     messagesDiv.innerHTML = "";
                     let lastDateLabel = "";
 
                     history.forEach(msg => {
                         const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
-                        
                         if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
                             if (Notification.permission === "granted") {
-                                new Notification(`New message from ${msg.senderName}`, { body: msg.message });
+                                new Notification(`New message from ${activeRecipient.name}`, { body: msg.message });
                             }
                         }
                         knownMessages.add(uniqueKey);
@@ -446,7 +283,6 @@
 
                         const msgEl = document.createElement('div');
                         msgEl.className = 'msg';
-
                         const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                         if (msg.senderPhone === currentUser.phone) {
@@ -454,12 +290,11 @@
                             msgEl.innerHTML = `${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         } else {
                             msgEl.classList.add('them');
-                            msgEl.innerHTML = `<div class="msg-sender">${escapeHtml(msg.senderName)}</div>${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         }
 
                         messagesDiv.appendChild(msgEl);
                     });
-
                     messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 }
             } catch (e) {
@@ -470,7 +305,7 @@
         async function sendMessage() {
             const input = document.getElementById('message-input');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text || !currentRoomId) return;
 
             const timeNow = new Date().toISOString();
             input.value = "";
@@ -481,14 +316,14 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        room_id: 'global_room',
+                        room_id: currentRoomId,
                         sender_id: currentUser.phone,
                         sender_name: currentUser.name,
                         message: text,
                         created_at: timeNow
                     })
                 });
-                await pollMessages(false);
+                await pollChatMessages(false);
             } catch (err) {
                 console.error("Failed to send message", err);
             }
