@@ -15,13 +15,13 @@ export async function onRequest(context) {
   }
 
   if (!DB) {
-    return new Response(JSON.stringify({ error: "Database binding missing in Cloudflare. Check D1 bindings." }), {
+    return new Response(JSON.stringify({ error: "Database binding missing in Cloudflare." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
   }
 
-  // Ensure users table exists
+  // Ensure users table includes device tracking
   try {
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS users (
@@ -29,6 +29,7 @@ export async function onRequest(context) {
         name TEXT,
         name_lower TEXT,
         pin TEXT,
+        device_id TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
@@ -39,7 +40,7 @@ export async function onRequest(context) {
       const data = await request.json();
 
       if (action === "register") {
-        const { name, phone, pin } = data;
+        const { name, phone, pin, device_id } = data;
         if (!name || !phone || !pin) {
           return new Response(JSON.stringify({ error: "All fields are required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
@@ -50,8 +51,8 @@ export async function onRequest(context) {
         }
 
         await DB.prepare(
-          "INSERT INTO users (phone, name, name_lower, pin) VALUES (?, ?, ?, ?)"
-        ).bind(phone, name, name.toLowerCase(), pin).run();
+          "INSERT INTO users (phone, name, name_lower, pin, device_id) VALUES (?, ?, ?, ?, ?)"
+        ).bind(phone, name, name.toLowerCase(), pin, device_id || "").run();
 
         return new Response(JSON.stringify({ success: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -59,14 +60,19 @@ export async function onRequest(context) {
       }
 
       if (action === "login") {
-        const { phone, pin } = data;
+        const { phone, pin, device_id } = data;
         if (!phone || !pin) {
           return new Response(JSON.stringify({ error: "Phone and PIN required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
-        const user = await DB.prepare("SELECT phone, name FROM users WHERE phone = ? AND pin = ?").bind(phone, pin).first();
+        const user = await DB.prepare("SELECT phone, name, device_id FROM users WHERE phone = ? AND pin = ?").bind(phone, pin).first();
         if (!user) {
           return new Response(JSON.stringify({ error: "Invalid phone number or PIN" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+
+        // Update device ID binding on login
+        if (device_id) {
+          await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
         }
 
         return new Response(JSON.stringify({ success: true, user }), {
