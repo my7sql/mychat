@@ -20,7 +20,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // 1. Create table if completely missing
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,16 +27,9 @@ export async function onRequest(context) {
         sender_id TEXT,
         sender_name TEXT,
         message TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TEXT
       )
     `).run();
-
-    // 2. Safely add columns if updating an older table schema
-    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN room_id TEXT`).run(); } catch(e){}
-    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN sender_id TEXT`).run(); } catch(e){}
-    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN sender_name TEXT`).run(); } catch(e){}
-    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN message TEXT`).run(); } catch(e){}
-    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP`).run(); } catch(e){}
   } catch (e) {}
 
   if (request.method === "GET") {
@@ -60,7 +52,7 @@ export async function onRequest(context) {
   if (request.method === "POST") {
     try {
       const data = await request.json();
-      const { room_id, sender_id, sender_name, message } = data;
+      const { room_id, sender_id, sender_name, message, created_at } = data;
 
       if (!message || !sender_id) {
         return new Response(JSON.stringify({ error: "Missing message data" }), { 
@@ -69,9 +61,11 @@ export async function onRequest(context) {
         });
       }
 
+      const timestamp = created_at || new Date().toISOString();
+
       await DB.prepare(
-        "INSERT INTO messages (room_id, sender_id, sender_name, message) VALUES (?, ?, ?, ?)"
-      ).bind(room_id || "global_room", sender_id, sender_name, message).run();
+        "INSERT INTO messages (room_id, sender_id, sender_name, message, created_at) VALUES (?, ?, ?, ?, ?)"
+      ).bind(room_id || "global_room", sender_id, sender_name, message, timestamp).run();
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
