@@ -18,6 +18,14 @@ export async function onRequest(context) {
     });
   }
 
+  // --- AUTOMATIC FRESH START WIPE ---
+  // This drops old tables automatically so you never have to run SQLite commands.
+  try {
+    await DB.prepare("DROP TABLE IF EXISTS users").run();
+    await DB.prepare("DROP TABLE IF EXISTS messages").run();
+  } catch (e) {}
+  // ----------------------------------
+
   try {
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS users (
