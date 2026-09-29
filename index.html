@@ -42,6 +42,9 @@
 
         .btn { background: #075e54; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
+        .switch-text { text-align: center; font-size: 0.85rem; color: #666; margin-top: 10px; }
+        .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
 
         /* Contacts List */
         #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
@@ -63,6 +66,7 @@
         #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; }
+        .success-msg { color: #2e7d32; font-size: 0.8rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -75,20 +79,35 @@
             <div class="spinner"></div>
         </div>
 
-        <!-- 2. LOGIN SCREEN (Passwordless) -->
-        <div id="login-screen" class="screen">
-            <div class="header-bar">Quick Sign In</div>
+        <!-- 2. REGISTER SCREEN (Name + Phone) -->
+        <div id="register-screen" class="screen">
+            <div class="header-bar">Create Account</div>
             <div class="form-content">
-                <h2>Welcome</h2>
-                <p class="subtitle">Enter your details to start chatting instantly</p>
-                <input type="text" id="login-name" placeholder="Your Full Name">
-                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <div class="error-msg" id="login-error"></div>
-                <button class="btn" onclick="handleLogin()">Start Messaging</button>
+                <h2>Register</h2>
+                <p class="subtitle">Enter your name and phone number to sign up</p>
+                <input type="text" id="reg-name" placeholder="Your Full Name">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div class="error-msg" id="reg-error"></div>
+                <div class="success-msg" id="reg-success"></div>
+                <button class="btn" onclick="handleRegister()">Register Account</button>
+                <div class="switch-text">Already have an account? <a onclick="switchScreen('login-screen')">Log In here</a></div>
             </div>
         </div>
 
-        <!-- 3. CONTACTS LIST SCREEN -->
+        <!-- 3. LOGIN SCREEN (Phone number only) -->
+        <div id="login-screen" class="screen">
+            <div class="header-bar">Sign In</div>
+            <div class="form-content">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Enter your registered 10-digit phone number</p>
+                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div class="error-msg" id="login-error"></div>
+                <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                <div class="switch-text">New here? <a onclick="switchScreen('register-screen')">Register an account</a></div>
+            </div>
+        </div>
+
+        <!-- 4. CONTACTS LIST SCREEN -->
         <div id="contacts-screen" class="screen">
             <div class="header-bar">
                 <div>Chats (<span id="my-name-display"></span>)</div>
@@ -98,7 +117,7 @@
             <div id="contacts-container"></div>
         </div>
 
-        <!-- 4. CHAT ROOM SCREEN -->
+        <!-- 5. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
             <div class="header-bar">
                 <div style="display: flex; align-items: center;">
@@ -152,25 +171,61 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        async function handleLogin() {
-            const name = document.getElementById('login-name').value.trim();
-            const phone = document.getElementById('login-phone').value.trim();
-            const errDiv = document.getElementById('login-error');
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const errDiv = document.getElementById('reg-error');
+            const succDiv = document.getElementById('reg-success');
+            errDiv.innerText = "";
+            succDiv.innerText = "";
 
             if (!name || !phone) {
-                errDiv.innerText = "Please enter your name and phone number.";
+                errDiv.innerText = "Please fill in all fields.";
                 return;
             }
             if (phone.length !== 10) {
-                errDiv.innerText = "Phone number must be exactly 10 digits.";
+                errDiv.innerText = "Phone number must be 10 digits.";
                 return;
             }
 
             try {
-                const res = await fetch(USERS_API, {
+                const res = await fetch(`${USERS_API}?action=register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, phone, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Registration failed");
+
+                succDiv.innerText = "Registered successfully! Redirecting to login...";
+                setTimeout(() => {
+                    document.getElementById('login-phone').value = phone;
+                    switchScreen('login-screen');
+                }, 1200);
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const errDiv = document.getElementById('login-error');
+            errDiv.innerText = "";
+
+            if (!phone) {
+                errDiv.innerText = "Please enter your phone number.";
+                return;
+            }
+            if (phone.length !== 10) {
+                errDiv.innerText = "Phone number must be 10 digits.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, device_id: getDeviceId() })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Login failed");
@@ -209,7 +264,7 @@
                 container.innerHTML = "";
 
                 if (!Array.isArray(contacts) || contacts.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other users found yet.<br>Ask a friend to open the app and sign in!</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other users found yet.<br>Register another phone number on a different device to test!</div>`;
                     return;
                 }
 
@@ -229,7 +284,6 @@
             activeRecipient = recipient;
             if (contactsInterval) clearInterval(contactsInterval);
 
-            // Generate a deterministic unique room ID combining both phone numbers sorted alphabetically
             const sortedPhones = [currentUser.phone, recipient.phone].sort();
             currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
 
