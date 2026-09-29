@@ -272,6 +272,8 @@
         let mqttClient = null;
         let currentUser = null;
         let lastDisplayedDate = "";
+        let pollingInterval = null;
+        let knownMessageIds = new Set();
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('axtres_device_id');
@@ -292,7 +294,7 @@
                 } else {
                     switchScreen('login-screen');
                 }
-            }, 2000);
+            }, 1000);
 
             updateNotificationButtons();
         });
@@ -398,6 +400,7 @@
             localStorage.removeItem('axtres_user');
             currentUser = null;
             if (mqttClient) mqttClient.end();
+            if (pollingInterval) clearInterval(pollingInterval);
             switchScreen('login-screen');
         }
 
@@ -408,45 +411,71 @@
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
             lastDisplayedDate = "";
+            knownMessageIds.clear();
 
-            logSystem("Connecting to secure database...");
+            await fetchAndRenderMessages(true);
 
+            // Start real-time background sync polling every 2 seconds for smooth WhatsApp-like syncing
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(() => {
+                fetchAndRenderMessages(false);
+            }, 2000);
+
+            // Attempt MQTT connection with a safety timeout so it never hangs the screen
             try {
-                const res = await fetch(MESSAGES_API);
-                const history = await res.json();
-                if (Array.isArray(history)) {
-                    history.forEach(msg => displayMessage(msg));
-                }
-            } catch (e) {
-                logSystem("⚠️ Could not load offline history.");
-            }
-
-            try {
-                logSystem("Establishing live messaging stream...");
-                mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+                mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', { connectTimeout: 3000 });
 
                 mqttClient.on('connect', () => {
                     mqttClient.subscribe('axtres/global_chat');
-                    logSystem("🚀 Connected live to global room!");
                 });
 
                 mqttClient.on('message', (topic, payload) => {
                     try {
                         const data = JSON.parse(payload.toString());
                         if (data.senderPhone !== currentUser.phone) {
-                            displayMessage(data);
-                            
-                            // Trigger notification whenever a message comes from another user
-                            if (Notification.permission === "granted") {
-                                new Notification(`New message from ${data.senderName}`, { body: data.message });
-                            }
+                            handleIncomingLiveMessage(data);
                         }
                     } catch (err) {
                         console.error(err);
                     }
                 });
             } catch (err) {
-                logSystem("⚠️ Live stream network error.");
+                // Ignore MQTT errors; polling handles sync gracefully
+            }
+        }
+
+        async function fetchAndRenderMessages(isInitial) {
+            try {
+                const res = await fetch(MESSAGES_API);
+                const history = await res.json();
+                if (Array.isArray(history)) {
+                    history.forEach(msg => {
+                        const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
+                        if (!knownMessageIds.has(uniqueKey)) {
+                            knownMessageIds.add(uniqueKey);
+                            if (!isInitial && msg.senderPhone !== currentUser.phone) {
+                                // Trigger push notification on new background poll message
+                                if (Notification.permission === "granted") {
+                                    new Notification(`New message from ${msg.senderName}`, { body: msg.message });
+                                }
+                            }
+                            displayMessage(msg);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Sync error", e);
+            }
+        }
+
+        function handleIncomingLiveMessage(data) {
+            const uniqueKey = `${data.senderPhone}-${data.created_at}-${data.message}`;
+            if (!knownMessageIds.has(uniqueKey)) {
+                knownMessageIds.add(uniqueKey);
+                displayMessage(data);
+                if (Notification.permission === "granted") {
+                    new Notification(`New message from ${data.senderName}`, { body: data.message });
+                }
             }
         }
 
@@ -463,11 +492,16 @@
                 created_at: timeNow
             };
 
+            const uniqueKey = `${messagePayload.senderPhone}-${messagePayload.created_at}-${messagePayload.message}`;
+            knownMessageIds.add(uniqueKey);
             displayMessage(messagePayload);
 
             if (mqttClient && mqttClient.connected) {
                 mqttClient.publish('axtres/global_chat', JSON.stringify(messagePayload));
             }
+
+            input.value = "";
+            input.focus();
 
             try {
                 await fetch(MESSAGES_API, {
@@ -483,9 +517,6 @@
             } catch (err) {
                 console.error("Failed to save message to database", err);
             }
-
-            input.value = "";
-            input.focus();
         }
 
         function displayMessage(data) {
@@ -517,15 +548,6 @@
             }
 
             messagesDiv.appendChild(msgEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        function logSystem(text) {
-            const messagesDiv = document.getElementById('messages-container');
-            const el = document.createElement('div');
-            el.className = 'msg system';
-            el.innerText = text;
-            messagesDiv.appendChild(el);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
