@@ -24,6 +24,7 @@ export async function onRequest(context) {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         phone TEXT UNIQUE,
+        email TEXT,
         device_id TEXT
       )
     `).run();
@@ -32,11 +33,10 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const action = url.searchParams.get("action");
 
-  // GET /users?phone=... -> Returns contacts list excluding yourself
   if (request.method === "GET") {
     try {
       const myPhone = url.searchParams.get("phone");
-      const { results } = await DB.prepare("SELECT name, phone FROM users WHERE phone != ?").bind(myPhone || "").all();
+      const { results } = await DB.prepare("SELECT name, phone, email FROM users WHERE phone != ?").bind(myPhone || "").all();
       return new Response(JSON.stringify(results || []), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
@@ -48,7 +48,7 @@ export async function onRequest(context) {
   if (request.method === "POST") {
     try {
       const data = await request.json();
-      const { name, phone, device_id } = data;
+      const { name, phone, email, device_id } = data;
 
       if (!phone) {
         return new Response(JSON.stringify({ error: "Phone number is required." }), { 
@@ -56,28 +56,25 @@ export async function onRequest(context) {
         });
       }
 
-      // Action: REGISTER
       if (action === "register") {
         if (!name) {
           return new Response(JSON.stringify({ error: "Name is required for registration." }), { status: 400, headers: corsHeaders });
         }
 
-        // Check if phone already exists
         const existing = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
         if (existing.results && existing.results.length > 0) {
           return new Response(JSON.stringify({ error: "This phone number is already registered. Please log in." }), { status: 400, headers: corsHeaders });
         }
 
         await DB.prepare(
-          "INSERT INTO users (name, phone, device_id) VALUES (?, ?, ?)"
-        ).bind(name, phone, device_id || "unknown").run();
+          "INSERT INTO users (name, phone, email, device_id) VALUES (?, ?, ?, ?)"
+        ).bind(name, phone, email || "", device_id || "unknown").run();
 
         return new Response(JSON.stringify({ success: true }), { 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         });
       }
 
-      // Action: LOGIN (Phone number only)
       if (action === "login") {
         const { results } = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
         
@@ -89,12 +86,11 @@ export async function onRequest(context) {
 
         const user = results[0];
         
-        // Update device ID binding for persistence
         if (device_id) {
           await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
         }
 
-        return new Response(JSON.stringify({ success: true, user: { name: user.name, phone: user.phone } }), { 
+        return new Response(JSON.stringify({ success: true, user: { name: user.name, phone: user.phone, email: user.email } }), { 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         });
       }
