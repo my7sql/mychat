@@ -21,7 +21,7 @@ export async function onRequest(context) {
     });
   }
 
-  // Ensure users table includes device tracking
+  // Ensure users table exists and auto-add device_id if missing
   try {
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS users (
@@ -29,10 +29,16 @@ export async function onRequest(context) {
         name TEXT,
         name_lower TEXT,
         pin TEXT,
-        device_id TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
+
+    // Safely check and add device_id column if it doesn't exist yet
+    try {
+      await DB.prepare(`ALTER TABLE users ADD COLUMN device_id TEXT`).run();
+    } catch (e) {
+      // Column likely already exists, ignore error
+    }
   } catch (e) {}
 
   if (request.method === "POST") {
@@ -70,9 +76,10 @@ export async function onRequest(context) {
           return new Response(JSON.stringify({ error: "Invalid phone number or PIN" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
-        // Update device ID binding on login
         if (device_id) {
-          await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
+          try {
+            await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
+          } catch (e) {}
         }
 
         return new Response(JSON.stringify({ success: true, user }), {
