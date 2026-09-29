@@ -33,7 +33,7 @@
             width: 100%; 
             max-width: 420px; 
             height: 88vh; 
-            max-height: 750px; 
+            max-height: 780px; 
             border-radius: 20px; 
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
             display: flex; 
@@ -72,22 +72,22 @@
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
         .form-content { 
-            padding: 30px 25px; 
+            padding: 25px; 
             display: flex; 
             flex-direction: column; 
-            gap: 16px; 
+            gap: 12px; 
             justify-content: center; 
             flex: 1; 
             overflow-y: auto; 
         }
-        .form-content h2 { color: #075e54; font-size: 1.6rem; margin-bottom: 4px; }
-        .form-content p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+        .form-content h2 { color: #075e54; font-size: 1.5rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 6px; }
 
         input { 
-            padding: 14px 16px; 
+            padding: 12px 16px; 
             border: 1.5px solid #ddd; 
             border-radius: 10px; 
-            font-size: 1rem; 
+            font-size: 0.95rem; 
             outline: none; 
             transition: all 0.2s; 
             background: #fafafa; 
@@ -101,7 +101,7 @@
             background: #075e54; 
             color: white; 
             border: none; 
-            padding: 14px; 
+            padding: 13px; 
             border-radius: 10px; 
             font-size: 1rem; 
             cursor: pointer; 
@@ -111,7 +111,22 @@
         .btn:hover { background: #054c44; }
         .btn:active { transform: scale(0.98); }
 
-        .link-text { text-align: center; margin-top: 12px; font-size: 0.9rem; color: #666; }
+        .notif-toggle-btn {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1.5px dashed #a5d6a7;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .notif-toggle-btn:hover { background: #c8e6c9; }
+        .notif-toggle-btn.enabled { background: #c8e6c9; color: #1b5e20; border-style: solid; cursor: default; }
+
+        .link-text { text-align: center; margin-top: 8px; font-size: 0.85rem; color: #666; }
         .link-text span { color: #075e54; font-weight: 600; cursor: pointer; text-decoration: underline; }
 
         #messages-container { 
@@ -181,8 +196,7 @@
         }
         #send-btn:hover { background: #054c44; }
 
-        .error-msg { color: #d32f2f; font-size: 0.85rem; text-align: center; min-height: 18px; }
-        .notif-banner { background: #e8f5e9; color: #2e7d32; padding: 10px; text-align: center; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #c8e6c9; display: none; }
+        .error-msg { color: #d32f2f; font-size: 0.8rem; text-align: center; min-height: 16px; }
     </style>
 </head>
 <body>
@@ -200,9 +214,14 @@
             <div class="header-bar">Sign In</div>
             <div class="form-content">
                 <h2>Welcome Back</h2>
-                <p class="subtitle">Enter your registered 10-digit phone & 3-digit PIN</p>
+                <p class="subtitle">Enter your registered details</p>
                 <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div id="login-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
+                    🔔 Enable Push Notifications
+                </div>
+
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Login to Chat</button>
                 <div class="link-text">Don't have an account? <span onclick="switchScreen('register-screen')">Register here</span></div>
@@ -214,11 +233,16 @@
             <div class="header-bar">Create Account</div>
             <div class="form-content">
                 <h2>New Profile</h2>
-                <p class="subtitle">Set up your secure messaging identity</p>
-                <input type="text" id="reg-name" placeholder="Full Name (Case-Insensitive)">
+                <p class="subtitle">Set up your secure identity</p>
+                <input type="text" id="reg-name" placeholder="Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div id="reg-notif-btn" class="notif-toggle-btn" onclick="requestNotificationPermission()">
+                    🔔 Enable Push Notifications
+                </div>
+
                 <div class="error-msg" id="reg-error"></div>
                 <button class="btn" onclick="handleRegister()">Complete Registration</button>
                 <div class="link-text">Already registered? <span onclick="switchScreen('login-screen')">Sign In</span></div>
@@ -227,9 +251,6 @@
 
         <!-- 4. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
-            <div class="notif-banner" id="notif-banner" onclick="requestNotificationPermission()">
-                🔔 Click here to enable browser push notifications
-            </div>
             <div class="header-bar">
                 <div>
                     <div id="room-title">Axtres Global Chat</div>
@@ -252,7 +273,6 @@
         let currentUser = null;
         let lastDisplayedDate = "";
 
-        // Get or generate a persistent device fingerprint token
         function getDeviceId() {
             let deviceId = localStorage.getItem('axtres_device_id');
             if (!deviceId) {
@@ -263,7 +283,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            getDeviceId(); // Initialize device footprint
+            getDeviceId();
             setTimeout(() => {
                 const savedUser = localStorage.getItem('axtres_user');
                 if (savedUser) {
@@ -272,25 +292,36 @@
                 } else {
                     switchScreen('login-screen');
                 }
-            }, 2500);
+            }, 2000);
 
-            if (Notification.permission === "granted") {
-                document.getElementById('notif-banner').style.display = 'none';
-            } else {
-                document.getElementById('notif-banner').style.display = 'block';
-            }
+            updateNotificationButtons();
         });
 
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            updateNotificationButtons();
+        }
+
+        function updateNotificationButtons() {
+            const btns = [document.getElementById('reg-notif-btn'), document.getElementById('login-notif-btn')];
+            btns.forEach(btn => {
+                if (!btn) return;
+                if (Notification.permission === "granted") {
+                    btn.innerText = "✅ Push Notifications Enabled";
+                    btn.classList.add('enabled');
+                } else {
+                    btn.innerText = "🔔 Enable Push Notifications";
+                    btn.classList.remove('enabled');
+                }
+            });
         }
 
         async function requestNotificationPermission() {
             const permission = await Notification.requestPermission();
+            updateNotificationButtons();
             if (permission === "granted") {
-                document.getElementById('notif-banner').style.display = 'none';
-                new Notification("Axtres Chat", { body: "Push notifications enabled successfully!" });
+                new Notification("Axtres Chat", { body: "Notifications are now active!" });
             }
         }
 
@@ -306,11 +337,11 @@
                 return;
             }
             if (phone.length !== 10) {
-                errDiv.innerText = "Phone number must be exactly 10 digits.";
+                errDiv.innerText = "Phone number must be 10 digits.";
                 return;
             }
             if (pin.length !== 3) {
-                errDiv.innerText = "PIN must be exactly 3 digits.";
+                errDiv.innerText = "PIN must be 3 digits.";
                 return;
             }
             if (pin !== pinConfirm) {
@@ -370,7 +401,7 @@
 
         async function enterChatRoom() {
             switchScreen('chat-screen');
-            document.getElementById('user-display-info').innerText = `Logged in as: ${currentUser.name} (${currentUser.phone})`;
+            document.getElementById('user-display-info').innerText = `${currentUser.name} (${currentUser.phone})`;
             
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
@@ -385,7 +416,7 @@
                     history.forEach(msg => displayMessage(msg));
                 }
             } catch (e) {
-                logSystem("⚠️ Could not load offline history.");
+                logSystem("⚠️️ Could not load offline history.");
             }
 
             try {
