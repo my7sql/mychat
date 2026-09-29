@@ -9,8 +9,16 @@ export async function onRequest(context) {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (!DB) return new Response(JSON.stringify({ error: "DB binding missing" }), { status: 500, headers: corsHeaders });
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  if (!DB) {
+    return new Response(JSON.stringify({ error: "Database binding missing." }), { 
+      status: 500, 
+      headers: { ...corsHeaders, "Content-Type": "application/json" } 
+    });
+  }
 
   try {
     await DB.prepare(`
@@ -26,28 +34,45 @@ export async function onRequest(context) {
   } catch (e) {}
 
   if (request.method === "GET") {
-    const room = url.searchParams.get("room") || "general";
+    const roomId = url.searchParams.get("room") || "global_room";
     try {
       const { results } = await DB.prepare(
-        "SELECT sender_id AS senderPhone, sender_name AS senderName, message, time(created_at, 'localtime') AS time FROM messages WHERE room_id = ? ORDER BY id ASC"
-      ).bind(room).all();
-      return new Response(JSON.stringify(results), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        "SELECT sender_id AS senderPhone, sender_name AS senderName, message, created_at FROM messages WHERE room_id = ? ORDER BY id ASC"
+      ).bind(roomId).all();
+
+      return new Response(JSON.stringify(results), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: e.message }), { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      });
     }
   }
 
   if (request.method === "POST") {
     try {
-      const { room_id, sender_id, sender_name, message } = await request.json();
+      const data = await request.json();
+      const { room_id, sender_id, sender_name, message } = data;
+
       await DB.prepare(
         "INSERT INTO messages (room_id, sender_id, sender_name, message) VALUES (?, ?, ?, ?)"
-      ).bind(room_id, sender_id, sender_name, message).run();
-      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      ).bind(room_id || "global_room", sender_id, sender_name, message).run();
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: e.message }), { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      });
     }
   }
 
-  return new Response("Method not allowed", { status: 405, headers: corsHeaders });
+  return new Response(JSON.stringify({ error: "Method not allowed" }), { 
+    status: 405, 
+    headers: { ...corsHeaders, "Content-Type": "application/json" } 
+  });
 }
