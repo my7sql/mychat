@@ -1,197 +1,557 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Persistent Two-Person Chat</title>
-    <!-- Stable client engine delivery layer -->
-    <script src="https://cloudflare.com"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        #setup-container, #chat-container { background: white; width: 100%; max-width: 450px; height: 85vh; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
-        #chat-container { display: none; }
-        .header { background: #007bff; color: white; padding: 15px; font-size: 1.2rem; font-weight: bold; text-align: center; }
-        .form-group { padding: 20px; display: flex; flex-direction: column; gap: 15px; justify-content: center; height: 100%; }
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; }
-        input:focus { border-color: #007bff; }
-        button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0056b3; }
-        #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #efeae2; }
-        .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
-        .msg.me { background: #d9fdd3; align-self: flex-end; color: #111b21; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .msg.them { background: white; align-self: flex-start; color: #111b21; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .msg.system { background: #fff3cd; color: #856404; align-self: center; font-size: 0.8rem; max-width: 90%; text-align: center; box-shadow: none; }
-        #input-area { display: flex; padding: 10px; background: #f0f2f5; gap: 10px; border-top: 1px solid #e0e0e0; }
-        #message-input { flex: 1; border-radius: 20px; padding: 10px 15px; border: 1px solid #ccc; }
-    </style>
-</head>
-<body>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    
+    body { 
+        background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+        background-size: 300% 300%;
+        animation: gradientShift 15s ease infinite;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        overflow: hidden;
+    }
 
-    <div id="setup-container">
-        <div class="header">Join Chat Room</div>
-        <div class="form-group">
-            <input type="text" id="username" placeholder="Enter your name" required>
-            <input type="text" id="room-id" placeholder="Enter a secret Room ID" required>
-            <button onclick="connectToChat()">Start Chatting</button>
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .container-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        width: 100%;
+        max-width: 420px;
+        height: 88vh;
+        border-radius: 20px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Views */
+    .view { display: none; flex-direction: column; height: 100%; width: 100%; }
+    .view.active { display: flex; }
+
+    /* Welcome Screen Styles */
+    #welcome-view {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(135deg, #075e54, #128c7e);
+        color: white;
+    }
+    .welcome-logo {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: floatLogo 3s ease-in-out infinite;
+    }
+    @keyframes floatLogo {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    .welcome-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; }
+    .welcome-sub { font-size: 0.95rem; opacity: 0.85; line-height: 1.5; }
+
+    /* Common Header */
+    .app-header {
+        background: #008069;
+        color: white;
+        padding: 20px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Forms & Inputs */
+    .form-content {
+        padding: 30px 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        flex: 1;
+        justify-content: center;
+    }
+    .form-group-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-align: left;
+    }
+    .form-group-field label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+    .input-field {
+        padding: 12px 16px;
+        border: 1.5px solid #e1e8ed;
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s;
+        background: #fdfdfd;
+    }
+    .input-field:focus { border-color: #008069; background: #fff; box-shadow: 0 0 0 3px rgba(0, 128, 105, 0.1); }
+    
+    .btn-main {
+        background: #008069;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 4px 12px rgba(0, 128, 105, 0.2);
+        margin-top: 5px;
+    }
+    .btn-main:hover { background: #006d59; }
+    .btn-main:active { transform: scale(0.98); }
+
+    .auth-switch {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 10px;
+    }
+    .auth-switch span { color: #008069; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+    /* Chat Interface Styles (WhatsApp Look) */
+    #chat-view { background: #efeae2; }
+    .chat-topbar {
+        background: #008069;
+        color: white;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .chat-room-info { display: flex; flex-direction: column; }
+    .chat-room-info .room-name { font-size: 1.1rem; font-weight: 600; }
+    .chat-room-info .user-greet { font-size: 0.75rem; opacity: 0.85; }
+    .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
+    .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+    #messages-container {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background-image: radial-gradient(#d1dbd6 0.75px, transparent 0.75px);
+        background-size: 24px 24px;
+    }
+
+    .msg-bubble {
+        max-width: 75%;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+        position: relative;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+    }
+    .msg-bubble.me {
+        background: var(--bubble-me);
+        align-self: flex-end;
+        color: var(--text-main);
+        border-top-right-radius: 0;
+    }
+    .msg-bubble.them {
+        background: var(--bubble-them);
+        align-self: flex-start;
+        color: var(--text-main);
+        border-top-left-radius: 0;
+    }
+    .msg-bubble.system {
+        background: #fff3cd;
+        color: #856404;
+        align-self: center;
+        font-size: 0.8rem;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: none;
+        border-radius: 6px;
+    }
+    .msg-sender {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #008069;
+        margin-bottom: 2px;
+    }
+    .msg-time {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        float: right;
+        margin-left: 8px;
+        margin-top: 4px;
+        line-height: 1.5;
+    }
+
+    /* Input Panel */
+    .chat-input-area {
+        display: flex;
+        padding: 10px 14px;
+        background: #f0f2f5;
+        gap: 10px;
+        align-items: center;
+        border-top: 1px solid #e0e0e0;
+    }
+    .room-select-box {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 0.85rem;
+        outline: none;
+        background: white;
+    }
+    .message-box-input {
+        flex: 1;
+        border-radius: 20px;
+        padding: 10px 16px;
+        border: 1px solid #ccc;
+        outline: none;
+        font-size: 0.95rem;
+        background: white;
+    }
+    .message-box-input:focus { border-color: #008069; }
+    .send-btn {
+        background: #008069;
+        color: white;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        transition: background 0.2s;
+    }
+    .send-btn:hover { background: #006d59; }
+</style>
+
+
+<div class="container-box">
+    
+    <!-- 1. WELCOME VIEW (Auto transitions to login after 3.2s) -->
+    <div id="welcome-view" class="view active">
+        <div class="welcome-logo">💬</div>
+        <div class="welcome-title">Secure Messenger</div>
+        <div class="welcome-sub">End-to-end encrypted experience built with Cloudflare D1 & Real-time Sync streams.</div>
+    </div>
+
+    <!-- 2. LOGIN VIEW -->
+    <div id="login-view" class="view">
+        <div class="app-header">Welcome Back</div>
+        <div class="form-content">
+            <div class="form-group-field">
+                <label>10-Digit Phone Number</label>
+                <input type="tel" id="login-phone" class="input-field" placeholder="e.g. 9876543210" maxlength="10">
+            </div>
+            <div class="form-group-field">
+                <label>3-Digit Secret PIN</label>
+                <input type="password" id="login-pin" class="input-field" placeholder="•••" maxlength="3">
+            </div>
+            <button class="btn-main" onclick="handleLogin()">Sign In</button>
+            <div class="auth-switch">Don't have an account? <span onclick="switchView('register-view')">Register here</span></div>
         </div>
     </div>
 
-    <div id="chat-container">
-        <div class="header" id="chat-room-title">Room: None</div>
-        <div id="messages"></div>
-        <div id="input-area">
-            <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
-            <button onclick="sendMessage()">Send</button>
+    <!-- 3. REGISTER VIEW -->
+    <div id="register-view" class="view">
+        <div class="app-header">Create Account</div>
+        <div class="form-content">
+            <div class="form-group-field">
+                <label>Full Name (Case Insensitive Storage)</label>
+                <input type="text" id="reg-name" class="input-field" placeholder="e.g. Alex Morgan">
+            </div>
+            <div class="form-group-field">
+                <label>10-Digit Phone Number</label>
+                <input type="tel" id="reg-phone" class="input-field" placeholder="e.g. 9876543210" maxlength="10">
+            </div>
+            <div class="form-group-field">
+                <label>3-Digit PIN</label>
+                <input type="password" id="reg-pin" class="input-field" placeholder="•••" maxlength="3">
+            </div>
+            <div class="form-group-field">
+                <label>Confirm 3-Digit PIN</label>
+                <input type="password" id="reg-pin-confirm" class="input-field" placeholder="•••" maxlength="3">
+            </div>
+            <button class="btn-main" onclick="handleRegister()">Complete Registration</button>
+            <div class="auth-switch">Already registered? <span onclick="switchView('login-view')">Login here</span></div>
         </div>
     </div>
 
-    <script>
-        let client;
-        let myUsername = "";
-        let currentRoom = "";
-        const myClientId = 'user_' + Math.random().toString(36).substr(2, 9); 
+    <!-- 4. CHAT VIEW (WhatsApp style) -->
+    <div id="chat-view" class="view">
+        <div class="chat-topbar">
+            <div class="chat-room-info">
+                <span class="room-name" id="display-room-title">Room: General</span>
+                <span class="user-greet" id="display-user-greeting">Welcome, User</span>
+            </div>
+            <button class="logout-btn" onclick="logoutUser()">Logout</button>
+        </div>
+        
+        <div id="messages-container"></div>
 
-        const CLOUDFLARE_WORKER_URL = "/messages";
+        <div class="chat-input-area">
+            <select id="room-selector" class="room-select-box" onchange="changeRoom()">
+                <option value="general">General</option>
+                <option value="room-alpha">Alpha</option>
+                <option value="room-beta">Beta</option>
+            </select>
+            <input type="text" id="message-input" class="message-box-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
 
-        async function connectToChat() {
-            // Removes accidental spacing errors at start or end automatically
-            myUsername = document.getElementById('username').value.trim();
-            currentRoom = document.getElementById('room-id').value.trim();
+</div>
 
-            if (!myUsername || !currentRoom) {
-                alert("Please fill in both fields!");
-                return;
+<script>
+    const API_URL = "/users";
+    const CHAT_API_URL = "/messages";
+    
+    let currentUser = null; // { name, phone }
+    let currentRoom = "general";
+    let mqttClient = null;
+
+    // Auto transition from welcome screen after 3.2 seconds
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            switchView('login-view');
+        }, 3200);
+    });
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    async function handleRegister() {
+        const name = document.getElementById('reg-name').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const pin = document.getElementById('reg-pin').value.trim();
+        const pinConfirm = document.getElementById('reg-pin-confirm').value.trim();
+
+        if (!name || !phone || !pin || !pinConfirm) {
+            alert("Please fill in all registration fields.");
+            return;
+        }
+
+        if (phone.length !== 10 || isNaN(phone)) {
+            alert("Please enter a valid 10-digit phone number.");
+            return;
+        }
+
+        if (pin.length !== 3 || isNaN(pin)) {
+            alert("PIN must be exactly 3 digits.");
+            return;
+        }
+
+        if (pin !== pinConfirm) {
+            alert("PIN confirmation does not match.");
+            return;
+        }
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'register', name, phone, pin })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("Registration successful! Please login with your credentials.");
+                switchView('login-view');
+            } else {
+                alert(data.error || "Registration failed.");
             }
+        } catch (err) {
+            alert("Network error during registration.");
+        }
+    }
 
-            // Instantly load the chat room panel layout
-            document.getElementById('setup-container').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'flex';
-            document.getElementById('chat-room-title').innerText = `Room: ${currentRoom}`;
+    async function handleLogin() {
+        const phone = document.getElementById('login-phone').value.trim();
+        const pin = document.getElementById('login-pin').value.trim();
 
-            logSystemMessage("Connecting to cloud database...");
+        if (!phone || !pin) {
+            alert("Please enter both phone number and 3-digit PIN.");
+            return;
+        }
 
-            // 1. Fetch History from Cloudflare D1 database safely
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?room=${encodeURIComponent(currentRoom)}`);
-                const textData = await response.text();
-                
-                if (textData.trim().startsWith("<")) {
-                    throw new Error("Folder setup structural check needed.");
-                }
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'login', phone, pin })
+            });
+            const data = await res.json();
 
-                const history = JSON.parse(textData);
-                if (Array.isArray(history)) {
-                    history.forEach(data => displayMessage(data));
-                }
-            } catch (err) {
-                console.error("Database connection issue:", err);
-                logSystemMessage(`⚠️ Storage Status: ${err.message}`);
+            if (res.ok && data.user) {
+                currentUser = data.user;
+                initializeChatSession();
+            } else {
+                alert(data.error || "Invalid phone number or PIN.");
             }
+        } catch (err) {
+            alert("Network connection issue during login.");
+        }
+    }
 
-            // 2. Initializing live network communication streams
-            try {
-                logSystemMessage("Syncing live communication streams...");
-                
-                // Utilizing secure WebSocket protocol layer configurations
-                client = mqtt.connect('wss://://hivemq.com');
+    function initializeChatSession() {
+        document.getElementById('display-user-greeting').innerText = `Logged in as: ${currentUser.name}`;
+        switchView('chat-view');
+        loadRoomHistory();
+        connectMQTT();
+    }
 
-                client.on('connect', () => {
-                    const topic = `simplechat/rooms/${currentRoom}`;
-                    client.subscribe(topic);
-                    logSystemMessage(`🚀 Connected live! Room "${currentRoom}" is active.`);
-                });
+    function logoutUser() {
+        if (mqttClient) mqttClient.end();
+        currentUser = null;
+        document.getElementById('messages-container').innerHTML = "";
+        switchView('login-view');
+    }
 
-                client.on('error', (e) => {
-                    logSystemMessage(`Live stream layer alert: ${e.message}`);
-                });
+    function changeRoom() {
+        currentRoom = document.getElementById('room-selector').value;
+        document.getElementById('display-room-title').innerText = `Room: ${currentRoom.toUpperCase()}`;
+        document.getElementById('messages-container').innerHTML = "";
+        
+        if (mqttClient && mqttClient.connected) {
+            mqttClient.unsubscribe(`simplechat/rooms/#`);
+            mqttClient.subscribe(`simplechat/rooms/${currentRoom}`);
+        }
+        loadRoomHistory();
+    }
 
-                client.on('message', (topic, payload) => {
-                    try {
-                        const data = JSON.parse(payload.toString());
-                        if (data.senderId !== myClientId) {
-                            displayMessage(data);
-                        }
-                    } catch(e) {
-                        console.error(e);
+    async function loadRoomHistory() {
+        try {
+            const res = await fetch(`${CHAT_API_URL}?room=${encodeURIComponent(currentRoom)}`);
+            const history = await res.json();
+            if (Array.isArray(history)) {
+                const container = document.getElementById('messages-container');
+                container.innerHTML = "";
+                history.forEach(msg => renderMessage(msg));
+            }
+        } catch (e) {
+            console.error("Failed to load history", e);
+        }
+    }
+
+    function connectMQTT() {
+        try {
+            mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+
+            mqttClient.on('connect', () => {
+                mqttClient.subscribe(`simplechat/rooms/${currentRoom}`);
+                logSystemMessage("⚡ Connected to real-time live channel");
+            });
+
+            mqttClient.on('message', (topic, payload) => {
+                try {
+                    const data = JSON.parse(payload.toString());
+                    // Render messages sent by other clients
+                    if (data.senderPhone !== currentUser.phone) {
+                        renderMessage(data);
                     }
-                });
-            } catch (mqttErr) {
-                logSystemMessage(`Component status notice: ${mqttErr.message}`);
-            }
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        } catch (err) {
+            logSystemMessage("⚠️ Live stream broker connection warning.");
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('message-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const payload = {
+            room: currentRoom,
+            senderPhone: currentUser.phone,
+            senderName: currentUser.name,
+            message: text,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        // Display locally instantly
+        renderMessage(payload);
+
+        // Publish live via MQTT
+        if (mqttClient && mqttClient.connected) {
+            mqttClient.publish(`simplechat/rooms/${currentRoom}`, JSON.stringify(payload));
         }
 
-        async function sendMessage() {
-            const input = document.getElementById('message-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const messagePayload = {
-                senderId: myClientId,
-                senderName: myUsername,
-                message: text
-            };
-
-            // Display your own text instantly
-            displayMessage(messagePayload);
-
-            const topic = `simplechat/rooms/${currentRoom}`;
-            if (client && client.connected) {
-                client.publish(topic, JSON.stringify(messagePayload));
-            } else {
-                logSystemMessage("⚠️ Message local submission: Streaming server link offline.");
-            }
-
-            // Send message data log to your Cloudflare database
-            try {
-                await fetch(CLOUDFLARE_WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        room_id: currentRoom,
-                        sender_id: myClientId,
-                        sender_name: myUsername,
-                        message: text
-                    })
-                });
-            } catch (err) {
-                console.error("Database update transaction issue:", err);
-            }
-            
-            input.value = "";
-            input.focus();
+        // Save to Cloudflare D1 Database via worker endpoint
+        try {
+            await fetch(CHAT_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    room_id: currentRoom,
+                    sender_id: currentUser.phone,
+                    sender_name: currentUser.name,
+                    message: text
+                })
+            });
+        } catch (err) {
+            console.error("Database backup sync failed", err);
         }
 
-        function displayMessage(data) {
-            const messagesDiv = document.getElementById('messages');
-            const messageElement = document.createElement('div');
-            
-            messageElement.classList.add('msg');
-            if (data.senderId === myClientId) {
-                messageElement.classList.add('me');
-                messageElement.innerText = data.message;
-            } else {
-                messageElement.classList.add('them');
-                messageElement.innerText = `${data.senderName}: ${data.message}`;
-            }
+        input.value = "";
+        input.focus();
+    }
 
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scrolls window down
-        }
+    function renderMessage(data) {
+        const container = document.getElementById('messages-container');
+        const div = document.createElement('div');
+        
+        const isMe = currentUser && data.senderPhone === currentUser.phone;
+        div.className = `msg-bubble ${isMe ? 'me' : 'them'}`;
 
-        function logSystemMessage(text) {
-            const messagesDiv = document.getElementById('messages');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('msg', 'system');
-            messageElement.innerText = text;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scrolls notification text
+        let htmlContent = "";
+        if (!isMe) {
+            htmlContent += `<div class="msg-sender">${escapeHtml(data.senderName || "User")}</div>`;
         }
+        htmlContent += `<span>${escapeHtml(data.message)}</span>`;
+        htmlContent += `<span class="msg-time">${data.time || ''}</span>`;
 
-        function checkEnter(event) {
-            // Evaluates if user hits Enter to submit text block strings
-            if (event.key === 'Enter') sendMessage();
-        }
-    </script>
-</body>
-</html>
+        div.innerHTML = htmlContent;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function logSystemMessage(text) {
+        const container = document.getElementById('messages-container');
+        const div = document.createElement('div');
+        div.className = 'msg-bubble system';
+        div.innerText = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function checkEnter(event) {
+        if (event.key === 'Enter') sendMessage();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+</script>
