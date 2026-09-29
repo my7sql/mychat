@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Axtres Secure Messenger</title>
+    <link rel="manifest" href="/manifest.json">
+    <title>Axtres Emergency Secure Messenger</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { 
@@ -17,7 +18,7 @@
 
         .card { 
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
-            width: 100%; max-width: 420px; height: 88vh; max-height: 780px; 
+            width: 100%; max-width: 420px; height: 90vh; max-height: 800px; 
             border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
             display: flex; flex-direction: column; overflow: hidden; position: relative; 
         }
@@ -33,27 +34,32 @@
         .header-bar { background: #075e54; color: white; padding: 16px 20px; font-size: 1.15rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
-        .form-content { padding: 25px; display: flex; flex-direction: column; gap: 14px; justify-content: center; flex: 1; }
-        .form-content h2 { color: #075e54; font-size: 1.5rem; margin-bottom: 2px; }
-        .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 6px; }
+        .form-content { padding: 20px 25px; display: flex; flex-direction: column; gap: 10px; justify-content: center; flex: 1; overflow-y: auto; }
+        .form-content h2 { color: #075e54; font-size: 1.4rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 2px; }
 
-        input { padding: 12px 16px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input { padding: 11px 16px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
         input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
 
-        .btn { background: #075e54; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+        .btn { background: #075e54; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
-        .switch-text { text-align: center; font-size: 0.85rem; color: #666; margin-top: 10px; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-secondary:hover { background: #183d63; }
+        
+        /* Professional Install PWA Button */
+        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+        .btn-install:hover { opacity: 0.9; }
+
+        .switch-text { text-align: center; font-size: 0.85rem; color: #666; margin-top: 4px; }
         .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
         .switch-text a:hover { text-decoration: underline; }
 
-        /* Contacts List */
         #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
         .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
         .contact-item:hover { background: #f5f6f6; }
         .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
         .contact-phone { font-size: 0.85rem; color: #667781; }
 
-        /* Chat Room */
         #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
         .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
         .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
@@ -74,46 +80,59 @@
     <div class="card">
         <!-- 1. SPLASH -->
         <div id="welcome-screen" class="screen active">
-            <h1>Axtres Chat</h1>
-            <p>Secure 1-on-1 Messenger</p>
+            <h1>Axtres Emergency</h1>
+            <p>Secure Emergency Messenger</p>
             <div class="spinner"></div>
         </div>
 
-        <!-- 2. REGISTER SCREEN (Name + Phone) -->
+        <!-- 2. REGISTER SCREEN -->
         <div id="register-screen" class="screen">
-            <div class="header-bar">Create Account</div>
+            <div class="header-bar">Emergency Registration</div>
             <div class="form-content">
-                <h2>Register</h2>
-                <p class="subtitle">Enter your name and phone number to sign up</p>
+                <h2>Sign Up</h2>
+                <p class="subtitle">Notifications are <b>mandatory</b> for emergency alerts.</p>
                 <input type="text" id="reg-name" placeholder="Your Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications (Required)</button>
+                <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
+
                 <div class="error-msg" id="reg-error"></div>
                 <div class="success-msg" id="reg-success"></div>
-                <button class="btn" onclick="handleRegister()">Register Account</button>
-                <div class="switch-text">Already have an account? <a onclick="switchScreen('login-screen')">Log In here</a></div>
+                
+                <button class="btn" onclick="handleRegister()">Complete Registration</button>
+                
+                <!-- Professional PWA Install Trigger -->
+                <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
+
+                <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
             </div>
         </div>
 
-        <!-- 3. LOGIN SCREEN (Phone number only) -->
+        <!-- 3. LOGIN SCREEN -->
         <div id="login-screen" class="screen">
-            <div class="header-bar">Sign In</div>
+            <div class="header-bar">Emergency Sign In</div>
             <div class="form-content">
                 <h2>Welcome Back</h2>
                 <p class="subtitle">Enter your registered 10-digit phone number</p>
                 <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Log In to Chats</button>
-                <div class="switch-text">New here? <a onclick="switchScreen('register-screen')">Register an account</a></div>
+
+                <!-- Professional PWA Install Trigger -->
+                <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
+
+                <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
             </div>
         </div>
 
         <!-- 4. CONTACTS LIST SCREEN -->
         <div id="contacts-screen" class="screen">
             <div class="header-bar">
-                <div>Chats (<span id="my-name-display"></span>)</div>
+                <div>Emergency Chats (<span id="my-name-display"></span>)</div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
-            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a friend to start a private chat:</div>
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact for emergency chat:</div>
             <div id="contacts-container"></div>
         </div>
 
@@ -128,7 +147,7 @@
             </div>
             <div id="messages-container"></div>
             <div id="input-toolbar">
-                <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+                <input type="text" id="message-input" placeholder="Type emergency message..." onkeypress="checkEnter(event)">
                 <button id="send-btn" onclick="sendMessage()">&#9658;</button>
             </div>
         </div>
@@ -143,6 +162,27 @@
         let syncInterval = null;
         let contactsInterval = null;
         let knownMessages = new Set();
+        let deferredPrompt = null;
+
+        // Capture PWA installation prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'flex');
+        });
+
+        async function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'none');
+                }
+                deferredPrompt = null;
+            } else {
+                alert("To install this emergency app, open your browser menu (three dots) and select 'Add to Home Screen' or 'Install App'.");
+            }
+        }
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('axtres_device_id');
@@ -171,6 +211,23 @@
             document.getElementById(screenId).classList.add('active');
         }
 
+        async function requestNotificationPermission() {
+            const statusDiv = document.getElementById('notif-status');
+            if (!("Notification" in window)) {
+                statusDiv.innerText = "Error: Browser does not support notifications.";
+                statusDiv.style.color = "#d32f2f";
+                return;
+            }
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                statusDiv.innerText = "Status: Notifications Enabled successfully!";
+                statusDiv.style.color = "#2e7d32";
+            } else {
+                statusDiv.innerText = "Status: Permission Denied! You must allow notifications.";
+                statusDiv.style.color = "#d32f2f";
+            }
+        }
+
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
@@ -187,6 +244,10 @@
                 errDiv.innerText = "Phone number must be 10 digits.";
                 return;
             }
+            if (Notification.permission !== "granted") {
+                errDiv.innerText = "Registration Denied: You must click 'Enable Notifications' first!";
+                return;
+            }
 
             try {
                 const res = await fetch(`${USERS_API}?action=register`, {
@@ -197,7 +258,7 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Registration failed");
 
-                succDiv.innerText = "Registered successfully! Redirecting to login...";
+                succDiv.innerText = "Registered successfully! Redirecting...";
                 setTimeout(() => {
                     document.getElementById('login-phone').value = phone;
                     switchScreen('login-screen');
@@ -212,12 +273,8 @@
             const errDiv = document.getElementById('login-error');
             errDiv.innerText = "";
 
-            if (!phone) {
-                errDiv.innerText = "Please enter your phone number.";
-                return;
-            }
-            if (phone.length !== 10) {
-                errDiv.innerText = "Phone number must be 10 digits.";
+            if (!phone || phone.length !== 10) {
+                errDiv.innerText = "Enter a valid 10-digit phone number.";
                 return;
             }
 
@@ -264,7 +321,7 @@
                 container.innerHTML = "";
 
                 if (!Array.isArray(contacts) || contacts.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other users found yet.<br>Register another phone number on a different device to test!</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other contacts found yet.<br>Register another phone number!</div>`;
                     return;
                 }
 
@@ -318,7 +375,7 @@
                         const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
                         if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
                             if (Notification.permission === "granted") {
-                                new Notification(`New message from ${activeRecipient.name}`, { body: msg.message });
+                                new Notification(`🚨 Emergency Alert from ${activeRecipient.name}`, { body: msg.message });
                             }
                         }
                         knownMessages.add(uniqueKey);
