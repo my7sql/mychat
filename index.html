@@ -27,7 +27,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Container Card */
         .card { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(10px); 
@@ -43,11 +42,9 @@
             position: relative;
         }
 
-        /* Screen Controller */
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .screen.active { display: flex; }
 
-        /* Welcome Splash Screen */
         #welcome-screen { 
             justify-content: center; 
             align-items: center; 
@@ -61,7 +58,6 @@
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Header Bar */
         .header-bar { 
             background: #075e54; 
             color: white; 
@@ -75,7 +71,6 @@
         }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
-        /* Form Content */
         .form-content { 
             padding: 30px 25px; 
             display: flex; 
@@ -88,7 +83,6 @@
         .form-content h2 { color: #075e54; font-size: 1.6rem; margin-bottom: 4px; }
         .form-content p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
 
-        /* Inputs & Buttons */
         input { 
             padding: 14px 16px; 
             border: 1.5px solid #ddd; 
@@ -100,12 +94,8 @@
         }
         input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
         
-        /* Hide arrows for number inputs */
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         .btn { 
             background: #075e54; 
@@ -124,7 +114,6 @@
         .link-text { text-align: center; margin-top: 12px; font-size: 0.9rem; color: #666; }
         .link-text span { color: #075e54; font-weight: 600; cursor: pointer; text-decoration: underline; }
 
-        /* Chat Room Window */
         #messages-container { 
             flex: 1; 
             padding: 15px 20px; 
@@ -137,7 +126,6 @@
             background-size: 15px 15px; 
         }
 
-        /* Date Separator */
         .date-separator { 
             align-self: center; 
             background: #e1f3fb; 
@@ -151,7 +139,6 @@
             text-transform: uppercase; 
         }
 
-        /* Message Bubbles */
         .msg { 
             max-width: 78%; 
             padding: 8px 12px 6px 12px; 
@@ -169,7 +156,6 @@
         .msg-sender { font-size: 0.75rem; font-weight: 700; color: #075e54; margin-bottom: 2px; }
         .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; display: inline-block; }
 
-        /* Input Toolbar */
         #input-toolbar { 
             display: flex; 
             padding: 10px 15px; 
@@ -266,7 +252,18 @@
         let currentUser = null;
         let lastDisplayedDate = "";
 
+        // Get or generate a persistent device fingerprint token
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('axtres_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('axtres_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            getDeviceId(); // Initialize device footprint
             setTimeout(() => {
                 const savedUser = localStorage.getItem('axtres_user');
                 if (savedUser) {
@@ -325,7 +322,7 @@
                 const res = await fetch(`${API_BASE}?action=register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, pin })
+                    body: JSON.stringify({ name, phone, pin, device_id: getDeviceId() })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Registration failed");
@@ -351,7 +348,7 @@
                 const res = await fetch(`${API_BASE}?action=login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, pin })
+                    body: JSON.stringify({ phone, pin, device_id: getDeviceId() })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Login failed");
