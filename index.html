@@ -164,7 +164,6 @@
         }
         .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
         .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
-        .msg.system { background: #e1f3fb; color: #0277bd; align-self: center; font-size: 0.8rem; max-width: 90%; text-align: center; box-shadow: none; border-radius: 6px; }
         
         .msg-sender { font-size: 0.75rem; font-weight: 700; color: #075e54; margin-bottom: 2px; }
         .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; display: inline-block; }
@@ -268,7 +267,6 @@
         const API_BASE = "/users";
         const MESSAGES_API = "/messages";
         let currentUser = null;
-        let lastDisplayedDate = "";
         let syncInterval = null;
         let knownMessages = new Set();
 
@@ -406,7 +404,6 @@
             
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
-            lastDisplayedDate = "";
             knownMessages.clear();
 
             await pollMessages(true);
@@ -420,19 +417,52 @@
                 const res = await fetch(MESSAGES_API);
                 const history = await res.json();
                 if (Array.isArray(history)) {
+                    messagesDiv = document.getElementById('messages-container');
+                    
+                    // Re-render full list cleanly to group dates and avoid duplicates
+                    messagesDiv.innerHTML = "";
+                    let lastDateLabel = "";
+
                     history.forEach(msg => {
                         const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
-                        if (!knownMessages.has(uniqueKey)) {
-                            knownMessages.add(uniqueKey);
-                            
-                            if (!isInitial && msg.senderPhone !== currentUser.phone) {
-                                if (Notification.permission === "granted") {
-                                    new Notification(`New message from ${msg.senderName}`, { body: msg.message });
-                                }
+                        
+                        if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
+                            if (Notification.permission === "granted") {
+                                new Notification(`New message from ${msg.senderName}`, { body: msg.message });
                             }
-                            displayMessage(msg);
                         }
+                        knownMessages.add(uniqueKey);
+
+                        // Format Date Label grouping
+                        const msgDate = msg.created_at ? new Date(msg.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+                        const todayStr = new Date().toLocaleDateString();
+                        const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
+
+                        if (dateLabel !== lastDateLabel) {
+                            lastDateLabel = dateLabel;
+                            const dateDiv = document.createElement('div');
+                            dateDiv.className = 'date-separator';
+                            dateDiv.innerText = dateLabel;
+                            messagesDiv.appendChild(dateDiv);
+                        }
+
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'msg';
+
+                        const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        if (msg.senderPhone === currentUser.phone) {
+                            msgEl.classList.add('me');
+                            msgEl.innerHTML = `${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                        } else {
+                            msgEl.classList.add('them');
+                            msgEl.innerHTML = `<div class="msg-sender">${escapeHtml(msg.senderName)}</div>${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                        }
+
+                        messagesDiv.appendChild(msgEl);
                     });
+
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 }
             } catch (e) {
                 console.error("Polling error:", e);
@@ -443,18 +473,6 @@
             const input = document.getElementById('message-input');
             const text = input.value.trim();
             if (!text) return;
-
-            const timeNow = new Date().toISOString();
-            const messagePayload = {
-                senderPhone: currentUser.phone,
-                senderName: currentUser.name,
-                message: text,
-                created_at: timeNow
-            };
-
-            const uniqueKey = `${messagePayload.senderPhone}-${messagePayload.created_at}-${messagePayload.message}`;
-            knownMessages.add(uniqueKey);
-            displayMessage(messagePayload);
 
             input.value = "";
             input.focus();
@@ -470,41 +488,10 @@
                         message: text
                     })
                 });
+                await pollMessages(false); // Immediately sync and render cleanly
             } catch (err) {
-                console.error("Failed to save message", err);
+                console.error("Failed to send message", err);
             }
-        }
-
-        function displayMessage(data) {
-            const messagesDiv = document.getElementById('messages-container');
-            
-            const msgDate = data.created_at ? new Date(data.created_at).toLocaleDateString() : new Date().toLocaleDateString();
-            const todayStr = new Date().toLocaleDateString();
-            const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
-
-            if (dateLabel !== lastDisplayedDate) {
-                lastDisplayedDate = dateLabel;
-                const dateDiv = document.createElement('div');
-                dateDiv.className = 'date-separator';
-                dateDiv.innerText = dateLabel;
-                messagesDiv.appendChild(dateDiv);
-            }
-
-            const msgEl = document.createElement('div');
-            msgEl.className = 'msg';
-
-            const timeStr = data.created_at ? new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            if (data.senderPhone === currentUser.phone) {
-                msgEl.classList.add('me');
-                msgEl.innerHTML = `${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
-            } else {
-                msgEl.classList.add('them');
-                msgEl.innerHTML = `<div class="msg-sender">${escapeHtml(data.senderName)}</div>${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
-            }
-
-            messagesDiv.appendChild(msgEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         function checkEnter(e) {
