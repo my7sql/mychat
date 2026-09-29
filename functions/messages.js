@@ -25,6 +25,7 @@ export async function onRequest(context) {
         room_id TEXT,
         sender_id TEXT,
         sender_name TEXT,
+        recipient_id TEXT,
         message TEXT,
         created_at TEXT
       )
@@ -32,22 +33,23 @@ export async function onRequest(context) {
   } catch (e) {}
 
   const url = new URL(request.url);
-  const roomId = url.searchParams.get("room_id");
 
   if (request.method === "GET") {
+    const room_id = url.searchParams.get("room_id");
+    if (!room_id) {
+      return new Response(JSON.stringify({ error: "room_id required" }), { status: 400, headers: corsHeaders });
+    }
     try {
-      let query = "SELECT sender_id AS senderPhone, sender_name AS senderName, message, created_at FROM messages";
-      let params = [];
+      const { results } = await DB.prepare(
+        "SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC"
+      ).bind(room_id).all();
 
-      if (roomId) {
-        query += " WHERE room_id = ? ORDER BY id ASC";
-        params = [roomId];
-      } else {
-        query += " ORDER BY id ASC";
-      }
+      const formatted = (results || []).map(m => ({
+        ...m,
+        senderPhone: m.sender_id
+      }));
 
-      const { results } = await DB.prepare(query).bind(...params).all();
-      return new Response(JSON.stringify(results || []), {
+      return new Response(JSON.stringify(formatted), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (e) {
@@ -60,21 +62,25 @@ export async function onRequest(context) {
       const data = await request.json();
       const { room_id, sender_id, sender_name, message, created_at } = data;
 
-      if (!message || !sender_id || !room_id) {
-        return new Response(JSON.stringify({ error: "Missing message data" }), { status: 400, headers: corsHeaders });
+      if (!room_id || !sender_id || !message) {
+        return new Response(JSON.stringify({ error: "Missing required message fields." }), { status: 400, headers: corsHeaders });
       }
 
-      const timestamp = created_at || new Date().toISOString();
-
       await DB.prepare(
-        "INSERT INTO messages (room_id, sender_id, sender_name, message, created_at) VALUES (?, ?, ?, ?, ?)"
-      ).bind(room_id, sender_id, sender_name, message, timestamp).run();
+        "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+      ).bind(room_id, sender_id, sender_name || "Emergency User", "", message, created_at || new Date().toISOString()).run();
 
-      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+      // OPTIONAL FREE SMS BACKUP HOOK: 
+      // If you want free email-to-SMS gateways (e.g. carrier gateways for 10-digit phones), 
+      // you can integrate free lookups here without paying paid SMS API fees per message.
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
     }
   }
 
-  return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
+  return new Response(JSON.stringify({ error: "Invalid method" }), { status: 405, headers: corsHeaders });
 }
