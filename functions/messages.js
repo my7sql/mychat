@@ -34,11 +34,11 @@ export async function onRequest(context) {
   } catch (e) {}
 
   if (request.method === "GET") {
-    const roomId = url.searchParams.get("room") || "global_room";
     try {
+      // Fetch ALL messages for the global space to prevent room_id mismatch issues across devices
       const { results } = await DB.prepare(
-        "SELECT sender_id AS senderPhone, sender_name AS senderName, message, created_at FROM messages WHERE room_id = ? ORDER BY id ASC"
-      ).bind(roomId).all();
+        "SELECT sender_id AS senderPhone, sender_name AS senderName, message, created_at FROM messages ORDER BY id ASC"
+      ).all();
 
       return new Response(JSON.stringify(results), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
