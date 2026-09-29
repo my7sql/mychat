@@ -27,6 +27,7 @@ export async function onRequest(context) {
         sender_name TEXT,
         recipient_id TEXT,
         message TEXT,
+        is_emergency INTEGER DEFAULT 0,
         created_at TEXT
       )
     `).run();
@@ -60,21 +61,26 @@ export async function onRequest(context) {
   if (request.method === "POST") {
     try {
       const data = await request.json();
-      const { room_id, sender_id, sender_name, message, created_at } = data;
+      const { room_id, sender_id, sender_name, message, is_emergency, created_at } = data;
 
       if (!room_id || !sender_id || !message) {
         return new Response(JSON.stringify({ error: "Missing required message fields." }), { status: 400, headers: corsHeaders });
       }
 
+      // Automatic keyword fallback scanning if toggle wasn't manually clicked
+      const emergencyKeywords = ["help", "emergency", "sos", "danger", "fire", "urgent", "save", "accident", "attack", "critical"];
+      const lowerMsg = message.toLowerCase();
+      const autoDetected = emergencyKeywords.some(keyword => lowerMsg.includes(keyword));
+      const finalEmergencyState = (is_emergency || autoDetected) ? 1 : 0;
+
       await DB.prepare(
-        "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, created_at) VALUES (?, ?, ?, ?, ?, ?)"
-      ).bind(room_id, sender_id, sender_name || "Emergency User", "", message, created_at || new Date().toISOString()).run();
+        "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      ).bind(room_id, sender_id, sender_name || "Emergency User", "", message, finalEmergencyState, created_at || new Date().toISOString()).run();
 
-      // OPTIONAL FREE SMS BACKUP HOOK: 
-      // If you want free email-to-SMS gateways (e.g. carrier gateways for 10-digit phones), 
-      // you can integrate free lookups here without paying paid SMS API fees per message.
+      // OPTIONAL GMAIL BACKUP HOOK: 
+      // If finalEmergencyState === 1, you can hook up your Gmail API mail dispatch here for recipient.email!
 
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: true, is_emergency: finalEmergencyState }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (e) {
