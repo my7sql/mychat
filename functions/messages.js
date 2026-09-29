@@ -20,6 +20,7 @@ export async function onRequest(context) {
   }
 
   try {
+    // 1. Create table if completely missing
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +31,13 @@ export async function onRequest(context) {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
+
+    // 2. Safely add columns if updating an older table schema
+    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN room_id TEXT`).run(); } catch(e){}
+    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN sender_id TEXT`).run(); } catch(e){}
+    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN sender_name TEXT`).run(); } catch(e){}
+    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN message TEXT`).run(); } catch(e){}
+    try { await DB.prepare(`ALTER TABLE messages ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP`).run(); } catch(e){}
   } catch (e) {}
 
   if (request.method === "GET") {
