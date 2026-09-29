@@ -4,420 +4,277 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Axtres Secure Messenger</title>
+    <!-- MQTT Client Script -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
+        body { 
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364); 
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            color: #333; 
+            overflow: hidden; 
+        }
+
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        body {
-            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-            overflow: hidden;
+        /* Container Card */
+        .card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px); 
+            width: 100%; 
+            max-width: 420px; 
+            height: 88vh; 
+            max-height: 750px; 
+            border-radius: 20px; 
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
         }
 
-        /* Container Card Styling */
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 420px;
-            height: 88vh;
-            max-height: 750px;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+        /* Screen Controller */
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .screen.active { display: flex; }
 
-        /* Welcome Screen Styling */
-        #welcome-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 30px;
-            text-align: center;
-            background: linear-gradient(135deg, #007bff, #00d2ff);
-            color: white;
+        /* Welcome Splash Screen */
+        #welcome-screen { 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 30px; 
+            background: linear-gradient(135deg, #075e54, #128c7e); 
+            color: white; 
         }
+        #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
+        #welcome-screen p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 30px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        #welcome-screen h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        /* Header Bar */
+        .header-bar { 
+            background: #075e54; 
+            color: white; 
+            padding: 16px 20px; 
+            font-size: 1.15rem; 
+            font-weight: 600; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
+        .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
-        #welcome-screen p {
-            font-size: 1.05rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
+        /* Form Content */
+        .form-content { 
+            padding: 30px 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            justify-content: center; 
+            flex: 1; 
+            overflow-y: auto; 
         }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Auth & Chat Screens */
-        .screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        .header-bar {
-            background: #075e54;
-            color: white;
-            padding: 16px 20px;
-            font-size: 1.15rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-bar span {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            font-weight: normal;
-        }
-
-        .form-content {
-            padding: 30px 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            justify-content: center;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .form-content h2 {
-            color: #075e54;
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .form-content p.subtitle {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
+        .form-content h2 { color: #075e54; font-size: 1.6rem; margin-bottom: 4px; }
+        .form-content p.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
 
         /* Inputs & Buttons */
-        input {
-            padding: 14px 16px;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.2s;
-            background: #fafafa;
+        input { 
+            padding: 14px 16px; 
+            border: 1.5px solid #ddd; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: all 0.2s; 
+            background: #fafafa; 
         }
-
-        input:focus {
-            border-color: #075e54;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
+        input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+        
+        .btn { 
+            background: #075e54; 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: background 0.2s, transform 0.1s; 
         }
-
-        .btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s, transform 0.1s;
-        }
-
         .btn:hover { background: #054c44; }
         .btn:active { transform: scale(0.98); }
 
-        .link-text {
-            text-align: center;
-            margin-top: 12px;
-            font-size: 0.9rem;
-            color: #666;
+        .link-text { text-align: center; margin-top: 12px; font-size: 0.9rem; color: #666; }
+        .link-text span { color: #075e54; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+        /* Chat Room Window */
+        #messages-container { 
+            flex: 1; 
+            padding: 15px 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            background: #efeae2; 
+            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); 
+            background-size: 15px 15px; 
         }
 
-        .link-text a {
-            color: #075e54;
-            text-decoration: none;
-            font-weight: 600;
+        /* Date Separator */
+        .date-separator { 
+            align-self: center; 
+            background: #e1f3fb; 
+            color: #54656f; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            margin: 10px 0; 
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.08); 
+            text-transform: uppercase; 
         }
 
-        .link-text a:hover { text-decoration: underline; }
-
-        /* WhatsApp Style Chat Window */
-        #messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #efeae2;
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px);
-            background-size: 15px 15px;
+        /* Message Bubbles */
+        .msg { 
+            max-width: 78%; 
+            padding: 8px 12px 6px 12px; 
+            border-radius: 7.5px; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            word-wrap: break-word; 
+            position: relative; 
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); 
         }
+        .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
+        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        .msg.system { background: #e1f3fb; color: #0277bd; align-self: center; font-size: 0.8rem; max-width: 90%; text-align: center; box-shadow: none; border-radius: 6px; }
+        
+        .msg-sender { font-size: 0.75rem; font-weight: 700; color: #075e54; margin-bottom: 2px; }
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; display: inline-block; }
 
-        /* Date Separator Pill */
-        .date-separator {
-            align-self: center;
-            background: #e1f3fb;
-            color: #54656f;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 6px;
-            margin: 10px 0;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.08);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Input Toolbar */
+        #input-toolbar { 
+            display: flex; 
+            padding: 10px 15px; 
+            background: #f0f2f5; 
+            gap: 10px; 
+            align-items: center; 
+            border-top: 1px solid #e0e0e0; 
         }
-
-        .msg {
-            max-width: 78%;
-            padding: 8px 12px;
-            border-radius: 7.5px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            position: relative;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
+        #send-btn { 
+            background: #075e54; 
+            color: white; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 1.1rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
         }
-
-        .msg.me {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #111b21;
-            border-top-right-radius: 0;
-        }
-
-        .msg.them {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #111b21;
-            border-top-left-radius: 0;
-        }
-
-        .msg.system {
-            background: #e1f3fb;
-            color: #0277bd;
-            align-self: center;
-            font-size: 0.8rem;
-            max-width: 90%;
-            text-align: center;
-            box-shadow: none;
-            border-radius: 6px;
-        }
-
-        .msg-sender {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #075e54;
-            margin-bottom: 2px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            color: #667781;
-            float: right;
-            margin-left: 12px;
-            margin-top: 4px;
-            display: inline-block;
-            vertical-align: bottom;
-        }
-
-        /* Chat Input Toolbar */
-        #input-toolbar {
-            display: flex;
-            padding: 10px 15px;
-            background: #f0f2f5;
-            gap: 10px;
-            align-items: center;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        #message-input {
-            flex: 1;
-            border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        #send-btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
         #send-btn:hover { background: #054c44; }
 
-        .error-banner {
-            background: #ffebee;
-            color: #c62828;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            text-align: center;
-            display: none;
-        }
-
-        .notif-banner {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 5px;
-        }
+        .error-msg { color: #d32f2f; font-size: 0.85rem; text-align: center; min-height: 18px; }
+        .notif-banner { background: #e8f5e9; color: #2e7d32; padding: 10px; text-align: center; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #c8e6c9; display: none; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <!-- 1. WELCOME SPLASH SCREEN -->
-        <div id="welcome-screen">
+        <div id="welcome-screen" class="screen active">
             <h1>Axtres Chat</h1>
-            <p>Encrypted Secure Messenger</p>
+            <p>Secure WhatsApp-Style Global Messenger</p>
             <div class="spinner"></div>
         </div>
 
         <!-- 2. LOGIN SCREEN -->
         <div id="login-screen" class="screen">
-            <div class="header-bar">
-                Welcome Back
-                <span>Secure Access</span>
-            </div>
+            <div class="header-bar">Sign In</div>
             <div class="form-content">
-                <h2>Sign In</h2>
+                <h2>Welcome Back</h2>
                 <p class="subtitle">Enter your registered phone number & 3-digit PIN</p>
-                <div id="login-error" class="error-banner"></div>
                 <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10">
                 <input type="password" id="login-pin" placeholder="3-digit PIN" maxlength="3">
+                <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Login to Chat</button>
-                <div class="link-text">
-                    Don't have an account? <a href="#" onclick="switchScreen('register-screen')">Register here</a>
-                </div>
+                <div class="link-text">Don't have an account? <span onclick="switchScreen('register-screen')">Register here</span></div>
             </div>
         </div>
 
-        <!-- 3. REGISTRATION SCREEN -->
+        <!-- 3. REGISTER SCREEN -->
         <div id="register-screen" class="screen">
-            <div class="header-bar">
-                Create Account
-                <span>New Profile</span>
-            </div>
+            <div class="header-bar">Create Account</div>
             <div class="form-content">
-                <h2>Join Axtres</h2>
+                <h2>New Profile</h2>
                 <p class="subtitle">Set up your secure messaging identity</p>
-                <div id="reg-error" class="error-banner"></div>
                 <input type="text" id="reg-name" placeholder="Full Name (Case-Insensitive)">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10">
                 <input type="password" id="reg-pin" placeholder="Create 3-digit PIN" maxlength="3">
-                <input type="password" id="reg-confirm-pin" placeholder="Confirm 3-digit PIN" maxlength="3">
+                <input type="password" id="reg-pin-confirm" placeholder="Confirm 3-digit PIN" maxlength="3">
+                <div class="error-msg" id="reg-error"></div>
                 <button class="btn" onclick="handleRegister()">Complete Registration</button>
-                <div class="link-text">
-                    Already registered? <a href="#" onclick="switchScreen('login-screen')">Sign In</a>
-                </div>
+                <div class="link-text">Already registered? <span onclick="switchScreen('login-screen')">Sign In</span></div>
             </div>
         </div>
 
-        <!-- 4. CHAT ROOM SELECTION & CHAT INTERFACE -->
-        <div id="room-screen" class="screen">
-            <div class="header-bar">
-                <span id="user-greeting" style="font-weight: bold; font-size: 1rem;">Hello, User</span>
-                <span id="room-display">Room: General</span>
-            </div>
-            <div class="form-content" id="room-selector-box">
-                <h2>Select Chat Room</h2>
-                <p class="subtitle">Enter any secure room ID to start messaging</p>
-                <div id="notif-permission-box" class="notif-banner" onclick="requestNotificationPermission()">
-                    🔔 Click here to enable browser push notifications
-                </div>
-                <input type="text" id="room-input" placeholder="Secret Room ID (e.g. alpha-99)">
-                <button class="btn" onclick="joinChatRoom()">Enter Chat Room</button>
-            </div>
-        </div>
-
+        <!-- 4. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
+            <div class="notif-banner" id="notif-banner" onclick="requestNotificationPermission()">
+                🔔 Click here to enable browser push notifications
+            </div>
             <div class="header-bar">
-                <span id="active-room-title">Room: General</span>
-                <span style="cursor: pointer;" onclick="leaveRoom()">Switch Room</span>
+                <div>
+                    <div id="room-title">Axtres Global Chat</div>
+                    <span id="user-display-info"></span>
+                </div>
+                <span onclick="handleLogout()">Sign Out</span>
             </div>
             <div id="messages-container"></div>
             <div id="input-toolbar">
                 <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
-                <button id="send-btn" onclick="sendMessage()">➤</button>
+                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
             </div>
         </div>
     </div>
 
     <script>
-        const API_USERS = "/users";
-        const API_MESSAGES = "/messages";
-
-        let currentUser = null; // { name, phone }
-        let currentRoom = "";
+        const API_BASE = "/users";
+        const MESSAGES_API = "/messages";
         let mqttClient = null;
-        let lastRenderedDate = "";
+        let currentUser = null;
+        let lastDisplayedDate = "";
 
-        // Auto-transition from Welcome Splash after 3.2 seconds
+        // Auto transition from welcome screen after 2.5 seconds
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                document.getElementById('welcome-screen').style.display = 'none';
-                document.getElementById('login-screen').classList.add('active');
-            }, 3200);
+                const savedUser = localStorage.getItem('axtres_user');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    enterChatRoom();
+                } else {
+                    switchScreen('login-screen');
+                }
+            }, 2500);
 
-            // Check notification permission state
-            if ("Notification" in window && Notification.permission === "granted") {
-                const box = document.getElementById('notif-permission-box');
-                if (box) box.style.display = 'none';
+            if (Notification.permission === "granted") {
+                document.getElementById('notif-banner').style.display = 'none';
+            } else {
+                document.getElementById('notif-banner').style.display = 'block';
             }
         });
 
@@ -427,165 +284,137 @@
         }
 
         async function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                alert("This browser does not support desktop notifications.");
-                return;
-            }
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
-                document.getElementById('notif-permission-box').style.display = 'none';
-                new Notification("Axtres Chat", { body: "Push notifications are successfully enabled!" });
+                document.getElementById('notif-banner').style.display = 'none';
+                new Notification("Axtres Chat", { body: "Push notifications enabled successfully!" });
             }
         }
 
-        function showBrowserNotification(senderName, messageText) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                // Do not notify if window is actively focused and user is looking at it
-                if (document.hasFocus()) return;
-                
-                try {
-                    new Notification(`New message from ${senderName}`, {
-                        body: messageText,
-                        icon: "https://placehold.co/128x128/075e54/ffffff?text=A"
-                    });
-                } catch (e) {
-                    console.error("Notification error:", e);
-                }
-            }
-        }
-
-        // --- REGISTRATION LOGIC ---
+        // --- REGISTER HANDLER ---
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const pin = document.getElementById('reg-pin').value.trim();
-            const confirmPin = document.getElementById('reg-confirm-pin').value.trim();
+            const pinConfirm = document.getElementById('reg-pin-confirm').value.trim();
             const errDiv = document.getElementById('reg-error');
 
-            errDiv.style.display = 'none';
-
-            if (!name || !phone || !pin || !confirmPin) {
-                showError(errDiv, "Please fill in all registration fields.");
+            if (!name || !phone || !pin || !pinConfirm) {
+                errDiv.innerText = "Please fill in all fields.";
                 return;
             }
-
             if (phone.length !== 10 || isNaN(phone)) {
-                showError(errDiv, "Phone number must be exactly 10 digits.");
+                errDiv.innerText = "Phone number must be exactly 10 digits.";
                 return;
             }
-
             if (pin.length !== 3 || isNaN(pin)) {
-                showError(errDiv, "PIN must be exactly 3 digits.");
+                errDiv.innerText = "PIN must be exactly 3 digits.";
                 return;
             }
-
-            if (pin !== confirmPin) {
-                showError(errDiv, "PIN confirmation does not match.");
+            if (pin !== pinConfirm) {
+                errDiv.innerText = "PINs do not match.";
                 return;
             }
 
             try {
-                const res = await fetch(API_USERS, {
+                const res = await fetch(`${API_BASE}?action=register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'register', phone, name, pin })
+                    body: JSON.stringify({ name, phone, pin })
                 });
                 const data = await res.json();
-
                 if (!res.ok) throw new Error(data.error || "Registration failed");
 
-                alert("Registration successful! Please login with your new credentials.");
+                alert("Registration successful! Please sign in.");
                 switchScreen('login-screen');
-            } catch (e) {
-                showError(errDiv, e.message);
+            } catch (err) {
+                errDiv.innerText = err.message;
             }
         }
 
-        // --- LOGIN LOGIC ---
+        // --- LOGIN HANDLER ---
         async function handleLogin() {
             const phone = document.getElementById('login-phone').value.trim();
             const pin = document.getElementById('login-pin').value.trim();
             const errDiv = document.getElementById('login-error');
 
-            errDiv.style.display = 'none';
-
             if (!phone || !pin) {
-                showError(errDiv, "Please enter your phone number and 3-digit PIN.");
+                errDiv.innerText = "Please enter phone and PIN.";
                 return;
             }
 
             try {
-                const res = await fetch(API_USERS, {
+                const res = await fetch(`${API_BASE}?action=login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', phone, pin })
+                    body: JSON.stringify({ phone, pin })
                 });
                 const data = await res.json();
-
                 if (!res.ok) throw new Error(data.error || "Login failed");
 
-                currentUser = data.user; // Contains name and phone
-                
-                document.getElementById('user-greeting').innerText = `Welcome, ${currentUser.name}!`;
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById('room-screen').classList.add('active');
-            } catch (e) {
-                showError(errDiv, e.message);
+                currentUser = data.user; // Contains name, phone
+                localStorage.setItem('axtres_user', JSON.stringify(currentUser));
+                enterChatRoom();
+            } catch (err) {
+                errDiv.innerText = err.message;
             }
         }
 
-        // --- CHAT ROOM CONNECTION ---
-        async function joinChatRoom() {
-            const roomInput = document.getElementById('room-input').value.trim();
-            if (!roomInput) {
-                alert("Please enter a valid room ID.");
-                return;
-            }
+        function handleLogout() {
+            localStorage.removeItem('axtres_user');
+            currentUser = null;
+            if (mqttClient) mqttClient.end();
+            switchScreen('login-screen');
+        }
 
-            currentRoom = roomInput;
-            lastRenderedDate = "";
-            document.getElementById('active-room-title').innerText = `Room: ${currentRoom}`;
-            document.getElementById('room-display').innerText = `Room: ${currentRoom}`;
-
+        // --- ENTER CHAT ROOM ---
+        async function enterChatRoom() {
             switchScreen('chat-screen');
-            document.getElementById('messages-container').innerHTML = "";
+            document.getElementById('user-display-info').innerText = `Logged in as: ${currentUser.name} (${currentUser.phone})`;
+            
+            const messagesDiv = document.getElementById('messages-container');
+            messagesDiv.innerHTML = "";
+            lastDisplayedDate = "";
 
-            logSystemMessage("Connecting to cloud database history...");
+            logSystem("Connecting to secure database...");
 
-            // Fetch chat history
+            // Fetch History
             try {
-                const res = await fetch(`${API_MESSAGES}?room=${encodeURIComponent(currentRoom)}`);
+                const res = await fetch(`${MESSAGES_API}?room=global_room`);
                 const history = await res.json();
                 if (Array.isArray(history)) {
                     history.forEach(msg => displayMessage(msg));
                 }
             } catch (e) {
-                logSystemMessage("⚠️ Could not load past history.");
+                logSystem("⚠️ Could not load offline history.");
             }
 
             // Connect MQTT Live Stream
             try {
-                logSystemMessage("Establishing secure live stream channel...");
+                logSystem("Establishing live messaging stream...");
                 mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
 
                 mqttClient.on('connect', () => {
-                    mqttClient.subscribe(`axtres/chat/${currentRoom}`);
-                    logSystemMessage(`🚀 Live connected to room "${currentRoom}" is active`);
+                    mqttClient.subscribe('axtres/global_chat');
+                    logSystem("🚀 Connected live to global room!");
                 });
 
                 mqttClient.on('message', (topic, payload) => {
                     try {
                         const data = JSON.parse(payload.toString());
+                        // If message is from someone else, trigger push notification if backgrounded
                         if (data.senderPhone !== currentUser.phone) {
                             displayMessage(data);
-                            showBrowserNotification(data.senderName, data.message);
+                            if (document.hidden && Notification.permission === "granted") {
+                                new Notification(data.senderName, { body: data.message });
+                            }
                         }
-                    } catch (e) {
-                        console.error(e);
+                    } catch (err) {
+                        console.error(err);
                     }
                 });
             } catch (err) {
-                logSystemMessage("⚠️ Live stream offline. Messages will save to cloud.");
+                logSystem("⚠️ Live stream network error.");
             }
         }
 
@@ -594,39 +423,36 @@
             const text = input.value.trim();
             if (!text) return;
 
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD for grouping
-
-            const payload = {
+            const timeNow = new Date().toISOString();
+            const messagePayload = {
                 senderPhone: currentUser.phone,
                 senderName: currentUser.name,
                 message: text,
-                time: timeStr,
-                rawDate: dateStr
+                created_at: timeNow
             };
 
-            displayMessage(payload);
+            // Display locally instantly
+            displayMessage(messagePayload);
 
-            // Publish live MQTT
+            // Publish via MQTT
             if (mqttClient && mqttClient.connected) {
-                mqttClient.publish(`axtres/chat/${currentRoom}`, JSON.stringify(payload));
+                mqttClient.publish('axtres/global_chat', JSON.stringify(messagePayload));
             }
 
-            // Save to Cloudflare D1 Database via POST
+            // Save to D1 database via POST
             try {
-                await fetch(API_MESSAGES, {
+                await fetch(MESSAGES_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        room_id: currentRoom,
+                        room_id: 'global_room',
                         sender_id: currentUser.phone,
                         sender_name: currentUser.name,
                         message: text
                     })
                 });
-            } catch (e) {
-                console.error("Failed to save message to D1:", e);
+            } catch (err) {
+                console.error("Failed to save message to database", err);
             }
 
             input.value = "";
@@ -634,90 +460,54 @@
         }
 
         function displayMessage(data) {
-            const container = document.getElementById('messages-container');
+            const messagesDiv = document.getElementById('messages-container');
+            
+            // Date separator check
+            const msgDate = data.created_at ? new Date(data.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+            const todayStr = new Date().toLocaleDateString();
+            const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
 
-            // Handle WhatsApp Date Separator Banners
-            let messageDate = data.rawDate || (data.created_at ? data.created_at.split(' ')[0] : new Date().toISOString().split('T')[0]);
-            let formattedDateLabel = getFormattedDateLabel(messageDate);
-
-            if (formattedDateLabel !== lastRenderedDate) {
-                lastRenderedDate = formattedDateLabel;
-                const sepEl = document.createElement('div');
-                sepEl.classList.add('date-separator');
-                sepEl.innerText = formattedDateLabel;
-                container.appendChild(sepEl);
+            if (dateLabel !== lastDisplayedDate) {
+                lastDisplayedDate = dateLabel;
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date-separator';
+                dateDiv.innerText = dateLabel;
+                messagesDiv.appendChild(dateDiv);
             }
 
             const msgEl = document.createElement('div');
-            msgEl.classList.add('msg');
+            msgEl.className = 'msg';
 
-            const isMe = data.senderPhone === currentUser.phone || data.senderId === currentUser.phone;
-            msgEl.classList.add(isMe ? 'me' : 'them');
+            const timeStr = data.created_at ? new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            let timeDisplay = data.time || "";
-            if (!timeDisplay && data.created_at) {
-                // Format SQL timestamp string to readable HH:MM time
-                const parts = data.created_at.split(' ');
-                if (parts.length > 1) {
-                    const timePart = parts[1].substring(0, 5);
-                    timeDisplay = timePart;
-                }
+            if (data.senderPhone === currentUser.phone) {
+                msgEl.classList.add('me');
+                msgEl.innerHTML = `${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
+            } else {
+                msgEl.classList.add('them');
+                msgEl.innerHTML = `<div class="msg-sender">${escapeHtml(data.senderName)}</div>${escapeHtml(data.message)}<span class="msg-time">${timeStr}</span>`;
             }
 
-            let htmlContent = "";
-            if (!isMe) {
-                htmlContent += `<div class="msg-sender">${escapeHtml(data.senderName || data.sender_name || 'User')}</div>`;
-            }
-            htmlContent += `<div>${escapeHtml(data.message)}<span class="msg-time">${timeDisplay}</span></div>`;
-
-            msgEl.innerHTML = htmlContent;
-            container.appendChild(msgEl);
-            container.scrollTop = container.scrollHeight;
+            messagesDiv.appendChild(msgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        function getFormattedDateLabel(dateString) {
-            const today = new Date().toISOString().split('T')[0];
-            const yesterdayDate = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-            if (dateString === today) return "Today";
-            if (dateString === yesterdayDate) return "Yesterday";
-
-            // Format YYYY-MM-DD nicely
-            try {
-                const d = new Date(dateString);
-                return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-            } catch (e) {
-                return dateString;
-            }
+        function logSystem(text) {
+            const messagesDiv = document.getElementById('messages-container');
+            const el = document.createElement('div');
+            el.className = 'msg system';
+            el.innerText = text;
+            messagesDiv.appendChild(el);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        function logSystemMessage(text) {
-            const container = document.getElementById('messages-container');
-            const msgEl = document.createElement('div');
-            msgEl.classList.add('msg', 'system');
-            msgEl.innerText = text;
-            container.appendChild(msgEl);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function leaveRoom() {
-            if (mqttClient) mqttClient.end();
-            switchScreen('room-screen');
-        }
-
-        function showError(element, message) {
-            element.innerText = message;
-            element.style.display = 'block';
+        function checkEnter(e) {
+            if (e.key === 'Enter') sendMessage();
         }
 
         function escapeHtml(text) {
-            if (!text) return "";
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return String(text).replace(/[&<>"']/g, m => map[m]);
-        }
-
-        function checkEnter(event) {
-            if (event.key === 'Enter') sendMessage();
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
     </script>
 </body>
