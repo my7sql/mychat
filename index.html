@@ -49,6 +49,8 @@
         .btn:hover { background: #054c44; }
         .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
         .btn-secondary:hover { background: #183d63; }
+        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-accent:hover { background: #bf360c; }
         
         .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
 
@@ -62,7 +64,6 @@
         .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
         .contact-phone { font-size: 0.85rem; color: #667781; }
         
-        /* Privacy Email Status Pill badges */
         .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
         .status-pill.active { background: #e8f5e9; color: #2e7d32; }
         .status-pill.inactive { background: #f5f5f5; color: #757575; }
@@ -93,11 +94,14 @@
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
         .success-msg { color: #2e7d32; font-size: 0.78rem; text-align: center; }
+        .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
     <div class="card">
+        <div id="toast-notification" class="notice-toast">The email extension is already selected via the dropdown menu above.</div>
+
         <!-- 1. SPLASH -->
         <div id="welcome-screen" class="screen active">
             <h1>Axtres Messenger</h1>
@@ -115,7 +119,7 @@
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
                 <div class="email-group">
-                    <input type="text" id="reg-email-user" placeholder="Email username">
+                    <input type="text" id="reg-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
                     <select id="reg-email-domain">
                         <option value="@gmail.com" selected>@gmail.com</option>
                         <option value="@outlook.com">@outlook.com</option>
@@ -129,7 +133,6 @@
                 <div class="success-msg" id="reg-success"></div>
                 
                 <button class="btn" onclick="handleRegister()">Complete Registration</button>
-                
                 <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
@@ -145,10 +148,42 @@
                 <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                
+                <!-- Separate Button to Add Email if missing -->
+                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add Email to Account</button>
 
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
+            </div>
+        </div>
+
+        <!-- 3.5 ADD EMAIL SCREEN (Linked from Sign-In) -->
+        <div id="add-email-screen" class="screen">
+            <div class="header-bar">
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
+                    <div>Link Missing Email</div>
+                </div>
+            </div>
+            <div class="form-content">
+                <h2>Update Email</h2>
+                <p class="subtitle">Verify your phone to bind your email address</p>
+                <input type="tel" id="ae-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="email-group">
+                    <input type="text" id="ae-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
+                    <select id="ae-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+
+                <div class="error-msg" id="ae-error"></div>
+                <div class="success-msg" id="ae-success"></div>
+
+                <button class="btn" onclick="handleAddEmailSubmit()">Save Email Address</button>
+                <button class="btn-secondary" onclick="switchScreen('login-screen')">Back to Sign In</button>
             </div>
         </div>
 
@@ -250,6 +285,22 @@
             document.getElementById(screenId).classList.add('active');
         }
 
+        // Professional Notification Popup if user attempts typing @ or domain extensions
+        function interceptEmailInput(e) {
+            const input = e.target;
+            if (input.value.includes('@') || input.value.includes('.') || input.value.includes('gmail') || input.value.includes('outlook')) {
+                input.value = input.value.replace(/[@\.gmailyout-]/gi, '').trim();
+                showToast("The email extension is already selected via the dropdown menu above.");
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
         async function requestNotificationPermission() {
             const statusDiv = document.getElementById('notif-status');
             if (!("Notification" in window)) {
@@ -295,7 +346,7 @@
             try {
                 const res = await fetch(`${USERS_API}?action=register`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
                 });
                 const data = await res.json();
@@ -306,6 +357,52 @@
                     document.getElementById('login-phone').value = phone;
                     switchScreen('login-screen');
                 }, 1200);
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function openAddEmailModal() {
+            document.getElementById('ae-phone').value = "";
+            document.getElementById('ae-email-user').value = "";
+            document.getElementById('ae-error').innerText = "";
+            document.getElementById('ae-success').innerText = "";
+            switchScreen('add-email-screen');
+        }
+
+        async function handleAddEmailSubmit() {
+            const phone = document.getElementById('ae-phone').value.trim();
+            const emailUser = document.getElementById('ae-email-user').value.trim();
+            const emailDomain = document.getElementById('ae-email-domain').value;
+            const errDiv = document.getElementById('ae-error');
+            const succDiv = document.getElementById('ae-success');
+            errDiv.innerText = "";
+            succDiv.innerText = "";
+
+            if (!phone || phone.length !== 10) {
+                errDiv.innerText = "Enter a valid 10-digit registered phone number.";
+                return;
+            }
+            if (!emailUser) {
+                errDiv.innerText = "Enter your email username.";
+                return;
+            }
+
+            const email = emailUser + emailDomain;
+
+            try {
+                const res = await fetch(`${USERS_API}?action=update-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ phone, email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to update email");
+
+                succDiv.innerText = "Email successfully linked to your account!";
+                setTimeout(() => {
+                    switchScreen('login-screen');
+                }, 1500);
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -324,7 +421,7 @@
             try {
                 const res = await fetch(`${USERS_API}?action=login`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ phone, device_id: getDeviceId() })
                 });
                 const data = await res.json();
@@ -360,7 +457,7 @@
 
         async function fetchContacts() {
             try {
-                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}`);
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const contacts = await res.json();
                 const container = document.getElementById('contacts-container');
                 container.innerHTML = "";
@@ -373,8 +470,6 @@
                 contacts.forEach(c => {
                     const item = document.createElement('div');
                     item.className = 'contact-item';
-                    
-                    // Display hidden status badge instead of actual email string
                     const emailStatusBadge = c.has_email === 1 
                         ? `<span class="status-pill active">Email Enabled 🟢</span>` 
                         : `<span class="status-pill inactive">No Email ⚪</span>`;
@@ -409,8 +504,7 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            // Ultra-fast 800ms background polling for instant message appearance across devices
-            syncInterval = setInterval(() => pollChatMessages(false), 800);
+            syncInterval = setInterval(() => pollChatMessages(false), 700);
         }
 
         function backToContacts() {
@@ -421,7 +515,7 @@
         async function pollChatMessages(isInitial) {
             if (!currentRoomId) return;
             try {
-                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}`);
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const history = await res.json();
                 if (Array.isArray(history)) {
                     const messagesDiv = document.getElementById('messages-container');
@@ -486,7 +580,6 @@
             input.value = "";
             input.focus();
 
-            // Instant Local Render
             const messagesDiv = document.getElementById('messages-container');
             const localMsgEl = document.createElement('div');
             localMsgEl.className = 'msg me';
@@ -500,7 +593,7 @@
             try {
                 await fetch(MESSAGES_API, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({
                         room_id: currentRoomId,
                         sender_id: currentUser.phone,
