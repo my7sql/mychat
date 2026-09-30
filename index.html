@@ -562,7 +562,6 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            // Ultra-fast 1-second interval for real-time experience
             syncInterval = setInterval(() => pollChatMessages(false), 1000);
         }
 
@@ -577,6 +576,9 @@
                 const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const history = await res.json();
                 
+                // Debug log to let you see your actual server payload keys in F12 Developer Console
+                if (isInitial) console.log("Axtres API Message Payload Sample:", history);
+                
                 if (Array.isArray(history)) {
                     const messagesDiv = document.getElementById('messages-container');
                     let hasNewContent = false;
@@ -589,10 +591,10 @@
                     let lastDateLabel = "";
 
                     history.forEach(msg => {
-                        // FIX: Safely check both snake_case and camelCase keys returned by various backends
-                        const sender = msg.senderPhone || msg.sender_id || msg.sender;
-                        const msgText = msg.message || msg.text || "";
-                        const createdAt = msg.created_at || msg.createdAt || new Date().toISOString();
+                        // FIX: Aggressively check every possible key permutation for sender identification
+                        const sender = msg.senderPhone || msg.sender_phone || msg.sender_id || msg.sender || msg.phone || "";
+                        const msgText = msg.message || msg.text || msg.body || "";
+                        const createdAt = msg.created_at || msg.createdAt || msg.timestamp || new Date().toISOString();
                         const uniqueId = msg.id || `${sender}-${createdAt}-${msgText}`;
                         
                         if (knownMessageIds.has(uniqueId)) return;
@@ -600,8 +602,10 @@
                         knownMessageIds.add(uniqueId);
                         hasNewContent = true;
 
-                        // FIX: Match sender reliably against currentUser phone number
-                        const isMe = String(sender).trim() === String(currentUser.phone).trim();
+                        // FIX: Clean, strict string comparison trimming whitespace to prevent identity mismatch
+                        const cleanSender = String(sender).trim();
+                        const cleanMyPhone = String(currentUser.phone).trim();
+                        const isMe = cleanSender === cleanMyPhone;
 
                         if (!isInitial && !isMe) {
                             if (Notification.permission === "granted") {
@@ -610,11 +614,22 @@
                             }
                         }
 
-                        // FIX: Normalize date string cleanly to prevent duplicate date separator rows on every message
-                        const parsedDate = new Date(createdAt);
-                        const msgDate = isNaN(parsedDate.getTime()) ? new Date().toDateString() : parsedDate.toDateString();
-                        const todayStr = new Date().toDateString();
-                        const dateLabel = (msgDate === todayStr) ? "Today" : parsedDate.toLocaleDateString();
+                        // FIX: Bulletproof Date parsing fallback to prevent an isolated date separator on every single message
+                        let dateLabel = "Today";
+                        let timeStr = "";
+                        try {
+                            const parsedDate = new Date(createdAt);
+                            if (!isNaN(parsedDate.getTime())) {
+                                const msgDate = parsedDate.toDateString();
+                                const todayStr = new Date().toDateString();
+                                dateLabel = (msgDate === todayStr) ? "Today" : parsedDate.toLocaleDateString();
+                                timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            } else {
+                                timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            }
+                        } catch(err) {
+                            timeStr = "Just now";
+                        }
 
                         if (dateLabel !== lastDateLabel) {
                             lastDateLabel = dateLabel;
@@ -628,7 +643,6 @@
                         msgEl.className = 'msg';
                         if (msg.is_emergency === 1 || msg.isEmergency === 1) msgEl.classList.add('email-alert');
 
-                        const timeStr = isNaN(parsedDate.getTime()) ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         let badgeHTML = (msg.is_emergency === 1 || msg.isEmergency === 1) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
 
                         if (isMe) {
