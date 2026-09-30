@@ -1,6 +1,7 @@
 export async function onRequest(context) {
   const { request, env } = context;
   const DB = env.DB || env.chat;
+  const RESEND_API_KEY = env.RESEND_API_KEY;
 
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -78,21 +79,23 @@ export async function onRequest(context) {
           const recipient = recipientRes.results[0];
           if (recipient.email && recipient.email.includes("@")) {
             try {
-              await fetch("https://api.mailchannels.net/tx/v1/send", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  personalizations: [{ to: [{ email: recipient.email, name: recipient.name }] }],
-                  from: { email: "noreply@axtres-messenger.workers.dev", name: "Axtres Messenger" },
-                  subject: `📧 Secure Message from ${sender_name}`,
-                  content: [{
-                    type: "text/plain",
-                    value: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
-                  }]
-                })
-              });
+              if (RESEND_API_KEY) {
+                await fetch("https://api.resend.com/emails", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${RESEND_API_KEY}`
+                  },
+                  body: JSON.stringify({
+                    from: "Axtres Messenger <onboarding@resend.dev>",
+                    to: [recipient.email],
+                    subject: `📧 Secure Message from ${sender_name}`,
+                    text: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
+                  })
+                });
+              }
             } catch (mailErr) {
-              console.error("Email dispatch failed:", mailErr);
+              console.error("Resend dispatch failed:", mailErr);
             }
           }
         }
