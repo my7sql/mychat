@@ -61,6 +61,11 @@
         .contact-item:hover { background: #f5f6f6; }
         .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
         .contact-phone { font-size: 0.85rem; color: #667781; }
+        
+        /* Privacy Email Status Pill badges */
+        .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
+        .status-pill.active { background: #e8f5e9; color: #2e7d32; }
+        .status-pill.inactive { background: #f5f5f5; color: #757575; }
 
         #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
         .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
@@ -74,7 +79,6 @@
 
         .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
 
-        /* Send via Email Toggle Toolbar */
         .email-toolbar { background: #e3f2fd; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #bbdefb; font-size: 0.82rem; font-weight: 600; color: #1565c0; }
         .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -110,7 +114,6 @@
                 <input type="text" id="reg-name" placeholder="Your Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
-                <!-- Smart Email Domain Selector -->
                 <div class="email-group">
                     <input type="text" id="reg-email-user" placeholder="Email username">
                     <select id="reg-email-domain">
@@ -170,7 +173,6 @@
             </div>
             <div id="messages-container"></div>
             
-            <!-- Send via Email Toggle Bar -->
             <div class="email-toolbar">
                 <span>📧 Send via Email</span>
                 <label class="toggle-switch">
@@ -226,8 +228,15 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            localStorage.removeItem('axtres_user');
             getDeviceId();
+            const savedUser = localStorage.getItem('axtres_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    openContactsScreen();
+                    return;
+                } catch(e) {}
+            }
             setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
@@ -364,7 +373,13 @@
                 contacts.forEach(c => {
                     const item = document.createElement('div');
                     item.className = 'contact-item';
-                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div></div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    
+                    // Display hidden status badge instead of actual email string
+                    const emailStatusBadge = c.has_email === 1 
+                        ? `<span class="status-pill active">Email Enabled 🟢</span>` 
+                        : `<span class="status-pill inactive">No Email ⚪</span>`;
+
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
                     item.onclick = () => startChatWith(c);
                     container.appendChild(item);
                 });
@@ -394,7 +409,8 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 1000);
+            // Ultra-fast 800ms background polling for instant message appearance across devices
+            syncInterval = setInterval(() => pollChatMessages(false), 800);
         }
 
         function backToContacts() {
@@ -470,7 +486,7 @@
             input.value = "";
             input.focus();
 
-            // INSTANT LOCAL RENDER (Fixes lag feel)
+            // Instant Local Render
             const messagesDiv = document.getElementById('messages-container');
             const localMsgEl = document.createElement('div');
             localMsgEl.className = 'msg me';
@@ -495,6 +511,7 @@
                         created_at: timeNow
                     })
                 });
+                pollChatMessages(false);
             } catch (err) {
                 console.error("Failed to send message", err);
             }
