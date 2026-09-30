@@ -7,7 +7,7 @@ export async function onRequest(context) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
+    "Cache-Control": "no-store, no-cache, must-revalidate"
   };
 
   if (request.method === "OPTIONS") {
@@ -15,9 +15,7 @@ export async function onRequest(context) {
   }
 
   if (!DB) {
-    return new Response(JSON.stringify({ error: "Database binding missing." }), { 
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } 
-    });
+    return new Response(JSON.stringify({ error: "Database missing." }), { status: 500, headers: corsHeaders });
   }
 
   try {
@@ -27,18 +25,10 @@ export async function onRequest(context) {
         room_id TEXT,
         sender_id TEXT,
         sender_name TEXT,
-        recipient_id TEXT,
+        recipient_phone TEXT,
         message TEXT,
         is_emergency INTEGER DEFAULT 0,
         created_at TEXT
-      )
-    `).run();
-
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS users (
-        phone TEXT PRIMARY KEY,
-        name TEXT,
-        email TEXT
       )
     `).run();
   } catch (e) {}
@@ -47,22 +37,15 @@ export async function onRequest(context) {
 
   if (request.method === "GET") {
     const room_id = url.searchParams.get("room_id");
-    if (!room_id) {
-      return new Response(JSON.stringify({ error: "room_id required" }), { status: 400, headers: corsHeaders });
-    }
+    if (!room_id) return new Response(JSON.stringify({ error: "room_id required" }), { status: 400, headers: corsHeaders });
+    
     try {
-      const { results } = await DB.prepare(
-        "SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC"
-      ).bind(room_id).all();
-
+      const { results } = await DB.prepare("SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC").bind(room_id).all();
       const formatted = (results || []).map(m => ({
         ...m,
         senderPhone: m.sender_id
       }));
-
-      return new Response(JSON.stringify(formatted), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
+      return new Response(JSON.stringify(formatted), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
     }
@@ -74,49 +57,47 @@ export async function onRequest(context) {
       const { room_id, sender_id, sender_name, recipient_phone, message, send_via_email, created_at } = data;
 
       if (!room_id || !sender_id || !message) {
-        return new Response(JSON.stringify({ error: "Missing required message fields." }), { status: 400, headers: corsHeaders });
+        return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400, headers: corsHeaders });
       }
 
-      await DB.prepare(
-        "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
-      ).bind(room_id, sender_id, sender_name || "User", "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
+      await DB.prepare(`
+        INSERT INTO messages (room_id, sender_id, sender_name, recipient_phone, message, is_emergency, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(room_id, sender_id, sender_name || "User", recipient_phone || "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // Trigger Resend email if requested
+      // Trigger Email via Resend if toggled on
       if (send_via_email && recipient_phone) {
-        const recipientRes = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
-        if (recipientRes.results && recipientRes.results.length > 0) {
-          const recipient = recipientRes.results[0];
-          if (recipient.email && recipient.email.includes("@")) {
+        const userQuery = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
+        const recipient = userQuery.results ? userQuery.results[0] : null;
+
+        if (recipient && recipient.email && recipient.email.includes("@")) {
+          if (RESEND_API_KEY) {
             try {
-              if (RESEND_API_KEY) {
-                await fetch("https://api.resend.com/emails", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${RESEND_API_KEY}`
-                  },
-                  body: JSON.stringify({
-                    from: "Axtres Messenger <onboarding@resend.dev>",
-                    to: [recipient.email],
-                    subject: `📧 Secure Message from ${sender_name}`,
-                    text: `Hello ${recipient.name},\n\nYou received a secure email-dispatched message from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
-                  })
-                });
-              }
+              await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${RESEND_API_KEY}`
+                },
+                body: JSON.stringify({
+                  from: "Axtres Messenger <onboarding@resend.dev>",
+                  to: [recipient.email],
+                  subject: `📧 Secure Message from ${sender_name || "a contact"}`,
+                  text: `Hello ${recipient.name},\n\nYou received a secure message from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
+                })
+              });
             } catch (mailErr) {
-              console.error("Resend dispatch failed:", mailErr);
+              console.error("Resend fetch failed:", mailErr);
             }
           }
         }
       }
 
-      return new Response(JSON.stringify({ success: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
     }
   }
 
-  return new Response(JSON.stringify({ error: "Invalid method" }), { status: 405, headers: corsHeaders });
+  return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
 }
