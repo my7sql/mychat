@@ -6,6 +6,7 @@ export async function onRequest(context) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
   };
 
   if (request.method === "OPTIONS") {
@@ -36,7 +37,6 @@ export async function onRequest(context) {
   if (request.method === "GET") {
     try {
       const myPhone = url.searchParams.get("phone");
-      // Select users excluding self, and check if email exists without revealing it
       const { results } = await DB.prepare(
         "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END AS has_email FROM users WHERE phone != ?"
       ).bind(myPhone || "").all();
@@ -77,6 +77,19 @@ export async function onRequest(context) {
         return new Response(JSON.stringify({ success: true }), { 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         });
+      }
+
+      if (action === "update-email") {
+        if (!email) {
+          return new Response(JSON.stringify({ error: "Email is required." }), { status: 400, headers: corsHeaders });
+        }
+        const existing = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
+        if (!existing.results || existing.results.length === 0) {
+          return new Response(JSON.stringify({ error: "Phone number not found. Please register first." }), { status: 404, headers: corsHeaders });
+        }
+
+        await DB.prepare("UPDATE users SET email = ? WHERE phone = ?").bind(email, phone).run();
+        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       if (action === "login") {
