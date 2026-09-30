@@ -6,7 +6,7 @@ export async function onRequest(context) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
+    "Cache-Control": "no-store, no-cache, must-revalidate"
   };
 
   if (request.method === "OPTIONS") {
@@ -14,17 +14,14 @@ export async function onRequest(context) {
   }
 
   if (!DB) {
-    return new Response(JSON.stringify({ error: "Database binding missing." }), { 
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } 
-    });
+    return new Response(JSON.stringify({ error: "Database binding missing." }), { status: 500, headers: corsHeaders });
   }
 
   try {
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        phone TEXT PRIMARY KEY,
         name TEXT,
-        phone TEXT UNIQUE,
         email TEXT,
         device_id TEXT
       )
@@ -35,15 +32,14 @@ export async function onRequest(context) {
   const action = url.searchParams.get("action");
 
   if (request.method === "GET") {
+    const phone = url.searchParams.get("phone");
     try {
-      const myPhone = url.searchParams.get("phone");
-      const { results } = await DB.prepare(
-        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END AS has_email FROM users WHERE phone != ?"
-      ).bind(myPhone || "").all();
-
-      return new Response(JSON.stringify(results || []), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
+      const { results } = await DB.prepare("SELECT phone, name, email FROM users WHERE phone != ?").bind(phone || "").all();
+      const formatted = (results || []).map(u => ({
+        ...u,
+        has_email: (u.email && u.email.includes("@")) ? 1 : 0
+      }));
+      return new Response(JSON.stringify(formatted), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
     }
@@ -52,40 +48,26 @@ export async function onRequest(context) {
   if (request.method === "POST") {
     try {
       const data = await request.json();
-      const { name, phone, email, device_id } = data;
-
-      if (!phone) {
-        return new Response(JSON.stringify({ error: "Phone number is required." }), { 
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        });
-      }
-
+      
       if (action === "register") {
-        if (!name) {
-          return new Response(JSON.stringify({ error: "Name is required for registration." }), { status: 400, headers: corsHeaders });
-        }
+        const { name, phone, email, device_id } = data;
+        if (!name || !phone) return new Response(JSON.stringify({ error: "Name and phone required" }), { status: 400, headers: corsHeaders });
+        
+        await DB.prepare(`
+          INSERT INTO users (phone, name, email, device_id) VALUES (?, ?, ?, ?)
+          ON CONFLICT(phone) DO UPDATE SET name = ?, email = COALESCE(?, email), device_id = ?
+        `).bind(phone, name, email || "", device_id || "", name, email || null, device_id || "").run();
 
-        const existing = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
-        if (existing.results && existing.results.length > 0) {
-          return new Response(JSON.stringify({ error: "This phone number is already registered. Please log in." }), { status: 400, headers: corsHeaders });
-        }
-
-        await DB.prepare(
-          "INSERT INTO users (name, phone, email, device_id) VALUES (?, ?, ?, ?)"
-        ).bind(name, phone, email || "", device_id || "unknown").run();
-
-        return new Response(JSON.stringify({ success: true }), { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        });
+        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       if (action === "update-email") {
-        if (!email) {
-          return new Response(JSON.stringify({ error: "Email is required." }), { status: 400, headers: corsHeaders });
-        }
-        const existing = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
-        if (!existing.results || existing.results.length === 0) {
-          return new Response(JSON.stringify({ error: "Phone number not found. Please register first." }), { status: 404, headers: corsHeaders });
+        const { phone, email } = data;
+        if (!phone || !email) return new Response(JSON.stringify({ error: "Phone and email required" }), { status: 400, headers: corsHeaders });
+
+        const check = await DB.prepare("SELECT phone FROM users WHERE phone = ?").bind(phone).all();
+        if (!check.results || check.results.length === 0) {
+          return new Response(JSON.stringify({ error: "Phone number not registered. Please register first." }), { status: 404, headers: corsHeaders });
         }
 
         await DB.prepare("UPDATE users SET email = ? WHERE phone = ?").bind(email, phone).run();
@@ -93,31 +75,18 @@ export async function onRequest(context) {
       }
 
       if (action === "login") {
+        const { phone, device_id } = data;
         const { results } = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
-        
         if (!results || results.length === 0) {
-          return new Response(JSON.stringify({ error: "Phone number not found. Please register first." }), { 
-            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          });
+          return new Response(JSON.stringify({ error: "Phone number not found. Please register." }), { status: 404, headers: corsHeaders });
         }
-
-        const user = results[0];
-        
-        if (device_id) {
-          await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
-        }
-
-        return new Response(JSON.stringify({ success: true, user: { name: user.name, phone: user.phone } }), { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        });
+        const user = results.get ? results.get(0) : results[0];
+        return new Response(JSON.stringify({ success: true, user }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-
     } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { 
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      });
+      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
     }
   }
 
-  return new Response(JSON.stringify({ error: "Invalid endpoint" }), { status: 404, headers: corsHeaders });
+  return new Response(JSON.stringify({ error: "Invalid endpoint call" }), { status: 400, headers: corsHeaders });
 }
