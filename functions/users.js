@@ -36,7 +36,11 @@ export async function onRequest(context) {
   if (request.method === "GET") {
     try {
       const myPhone = url.searchParams.get("phone");
-      const { results } = await DB.prepare("SELECT name, phone, email FROM users WHERE phone != ?").bind(myPhone || "").all();
+      // Select users excluding self, and check if email exists without revealing it
+      const { results } = await DB.prepare(
+        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END AS has_email FROM users WHERE phone != ?"
+      ).bind(myPhone || "").all();
+
       return new Response(JSON.stringify(results || []), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
@@ -90,7 +94,7 @@ export async function onRequest(context) {
           await DB.prepare("UPDATE users SET device_id = ? WHERE phone = ?").bind(device_id, phone).run();
         }
 
-        return new Response(JSON.stringify({ success: true, user: { name: user.name, phone: user.phone, email: user.email } }), { 
+        return new Response(JSON.stringify({ success: true, user: { name: user.name, phone: user.phone } }), { 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         });
       }
