@@ -68,7 +68,7 @@
         .status-pill.active { background: #e8f5e9; color: #2e7d32; }
         .status-pill.inactive { background: #f5f5f5; color: #757575; }
 
-        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; -webkit-overflow-scrolling: touch; }
         .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
         
         .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
@@ -251,7 +251,7 @@
         let pendingPhone = null;
         let syncInterval = null;
         let contactsInterval = null;
-        let knownMessages = new Set();
+        let knownMessageIds = new Set();
         let deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -296,12 +296,11 @@
         });
 
         function forceSyncOnWake() {
-            if (currentRoomId) pollChatMessages(false);
+            if (currentRoomId) pollChatMessages();
             if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
         }
 
         window.addEventListener('focus', forceSyncOnWake);
-        window.addEventListener('pageshow', (e) => { if (e.persisted) forceSyncOnWake(); });
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "visible") forceSyncOnWake();
         });
@@ -513,7 +512,7 @@
         function startContactsPolling() {
             if (contactsInterval) clearInterval(contactsInterval);
             fetchContacts();
-            contactsInterval = setInterval(fetchContacts, 2000);
+            contactsInterval = setInterval(fetchContacts, 1000);
         }
 
         async function fetchContacts() {
@@ -555,7 +554,7 @@
 
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
-            knownMessages.clear();
+            knownMessageIds.clear();
 
             startChatPolling();
         }
@@ -563,7 +562,8 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 800);
+            // Ultra-fast 1-second interval for real-time experience
+            syncInterval = setInterval(() => pollChatMessages(false), 1000);
         }
 
         function backToContacts() {
@@ -576,20 +576,32 @@
             try {
                 const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const history = await res.json();
+                
                 if (Array.isArray(history)) {
                     const messagesDiv = document.getElementById('messages-container');
-                    messagesDiv.innerHTML = "";
+                    let hasNewContent = false;
+                    
+                    if (isInitial) {
+                        messagesDiv.innerHTML = "";
+                        knownMessageIds.clear();
+                    }
+
                     let lastDateLabel = "";
 
                     history.forEach(msg => {
-                        const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
-                        if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
+                        const uniqueId = msg.id || `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
+                        
+                        if (knownMessageIds.has(uniqueId)) return;
+
+                        knownMessageIds.add(uniqueId);
+                        hasNewContent = true;
+
+                        if (!isInitial && msg.senderPhone !== currentUser.phone) {
                             if (Notification.permission === "granted") {
                                 const alertTitle = msg.is_emergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
                                 new Notification(alertTitle, { body: msg.message });
                             }
                         }
-                        knownMessages.add(uniqueKey);
 
                         const msgDate = msg.created_at ? new Date(msg.created_at).toLocaleDateString() : new Date().toLocaleDateString();
                         const todayStr = new Date().toLocaleDateString();
@@ -620,7 +632,10 @@
 
                         messagesDiv.appendChild(msgEl);
                     });
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                    if (hasNewContent || isInitial) {
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
                 }
             } catch (e) {}
         }
@@ -634,17 +649,6 @@
             const timeNow = new Date().toISOString();
             input.value = "";
             input.focus();
-
-            // Instant Local Append so phone shows sent message immediately
-            const messagesDiv = document.getElementById('messages-container');
-            const localMsgEl = document.createElement('div');
-            localMsgEl.className = 'msg me';
-            if (sendViaEmail) localMsgEl.classList.add('email-alert');
-            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            let badgeHTML = sendViaEmail ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
-            localMsgEl.innerHTML = `${badgeHTML}${escapeHtml(text)}<span class="msg-time">${timeStr}</span>`;
-            messagesDiv.appendChild(localMsgEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             try {
                 await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
@@ -660,6 +664,7 @@
                         created_at: timeNow
                     })
                 });
+                // INSTANT TRIGGER: Pull messages immediately on send
                 pollChatMessages(false);
             } catch (err) {}
         }
