@@ -589,23 +589,32 @@
                     let lastDateLabel = "";
 
                     history.forEach(msg => {
-                        const uniqueId = msg.id || `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
+                        // FIX: Safely check both snake_case and camelCase keys returned by various backends
+                        const sender = msg.senderPhone || msg.sender_id || msg.sender;
+                        const msgText = msg.message || msg.text || "";
+                        const createdAt = msg.created_at || msg.createdAt || new Date().toISOString();
+                        const uniqueId = msg.id || `${sender}-${createdAt}-${msgText}`;
                         
                         if (knownMessageIds.has(uniqueId)) return;
 
                         knownMessageIds.add(uniqueId);
                         hasNewContent = true;
 
-                        if (!isInitial && msg.senderPhone !== currentUser.phone) {
+                        // FIX: Match sender reliably against currentUser phone number
+                        const isMe = String(sender).trim() === String(currentUser.phone).trim();
+
+                        if (!isInitial && !isMe) {
                             if (Notification.permission === "granted") {
                                 const alertTitle = msg.is_emergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
-                                new Notification(alertTitle, { body: msg.message });
+                                new Notification(alertTitle, { body: msgText });
                             }
                         }
 
-                        const msgDate = msg.created_at ? new Date(msg.created_at).toLocaleDateString() : new Date().toLocaleDateString();
-                        const todayStr = new Date().toLocaleDateString();
-                        const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
+                        // FIX: Normalize date string cleanly to prevent duplicate date separator rows on every message
+                        const parsedDate = new Date(createdAt);
+                        const msgDate = isNaN(parsedDate.getTime()) ? new Date().toDateString() : parsedDate.toDateString();
+                        const todayStr = new Date().toDateString();
+                        const dateLabel = (msgDate === todayStr) ? "Today" : parsedDate.toLocaleDateString();
 
                         if (dateLabel !== lastDateLabel) {
                             lastDateLabel = dateLabel;
@@ -617,17 +626,17 @@
 
                         const msgEl = document.createElement('div');
                         msgEl.className = 'msg';
-                        if (msg.is_emergency === 1) msgEl.classList.add('email-alert');
+                        if (msg.is_emergency === 1 || msg.isEmergency === 1) msgEl.classList.add('email-alert');
 
-                        const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        let badgeHTML = msg.is_emergency === 1 ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+                        const timeStr = isNaN(parsedDate.getTime()) ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        let badgeHTML = (msg.is_emergency === 1 || msg.isEmergency === 1) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
 
-                        if (msg.senderPhone === currentUser.phone) {
+                        if (isMe) {
                             msgEl.classList.add('me');
-                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
                         } else {
                             msgEl.classList.add('them');
-                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
                         }
 
                         messagesDiv.appendChild(msgEl);
@@ -664,7 +673,6 @@
                         created_at: timeNow
                     })
                 });
-                // INSTANT TRIGGER: Pull messages immediately on send
                 pollChatMessages(false);
             } catch (err) {}
         }
