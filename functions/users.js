@@ -10,13 +10,8 @@ export async function onRequest(context) {
     "Cache-Control": "no-store, no-cache, must-revalidate"
   };
 
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  if (!DB) {
-    return new Response(JSON.stringify({ error: "Database binding missing." }), { status: 500, headers: corsHeaders });
-  }
+  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (!DB) return new Response(JSON.stringify({ error: "DB missing" }), { status: 500, headers: corsHeaders });
 
   try {
     await DB.prepare(`
@@ -52,70 +47,61 @@ export async function onRequest(context) {
     try {
       const data = await request.json();
 
-      // 1. INITIALIZE REGISTRATION & SEND PIN
-      if (action === "register-init") {
+      // 1. REGISTRATION (Optional Email)
+      if (action === "register") {
         const { name, phone, email, device_id } = data;
-        if (!name || !phone || !email) {
-          return new Response(JSON.stringify({ error: "Name, phone, and email are required." }), { status: 400, headers: corsHeaders });
-        }
+        if (!name || !phone) return new Response(JSON.stringify({ error: "Name and phone required" }), { status: 400, headers: corsHeaders });
 
-        const pin = Math.floor(100 + Math.random() * 900).toString();
+        let pin = null;
+        let is_verified = 1; // Auto-verified if no email
+
+        if (email && email.includes("@")) {
+          pin = Math.floor(100 + Math.random() * 900).toString();
+          is_verified = 0; // Requires PIN verification if email provided
+        }
 
         await DB.prepare(`
           INSERT INTO users (phone, name, email, device_id, verification_pin, is_verified) 
-          VALUES (?, ?, ?, ?, ?, 0)
-          ON CONFLICT(phone) DO UPDATE SET name = ?, email = ?, device_id = ?, verification_pin = ?, is_verified = 0
-        `).bind(phone, name, email, device_id || "", pin, name, email, device_id || "", pin).run();
+          VALUES (?, ?, ?, ?, ?, ?)
+          ON CONFLICT(phone) DO UPDATE SET name = ?, email = ?, device_id = ?, verification_pin = ?, is_verified = ?
+        `).bind(phone, name, email || "", device_id || "", pin, is_verified, name, email || "", device_id || "", pin, is_verified).run();
 
-        // Send Email via Resend
-        if (RESEND_API_KEY) {
+        // Send Email via Resend if email provided
+        if (email && email.includes("@") && RESEND_API_KEY) {
           try {
             await fetch("https://api.resend.com/emails", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${RESEND_API_KEY}`
-              },
+              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${RESEND_API_KEY}` },
               body: JSON.stringify({
                 from: "Axtres Messenger <onboarding@resend.dev>",
                 to: [email],
                 subject: `🔒 Your Axtres Verification PIN: ${pin}`,
-                text: `Hello ${name},\n\nYour 3-digit verification PIN for Axtres Messenger is: ${pin}\n\nEnter this code in the app to complete your registration.`
+                text: `Hello ${name},\n\nYour 3-digit verification PIN is: ${pin}`
               })
             });
-          } catch (mailErr) {
-            console.error("Resend PIN dispatch failed:", mailErr);
-          }
+          } catch (e) {}
         }
 
-        return new Response(JSON.stringify({ success: true, pin_sent: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: true, requires_verification: is_verified === 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      // 2. VERIFY PIN & COMPLETE REGISTRATION
+      // 2. VERIFY PIN FOR REGISTRATION
       if (action === "verify-register") {
         const { phone, pin } = data;
-        if (!phone || !pin) return new Response(JSON.stringify({ error: "Phone and PIN required" }), { status: 400, headers: corsHeaders });
-
         const { results } = await DB.prepare("SELECT verification_pin FROM users WHERE phone = ?").bind(phone).all();
-        if (!results || results.length === 0) {
-          return new Response(JSON.stringify({ error: "User not found." }), { status: 404, headers: corsHeaders });
+        if (!results || results.length === 0 || results[0].verification_pin !== pin.trim()) {
+          return new Response(JSON.stringify({ error: "Incorrect 3-digit PIN." }), { status: 400, headers: corsHeaders });
         }
-
-        const userRecord = results[0];
-        if (userRecord.verification_pin !== pin.trim()) {
-          return new Response(JSON.stringify({ error: "Invalid verification PIN. Please check your email." }), { status: 400, headers: corsHeaders });
-        }
-
         await DB.prepare("UPDATE users SET is_verified = 1, verification_pin = NULL WHERE phone = ?").bind(phone).run();
         return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      // 3. INITIALIZE EMAIL UPDATE & SEND PIN
+      // 3. ADD / UPDATE EMAIL LATER (From Sign-In)
       if (action === "update-email-init") {
         const { phone, email } = data;
         if (!phone || !email) return new Response(JSON.stringify({ error: "Phone and email required" }), { status: 400, headers: corsHeaders });
 
-        const check = await DB.prepare("SELECT name FROM users WHERE phone = ?").bind(phone).all();
+        const check = await DB.prepare("SELECT phone FROM users WHERE phone = ?").bind(phone).all();
         if (!check.results || check.results.length === 0) {
           return new Response(JSON.stringify({ error: "Phone number not registered. Please register first." }), { status: 404, headers: corsHeaders });
         }
@@ -127,10 +113,7 @@ export async function onRequest(context) {
           try {
             await fetch("https://api.resend.com/emails", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${RESEND_API_KEY}`
-              },
+              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${RESEND_API_KEY}` },
               body: JSON.stringify({
                 from: "Axtres Messenger <onboarding@resend.dev>",
                 to: [email],
@@ -138,10 +121,10 @@ export async function onRequest(context) {
                 text: `Your 3-digit verification PIN to link this email is: ${pin}`
               })
             });
-          } catch (mailErr) {}
+          } catch (e) {}
         }
 
-        return new Response(JSON.stringify({ success: true, pin_sent: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       // 4. VERIFY EMAIL UPDATE PIN
@@ -149,9 +132,8 @@ export async function onRequest(context) {
         const { phone, pin } = data;
         const { results } = await DB.prepare("SELECT verification_pin FROM users WHERE phone = ?").bind(phone).all();
         if (!results || results.length === 0 || results[0].verification_pin !== pin.trim()) {
-          return new Response(JSON.stringify({ error: "Invalid PIN code." }), { status: 400, headers: corsHeaders });
+          return new Response(JSON.stringify({ error: "Incorrect 3-digit PIN." }), { status: 400, headers: corsHeaders });
         }
-
         await DB.prepare("UPDATE users SET is_verified = 1, verification_pin = NULL WHERE phone = ?").bind(phone).run();
         return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
@@ -163,11 +145,7 @@ export async function onRequest(context) {
         if (!results || results.length === 0) {
           return new Response(JSON.stringify({ error: "Phone number not found. Please register." }), { status: 404, headers: corsHeaders });
         }
-        const user = results[0];
-        if (user.is_verified !== 1) {
-          return new Response(JSON.stringify({ error: "Account email is not verified yet." }), { status: 403, headers: corsHeaders });
-        }
-        return new Response(JSON.stringify({ success: true, user }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: true, user: results[0] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
     } catch (e) {
