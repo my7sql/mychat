@@ -7,7 +7,9 @@ export async function onRequest(context) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    "Cache-Control": "no-store, no-cache, must-revalidate"
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0"
   };
 
   if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
