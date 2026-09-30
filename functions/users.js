@@ -18,7 +18,6 @@ export async function onRequest(context) {
     });
   }
 
-  // Ensure tables exist safely without dropping them
   try {
     await DB.prepare(`
       CREATE TABLE IF NOT EXISTS users (
