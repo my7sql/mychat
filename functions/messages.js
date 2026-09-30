@@ -81,11 +81,7 @@ export async function onRequest(context) {
         "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
       ).bind(room_id, sender_id, sender_name || "User", "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // Automatically register sender or update info if needed
-      await DB.prepare(
-        "INSERT INTO users (phone, name) VALUES (?, ?) ON CONFLICT(phone) DO UPDATE SET name = ?"
-      ).bind(sender_id, sender_name || "User", sender_name || "User").run();
-
+      // Trigger Resend email if requested
       if (send_via_email && recipient_phone) {
         const recipientRes = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
         if (recipientRes.results && recipientRes.results.length > 0) {
@@ -103,7 +99,7 @@ export async function onRequest(context) {
                     from: "Axtres Messenger <onboarding@resend.dev>",
                     to: [recipient.email],
                     subject: `📧 Secure Message from ${sender_name}`,
-                    text: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
+                    text: `Hello ${recipient.name},\n\nYou received a secure email-dispatched message from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
                   })
                 });
               }
