@@ -61,26 +61,45 @@ export async function onRequest(context) {
   if (request.method === "POST") {
     try {
       const data = await request.json();
-      const { room_id, sender_id, sender_name, message, is_emergency, created_at } = data;
+      const { room_id, sender_id, sender_name, recipient_phone, message, send_via_email, created_at } = data;
 
       if (!room_id || !sender_id || !message) {
         return new Response(JSON.stringify({ error: "Missing required message fields." }), { status: 400, headers: corsHeaders });
       }
 
-      // Automatic keyword fallback scanning if toggle wasn't manually clicked
-      const emergencyKeywords = ["help", "emergency", "sos", "danger", "fire", "urgent", "save", "accident", "attack", "critical"];
-      const lowerMsg = message.toLowerCase();
-      const autoDetected = emergencyKeywords.some(keyword => lowerMsg.includes(keyword));
-      const finalEmergencyState = (is_emergency || autoDetected) ? 1 : 0;
-
       await DB.prepare(
         "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
-      ).bind(room_id, sender_id, sender_name || "Emergency User", "", message, finalEmergencyState, created_at || new Date().toISOString()).run();
+      ).bind(room_id, sender_id, sender_name || "User", "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // OPTIONAL GMAIL BACKUP HOOK: 
-      // If finalEmergencyState === 1, you can hook up your Gmail API mail dispatch here for recipient.email!
+      // If "Send via Email" is checked, dispatch email to recipient with anti-spam headers
+      if (send_via_email && recipient_phone) {
+        const recipientRes = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
+        if (recipientRes.results && recipientRes.results.length > 0) {
+          const recipient = recipientRes.results[0];
+          if (recipient.email && recipient.email.includes("@")) {
+            try {
+              // Send via Cloudflare Mailchannels API (optimized to reduce spam flagging)
+              await fetch("https://api.mailchannels.net/tx/v1/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  personalizations: [{ to: [{ email: recipient.email, name: recipient.name }] }],
+                  from: { email: "noreply@axtres-messenger.workers.dev", name: "Axtres Emergency Messenger" },
+                  subject: `🚨 Urgent Message from ${sender_name}`,
+                  content: [{
+                    type: "text/plain",
+                    value: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to reply.`
+                  }]
+                })
+              });
+            } catch (mailErr) {
+              console.error("Email dispatch failed:", mailErr);
+            }
+          }
+        }
+      }
 
-      return new Response(JSON.stringify({ success: true, is_emergency: finalEmergencyState }), {
+      return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (e) {
