@@ -57,7 +57,6 @@ export async function onRequest(context) {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).bind(room_id, sender_id, sender_name || "User", recipient_phone || "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // Dispatch Email via Resend if toggled on
       if (send_via_email && recipient_phone) {
         const userQuery = await DB.prepare("SELECT email, name, is_verified FROM users WHERE phone = ?").bind(recipient_phone).all();
         const recipient = userQuery.results ? userQuery.results[0] : null;
@@ -67,18 +66,15 @@ export async function onRequest(context) {
             try {
               await fetch("https://api.resend.com/emails", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${RESEND_API_KEY}`
-                },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${RESEND_API_KEY}` },
                 body: JSON.stringify({
                   from: "Axtres Messenger <onboarding@resend.dev>",
                   to: [recipient.email],
                   subject: `📧 Secure Message from ${sender_name || "a contact"}`,
-                  text: `Hello ${recipient.name},\n\nYou received a secure message from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
+                  text: `Hello ${recipient.name},\n\nYou received a secure message from ${sender_name}:\n\n"${message}"`
                 })
               });
-            } catch (mailErr) {}
+            } catch (e) {}
           }
         }
       }
