@@ -1,208 +1,638 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Axtres Messenger</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .container { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
-    input, textarea, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .chat-box { height: 300px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; background: #fafafa; display: flex; flex-direction: column; }
-    .message { margin-bottom: 8px; padding: 8px; border-radius: 6px; max-width: 80%; }
-    .my-message { background: #dcf8c6; align-self: flex-end; }
-    .other-message { background: #fff; border: 1px solid #ddd; align-self: flex-start; }
-    .hidden { display: none !important; }
-    .checkbox-container { display: flex; align-items: center; font-size: 14px; margin: 8px 0; }
-    .checkbox-container input { width: auto; margin-right: 8px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>Axtres Secure Messenger</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { 
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364); 
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; color: #333; overflow: hidden; 
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            width: 100%; max-width: 420px; height: 92vh; max-height: 820px; 
+            border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; flex-direction: column; overflow: hidden; position: relative; 
+        }
+
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .screen.active { display: flex; }
+
+        #welcome-screen { justify-content: center; align-items: center; text-align: center; padding: 30px; background: linear-gradient(135deg, #075e54, #128c7e); color: white; }
+        #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
+
+        .form-content { padding: 18px 25px; display: flex; flex-direction: column; gap: 8px; justify-content: center; flex: 1; overflow-y: auto; }
+        .form-content h2 { color: #075e54; font-size: 1.35rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.82rem; margin-bottom: 2px; }
+
+        input, select { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input:focus, select:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+
+        .email-group { display: flex; gap: 6px; }
+        .email-group input { flex: 2; }
+        .email-group select { flex: 1.2; font-size: 0.85rem; }
+
+        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
+        .btn:hover { background: #054c44; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
+        .btn-secondary:hover { background: #183d63; }
+        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-accent:hover { background: #bf360c; }
+        
+        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+
+        .switch-text { text-align: center; font-size: 0.82rem; color: #666; margin-top: 2px; }
+        .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+
+        #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
+        .contact-phone { font-size: 0.85rem; color: #667781; }
+        
+        .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
+        .status-pill.active { background: #e8f5e9; color: #2e7d32; }
+        .status-pill.inactive { background: #f5f5f5; color: #757575; }
+
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; }
+        .date-separator { align-self: center; background: #e1f3fb; color: #54656f; font-size: 0.75rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin: 10px 0; text-transform: uppercase; }
+        
+        .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+        .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
+        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        
+        .msg.email-alert { background: #e3f2fd !important; border: 1.5px solid #1976d2 !important; color: #0d47a1 !important; }
+        .email-badge { font-size: 0.65rem; background: #1976d2; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
+
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
+
+        .email-toolbar { background: #e3f2fd; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #bbdefb; font-size: 0.82rem; font-weight: 600; color: #1565c0; }
+        .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #1976d2; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
+        #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
+        .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+        .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
+        .success-msg { color: #2e7d32; font-size: 0.78rem; text-align: center; }
+        .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- LOGIN VIEW -->
-    <div id="login-section">
-      <h2>Axtres Login</h2>
-      <input type="text" id="login-phone" placeholder="Enter Phone Number" required>
-      <input type="text" id="login-name" placeholder="Enter Your Name" required>
-      <input type="email" id="login-email" placeholder="Enter Your Email (for Email notifications)" required>
-      <button onclick="handleLogin()">Login / Register</button>
+    <div class="card">
+        <div id="toast-notification" class="notice-toast">The email extension is already selected via the dropdown menu above.</div>
+
+        <!-- 1. SPLASH -->
+        <div id="welcome-screen" class="screen active">
+            <h1>Axtres Messenger</h1>
+            <p>Secure Email & Chat Messenger</p>
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 2. REGISTER SCREEN -->
+        <div id="register-screen" class="screen">
+            <div class="header-bar">Registration</div>
+            <div class="form-content">
+                <h2>Sign Up</h2>
+                <p class="subtitle">Notifications are required for alerts.</p>
+                <input type="text" id="reg-name" placeholder="Your Full Name">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="email-group">
+                    <input type="text" id="reg-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
+                    <select id="reg-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+                
+                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications</button>
+                <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
+
+                <div class="error-msg" id="reg-error"></div>
+                <div class="success-msg" id="reg-success"></div>
+                
+                <button class="btn" onclick="handleRegister()">Complete Registration</button>
+                <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
+
+                <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
+            </div>
+        </div>
+
+        <!-- 3. LOGIN SCREEN -->
+        <div id="login-screen" class="screen">
+            <div class="header-bar">Sign In</div>
+            <div class="form-content">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Enter your registered 10-digit phone number</p>
+                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div class="error-msg" id="login-error"></div>
+                <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                
+                <!-- Separate Button to Add Email if missing -->
+                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add Email to Account</button>
+
+                <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
+
+                <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
+            </div>
+        </div>
+
+        <!-- 3.5 ADD EMAIL SCREEN (Linked from Sign-In) -->
+        <div id="add-email-screen" class="screen">
+            <div class="header-bar">
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
+                    <div>Link Missing Email</div>
+                </div>
+            </div>
+            <div class="form-content">
+                <h2>Update Email</h2>
+                <p class="subtitle">Verify your phone to bind your email address</p>
+                <input type="tel" id="ae-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="email-group">
+                    <input type="text" id="ae-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
+                    <select id="ae-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+
+                <div class="error-msg" id="ae-error"></div>
+                <div class="success-msg" id="ae-success"></div>
+
+                <button class="btn" onclick="handleAddEmailSubmit()">Save Email Address</button>
+                <button class="btn-secondary" onclick="switchScreen('login-screen')">Back to Sign In</button>
+            </div>
+        </div>
+
+        <!-- 4. CONTACTS LIST SCREEN -->
+        <div id="contacts-screen" class="screen">
+            <div class="header-bar">
+                <div>Chats (<span id="my-name-display"></span>)</div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact to chat:</div>
+            <div id="contacts-container"></div>
+        </div>
+
+        <!-- 5. CHAT ROOM SCREEN -->
+        <div id="chat-screen" class="screen">
+            <div class="header-bar">
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="backToContacts()">&#8592;</span>
+                    <div id="chat-room-title">Chat</div>
+                </div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div id="messages-container"></div>
+            
+            <div class="email-toolbar">
+                <span>📧 Send via Email</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="email-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="input-toolbar">
+                <input type="text" id="message-input" placeholder="Type message..." onkeypress="checkEnter(event)">
+                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
+            </div>
+        </div>
     </div>
 
-    <!-- CHAT VIEW -->
-    <div id="chat-section" class="hidden">
-      <h3>Welcome, <span id="user-display-name"></span></h3>
-      <div>
-        <input type="text" id="room-id-input" placeholder="Enter Room ID">
-        <button onclick="joinRoom()">Join Room</button>
-      </div>
-      <div id="active-room-label" style="font-weight: bold; color: #555; margin: 5px 0;"></div>
-      
-      <div class="chat-box" id="chat-messages"></div>
+    <script>
+        const USERS_API = "/users";
+        const MESSAGES_API = "/messages";
+        let currentUser = null;
+        let activeRecipient = null;
+        let currentRoomId = null;
+        let syncInterval = null;
+        let contactsInterval = null;
+        let knownMessages = new Set();
+        let deferredPrompt = null;
 
-      <textarea id="message-input" placeholder="Type a message..."></textarea>
-      
-      <div class="checkbox-container">
-        <input type="checkbox" id="send-via-email">
-        <label for="send-via-email">Also send via Email to recipient</label>
-      </div>
-      
-      <input type="text" id="recipient-phone-input" placeholder="Recipient Phone Number (Required if Email selected)">
-      <button onclick="sendMessage()">Send Message</button>
-      <button onclick="handleLogout()" style="background: #dc3545; margin-top: 15px;">Logout</button>
-    </div>
-  </div>
-
-  <script>
-    let currentUser = null;
-    let currentRoom = null;
-    let pollInterval = null;
-
-    // Check localStorage on load for persistent login during low battery / page reloads
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedUser = localStorage.getItem("axtres_user");
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        showChatUI();
-      }
-    });
-
-    function handleLogin() {
-      const phone = document.getElementById("login-phone").value.trim();
-      const name = document.getElementById("login-name").value.trim();
-      const email = document.getElementById("login-email").value.trim();
-
-      if (!phone || !name || !email) {
-        alert("Please fill in all fields.");
-        return;
-      }
-
-      currentUser = { phone, name, email };
-      // Save permanently to localStorage so low battery RAM purging doesn't kick user out
-      localStorage.setItem("axtres_user", JSON.stringify(currentUser));
-      showChatUI();
-    }
-
-    function handleLogout() {
-      localStorage.removeItem("axtres_user");
-      currentUser = null;
-      currentRoom = null;
-      if (pollInterval) clearInterval(pollInterval);
-      document.getElementById("chat-section").classList.add("hidden");
-      document.getElementById("login-section").classList.remove("hidden");
-    }
-
-    function showChatUI() {
-      document.getElementById("login-section").classList.add("hidden");
-      document.getElementById("chat-section").classList.remove("hidden");
-      document.getElementById("user-display-name").innerText = currentUser.name;
-    }
-
-    function joinRoom() {
-      const roomId = document.getElementById("room-id-input").value.trim();
-      if (!roomId) {
-        alert("Please enter a Room ID");
-        return;
-      }
-      currentRoom = roomId;
-      document.getElementById("active-room-label").innerText = `Active Room: ${roomId}`;
-      
-      fetchMessages();
-      if (pollInterval) clearInterval(pollInterval);
-      pollInterval = setInterval(fetchMessages, 3000); // Poll every 3 seconds
-    }
-
-    async function fetchMessages() {
-      if (!currentRoom) return;
-      try {
-        const res = await fetch(`/messages?room_id=${encodeURIComponent(currentRoom)}`, {
-          cache: "no-store"
-        });
-        if (!res.ok) return;
-        const messages = await res.json();
-        
-        const chatBox = document.getElementById("chat-messages");
-        chatBox.innerHTML = "";
-        
-        messages.forEach(m => {
-          const div = document.createElement("div");
-          div.className = `message ${m.senderPhone === currentUser.phone ? "my-message" : "other-message"}`;
-          div.innerHTML = `<strong>${m.sender_name || 'User'}</strong>: ${m.message}`;
-          chatBox.appendChild(div);
-        });
-        chatBox.scrollTop = chatBox.scrollHeight;
-      } catch (e) {
-        console.error("Failed to fetch messages", e);
-      }
-    }
-
-    async function sendMessage() {
-      if (!currentRoom) {
-        alert("Join a room first!");
-        return;
-      }
-      const messageText = document.getElementById("message-input").value.trim();
-      const sendViaEmail = document.getElementById("send-via-email").checked;
-      const recipientPhone = document.getElementById("recipient-phone-input").value.trim();
-
-      if (!messageText) return;
-
-      if (sendViaEmail && !recipientPhone) {
-        alert("Please enter the recipient phone number to send via email.");
-        return;
-      }
-
-      // Also ensure recipient exists in DB or register them on the fly if needed
-      if (sendViaEmail) {
-        await fetch("/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone: recipientPhone, name: "Recipient", email: recipientPhone + "@temp.com" }) // Adjust if you have a separate user registry endpoint
-        }).catch(()=>{});
-      }
-
-      const payload = {
-        room_id: currentRoom,
-        sender_id: currentUser.phone,
-        sender_name: currentUser.name,
-        recipient_phone: recipientPhone,
-        message: messageText,
-        send_via_email: sendViaEmail ? 1 : 0,
-        created_at: new Date().toISOString()
-      };
-
-      try {
-        const res = await fetch("/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'flex');
         });
 
-        if (res.ok) {
-          document.getElementById("message-input").value = "";
-          fetchMessages();
-        } else {
-          alert("Failed to send message.");
+        async function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'none');
+                }
+                deferredPrompt = null;
+            } else {
+                alert("To install this app, open your browser menu and select 'Add to Home Screen' or 'Install App'.");
+            }
         }
-      } catch (e) {
-        alert("Network error while sending message.");
-      }
-    }
 
-    // LOW BATTERY RESILIENCE: Force immediate sync the second the user wakes up their phone screen
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && currentRoom) {
-        fetchMessages();
-      }
-    });
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('axtres_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('axtres_device_id', deviceId);
+            }
+            return deviceId;
+        }
 
-    window.addEventListener("pageshow", (event) => {
-      if ((event.persisted || document.visibilityState === "visible") && currentRoom) {
-        fetchMessages();
-      }
-    });
-  </script>
+        window.addEventListener('DOMContentLoaded', () => {
+            getDeviceId();
+            const savedUser = localStorage.getItem('axtres_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    openContactsScreen();
+                    return;
+                } catch(e) {}
+            }
+            setTimeout(() => { switchScreen('login-screen'); }, 800);
+        });
+
+        // LOW BATTERY RESILIENCE: Force immediate sync the second the user wakes up their phone screen or app focus
+        window.addEventListener('focus', () => {
+            if (currentRoomId) pollChatMessages(false);
+            if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                if (currentRoomId) pollChatMessages(false);
+                if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
+            }
+        });
+
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted || document.visibilityState === "visible") {
+                if (currentRoomId) pollChatMessages(false);
+                if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
+            }
+        });
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function interceptEmailInput(e) {
+            const input = e.target;
+            if (input.value.includes('@') || input.value.includes('.') || input.value.includes('gmail') || input.value.includes('outlook')) {
+                input.value = input.value.replace(/[@\.gmailyout-]/gi, '').trim();
+                showToast("The email extension is already selected via the dropdown menu above.");
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        async function requestNotificationPermission() {
+            const statusDiv = document.getElementById('notif-status');
+            if (!("Notification" in window)) {
+                statusDiv.innerText = "Error: Browser does not support notifications.";
+                statusDiv.style.color = "#d32f2f";
+                return;
+            }
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                statusDiv.innerText = "Status: Notifications Enabled!";
+                statusDiv.style.color = "#2e7d32";
+            } else {
+                statusDiv.innerText = "Status: Permission Denied.";
+                statusDiv.style.color = "#d32f2f";
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const emailUser = document.getElementById('reg-email-user').value.trim();
+            const emailDomain = document.getElementById('reg-email-domain').value;
+            const email = emailUser ? (emailUser + emailDomain) : "";
+            
+            const errDiv = document.getElementById('reg-error');
+            const succDiv = document.getElementById('reg-success');
+            errDiv.innerText = "";
+            succDiv.innerText = "";
+
+            if (!name || !phone) {
+                errDiv.innerText = "Please fill in required fields.";
+                return;
+            }
+            if (phone.length !== 10) {
+                errDiv.innerText = "Phone number must be 10 digits.";
+                return;
+            }
+            if (Notification.permission !== "granted") {
+                errDiv.innerText = "You must click 'Enable Notifications' first!";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Registration failed");
+
+                succDiv.innerText = "Registered successfully! Redirecting...";
+                setTimeout(() => {
+                    document.getElementById('login-phone').value = phone;
+                    switchScreen('login-screen');
+                }, 1200);
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function openAddEmailModal() {
+            document.getElementById('ae-phone').value = "";
+            document.getElementById('ae-email-user').value = "";
+            document.getElementById('ae-error').innerText = "";
+            document.getElementById('ae-success').innerText = "";
+            switchScreen('add-email-screen');
+        }
+
+        async function handleAddEmailSubmit() {
+            const phone = document.getElementById('ae-phone').value.trim();
+            const emailUser = document.getElementById('ae-email-user').value.trim();
+            const emailDomain = document.getElementById('ae-email-domain').value;
+            const errDiv = document.getElementById('ae-error');
+            const succDiv = document.getElementById('ae-success');
+            errDiv.innerText = "";
+            succDiv.innerText = "";
+
+            if (!phone || phone.length !== 10) {
+                errDiv.innerText = "Enter a valid 10-digit registered phone number.";
+                return;
+            }
+            if (!emailUser) {
+                errDiv.innerText = "Enter your email username.";
+                return;
+            }
+
+            const email = emailUser + emailDomain;
+
+            try {
+                const res = await fetch(`${USERS_API}?action=update-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ phone, email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to update email");
+
+                succDiv.innerText = "Email successfully linked to your account!";
+                setTimeout(() => {
+                    switchScreen('login-screen');
+                }, 1500);
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const errDiv = document.getElementById('login-error');
+            errDiv.innerText = "";
+
+            if (!phone || phone.length !== 10) {
+                errDiv.innerText = "Enter a valid 10-digit phone number.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ phone, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Login failed");
+
+                currentUser = data.user;
+                // Persistent localStorage save ensures low battery RAM clearing doesn't log user out
+                localStorage.setItem('axtres_user', JSON.stringify(currentUser));
+                openContactsScreen();
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('axtres_user');
+            currentUser = null;
+            if (syncInterval) clearInterval(syncInterval);
+            if (contactsInterval) clearInterval(contactsInterval);
+            switchScreen('login-screen');
+        }
+
+        async function openContactsScreen() {
+            switchScreen('contacts-screen');
+            document.getElementById('my-name-display').innerText = currentUser.name;
+            startContactsPolling();
+        }
+
+        function startContactsPolling() {
+            if (contactsInterval) clearInterval(contactsInterval);
+            fetchContacts();
+            contactsInterval = setInterval(fetchContacts, 2000);
+        }
+
+        async function fetchContacts() {
+            try {
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const contacts = await res.json();
+                const container = document.getElementById('contacts-container');
+                container.innerHTML = "";
+
+                if (!Array.isArray(contacts) || contacts.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other contacts found yet.<br>Register another phone number!</div>`;
+                    return;
+                }
+
+                contacts.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
+                    const emailStatusBadge = c.has_email === 1 
+                        ? `<span class="status-pill active">Email Enabled 🟢</span>` 
+                        : `<span class="status-pill inactive">No Email ⚪</span>`;
+
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    item.onclick = () => startChatWith(c);
+                    container.appendChild(item);
+                });
+            } catch (e) {
+                console.error("Error fetching contacts:", e);
+            }
+        }
+
+        function startChatWith(recipient) {
+            activeRecipient = recipient;
+            if (contactsInterval) clearInterval(contactsInterval);
+
+            const sortedPhones = [currentUser.phone, recipient.phone].sort();
+            currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
+
+            document.getElementById('chat-room-title').innerText = recipient.name;
+            switchScreen('chat-screen');
+            document.getElementById('email-toggle').checked = false;
+
+            const messagesDiv = document.getElementById('messages-container');
+            messagesDiv.innerHTML = "";
+            knownMessages.clear();
+
+            startChatPolling();
+        }
+
+        function startChatPolling() {
+            if (syncInterval) clearInterval(syncInterval);
+            pollChatMessages(true);
+            syncInterval = setInterval(() => pollChatMessages(false), 700);
+        }
+
+        function backToContacts() {
+            if (syncInterval) clearInterval(syncInterval);
+            openContactsScreen();
+        }
+
+        async function pollChatMessages(isInitial) {
+            if (!currentRoomId) return;
+            try {
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const history = await res.json();
+                if (Array.isArray(history)) {
+                    const messagesDiv = document.getElementById('messages-container');
+                    messagesDiv.innerHTML = "";
+                    let lastDateLabel = "";
+
+                    history.forEach(msg => {
+                        const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
+                        if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
+                            if (Notification.permission === "granted") {
+                                const alertTitle = msg.is_emergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
+                                new Notification(alertTitle, { body: msg.message });
+                            }
+                        }
+                        knownMessages.add(uniqueKey);
+
+                        const msgDate = msg.created_at ? new Date(msg.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+                        const todayStr = new Date().toLocaleDateString();
+                        const dateLabel = (msgDate === todayStr) ? "Today" : msgDate;
+
+                        if (dateLabel !== lastDateLabel) {
+                            lastDateLabel = dateLabel;
+                            const dateDiv = document.createElement('div');
+                            dateDiv.className = 'date-separator';
+                            dateDiv.innerText = dateLabel;
+                            messagesDiv.appendChild(dateDiv);
+                        }
+
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'msg';
+                        if (msg.is_emergency === 1) {
+                            msgEl.classList.add('email-alert');
+                        }
+
+                        const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        let badgeHTML = msg.is_emergency === 1 ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+
+                        if (msg.senderPhone === currentUser.phone) {
+                            msgEl.classList.add('me');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                        } else {
+                            msgEl.classList.add('them');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                        }
+
+                        messagesDiv.appendChild(msgEl);
+                    });
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Polling error:", e);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            const sendViaEmail = document.getElementById('email-toggle').checked ? 1 : 0;
+            if (!text || !currentRoomId) return;
+
+            const timeNow = new Date().toISOString();
+            input.value = "";
+            input.focus();
+
+            const messagesDiv = document.getElementById('messages-container');
+            const localMsgEl = document.createElement('div');
+            localMsgEl.className = 'msg me';
+            if (sendViaEmail) localMsgEl.classList.add('email-alert');
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            let badgeHTML = sendViaEmail ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+            localMsgEl.innerHTML = `${badgeHTML}${escapeHtml(text)}<span class="msg-time">${timeStr}</span>`;
+            messagesDiv.appendChild(localMsgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                await fetch(MESSAGES_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({
+                        room_id: currentRoomId,
+                        sender_id: currentUser.phone,
+                        sender_name: currentUser.name,
+                        recipient_phone: activeRecipient.phone,
+                        message: text,
+                        send_via_email: sendViaEmail,
+                        created_at: timeNow
+                    })
+                });
+                pollChatMessages(false);
+            } catch (err) {
+                console.error("Failed to send message", err);
+            }
+        }
+
+        function checkEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+            return text.replace(/[\n&<>"']/g, function(m) { return map[m] || m; });
+        }
+    </script>
 </body>
 </html>
