@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
     <title>axtres</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -353,7 +352,8 @@
             try {
                 const res = await fetch(`${USERS_API}?action=register&_t=${Date.now()}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                     body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
                 });
                 const data = await res.json();
@@ -385,7 +385,8 @@
                 try {
                     const res = await fetch(`${USERS_API}?action=verify-register&_t=${Date.now()}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                         body: JSON.stringify({ phone: pendingPhone, pin: input.value })
                     });
                     const data = await res.json();
@@ -427,7 +428,8 @@
             try {
                 const res = await fetch(`${USERS_API}?action=update-email-init&_t=${Date.now()}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                     body: JSON.stringify({ phone, email })
                 });
                 const data = await res.json();
@@ -450,7 +452,8 @@
                 try {
                     const res = await fetch(`${USERS_API}?action=verify-email-update&_t=${Date.now()}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                         body: JSON.stringify({ phone: pendingPhone, pin: input.value })
                     });
                     const data = await res.json();
@@ -480,7 +483,8 @@
             try {
                 const res = await fetch(`${USERS_API}?action=login&_t=${Date.now()}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                     body: JSON.stringify({ phone })
                 });
                 const data = await res.json();
@@ -516,7 +520,10 @@
 
         async function fetchContacts() {
             try {
-                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
                 const contacts = await res.json();
                 const container = document.getElementById('contacts-container');
                 container.innerHTML = "";
@@ -561,7 +568,7 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 700); // 700ms polling for instant multi-device message updates
+            syncInterval = setInterval(() => pollChatMessages(false), 600);
         }
 
         function backToContacts() {
@@ -572,7 +579,10 @@
         async function pollChatMessages(isInitial) {
             if (!currentRoomId) return;
             try {
-                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
                 const history = await res.json();
                 
                 if (Array.isArray(history)) {
@@ -586,12 +596,11 @@
                     let shouldScroll = false;
 
                     history.forEach(msg => {
-                        const sender = msg.senderPhone || msg.sender_phone || msg.sender_id || msg.sender || msg.phone || "";
-                        const msgText = msg.message || msg.text || msg.body || "";
-                        const createdAt = msg.created_at || msg.createdAt || msg.timestamp || "";
-                        const isEmergency = msg.is_emergency || msg.isEmergency || 0;
+                        const sender = msg.sender_phone || msg.senderPhone || msg.sender_id || "";
+                        const msgText = msg.message || "";
+                        const createdAt = msg.created_at || "";
+                        const isEmergency = msg.is_emergency || 0;
                         
-                        // Strict unique signature to prevent any duplicate rendering
                         const uniqueId = msg.id ? String(msg.id) : `${sender}_${createdAt}_${msgText}`;
                         
                         if (knownMessageIds.has(uniqueId)) return;
@@ -658,7 +667,8 @@
             try {
                 await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
                     body: JSON.stringify({
                         room_id: currentRoomId,
                         sender_id: currentUser.phone,
@@ -669,7 +679,6 @@
                         created_at: timeNow
                     })
                 });
-                // Immediate fetch after sending so it appears instantly without duplication
                 pollChatMessages(false);
             } catch (err) {}
         }
