@@ -93,7 +93,6 @@
         #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
-        .success-msg { color: #2e7d32; font-size: 0.78rem; text-align: center; }
         .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -354,7 +353,7 @@
             }
 
             try {
-                const res = await fetch(`${USERS_API}?action=register`, {
+                const res = await fetch(`${USERS_API}?action=register&_t=${Date.now()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
@@ -378,7 +377,6 @@
             }
         }
 
-        // AUTO-VERIFY PIN FOR REGISTRATION
         async function handleAutoVerifyRegister(e) {
             const input = e.target;
             input.value = input.value.replace(/[^0-9]/g, '');
@@ -387,7 +385,7 @@
 
             if (input.value.length === 3) {
                 try {
-                    const res = await fetch(`${USERS_API}?action=verify-register`, {
+                    const res = await fetch(`${USERS_API}?action=verify-register&_t=${Date.now()}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                         body: JSON.stringify({ phone: pendingPhone, pin: input.value })
@@ -429,7 +427,7 @@
             const email = emailUser + emailDomain;
 
             try {
-                const res = await fetch(`${USERS_API}?action=update-email-init`, {
+                const res = await fetch(`${USERS_API}?action=update-email-init&_t=${Date.now()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ phone, email })
@@ -444,7 +442,6 @@
             }
         }
 
-        // AUTO-VERIFY PIN FOR EMAIL UPDATE
         async function handleAutoVerifyEmail(e) {
             const input = e.target;
             input.value = input.value.replace(/[^0-9]/g, '');
@@ -453,7 +450,7 @@
 
             if (input.value.length === 3) {
                 try {
-                    const res = await fetch(`${USERS_API}?action=verify-email-update`, {
+                    const res = await fetch(`${USERS_API}?action=verify-email-update&_t=${Date.now()}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                         body: JSON.stringify({ phone: pendingPhone, pin: input.value })
@@ -483,7 +480,7 @@
             }
 
             try {
-                const res = await fetch(`${USERS_API}?action=login`, {
+                const res = await fetch(`${USERS_API}?action=login&_t=${Date.now()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ phone })
@@ -521,7 +518,7 @@
 
         async function fetchContacts() {
             try {
-                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const contacts = await res.json();
                 const container = document.getElementById('contacts-container');
                 container.innerHTML = "";
@@ -566,7 +563,7 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 600);
+            syncInterval = setInterval(() => pollChatMessages(false), 800);
         }
 
         function backToContacts() {
@@ -577,7 +574,7 @@
         async function pollChatMessages(isInitial) {
             if (!currentRoomId) return;
             try {
-                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}`, { headers: { 'Cache-Control': 'no-cache' } });
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const history = await res.json();
                 if (Array.isArray(history)) {
                     const messagesDiv = document.getElementById('messages-container');
@@ -638,6 +635,7 @@
             input.value = "";
             input.focus();
 
+            // Instant Local Append so phone shows sent message immediately
             const messagesDiv = document.getElementById('messages-container');
             const localMsgEl = document.createElement('div');
             localMsgEl.className = 'msg me';
@@ -649,7 +647,7 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             try {
-                await fetch(MESSAGES_API, {
+                await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({
