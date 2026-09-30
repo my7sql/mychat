@@ -114,7 +114,7 @@
             <div class="header-bar">Registration</div>
             <div class="form-content">
                 <h2>Sign Up</h2>
-                <p class="subtitle">Notifications are required for alerts.</p>
+                <p class="subtitle">Enter details to receive a 3-digit verification PIN.</p>
                 <input type="text" id="reg-name" placeholder="Your Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
@@ -132,10 +132,26 @@
                 <div class="error-msg" id="reg-error"></div>
                 <div class="success-msg" id="reg-success"></div>
                 
-                <button class="btn" onclick="handleRegister()">Complete Registration</button>
+                <button class="btn" onclick="handleRegisterInit()">Send Verification PIN</button>
                 <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
+            </div>
+        </div>
+
+        <!-- 2.5 PIN VERIFICATION SCREEN -->
+        <div id="verify-screen" class="screen">
+            <div class="header-bar">Verify Email</div>
+            <div class="form-content" style="text-align: center;">
+                <h2>Enter 3-Digit PIN</h2>
+                <p class="subtitle">We sent a verification code to your email inbox.</p>
+                <input type="tel" id="verify-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="error-msg" id="verify-error"></div>
+                <div class="success-msg" id="verify-success"></div>
+
+                <button class="btn" onclick="handleVerifyRegisterSubmit()">Verify & Complete Signup</button>
+                <button class="btn-secondary" onclick="switchScreen('register-screen')">Back</button>
             </div>
         </div>
 
@@ -149,7 +165,7 @@
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Log In to Chats</button>
                 
-                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add Email to Account</button>
+                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Verify Email</button>
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
@@ -161,12 +177,12 @@
             <div class="header-bar">
                 <div style="display: flex; align-items: center;">
                     <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
-                    <div>Link Missing Email</div>
+                    <div>Link & Verify Email</div>
                 </div>
             </div>
             <div class="form-content">
                 <h2>Update Email</h2>
-                <p class="subtitle">Verify your phone to bind your email address</p>
+                <p class="subtitle">Verify your phone to send a new PIN</p>
                 <input type="tel" id="ae-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
                 <div class="email-group">
@@ -178,10 +194,20 @@
                 </div>
 
                 <div class="error-msg" id="ae-error"></div>
-                <div class="success-msg" id="ae-success"></div>
+                <button class="btn" onclick="handleAddEmailInit()">Send PIN to Email</button>
+            </div>
+        </div>
 
-                <button class="btn" onclick="handleAddEmailSubmit()">Save Email Address</button>
-                <button class="btn-secondary" onclick="switchScreen('login-screen')">Back to Sign In</button>
+        <!-- 3.6 VERIFY EMAIL UPDATE SCREEN -->
+        <div id="verify-email-screen" class="screen">
+            <div class="header-bar">Confirm Email PIN</div>
+            <div class="form-content" style="text-align: center;">
+                <h2>Enter 3-Digit PIN</h2>
+                <p class="subtitle">Check your email for the update PIN.</p>
+                <input type="tel" id="ae-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="error-msg" id="ae-verify-error"></div>
+                <button class="btn" onclick="handleVerifyEmailSubmit()">Confirm PIN</button>
             </div>
         </div>
 
@@ -227,6 +253,7 @@
         let currentUser = null;
         let activeRecipient = null;
         let currentRoomId = null;
+        let pendingPhone = null;
         let syncInterval = null;
         let contactsInterval = null;
         let knownMessages = new Set();
@@ -273,7 +300,7 @@
             setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
-        // AGGRESSIVE MOBILE RESUME / WAKE-UP SYNC HANDLERS
+        // FAST WAKE-UP SYNC HANDLERS
         function forceSyncOnWake() {
             if (currentRoomId) pollChatMessages(false);
             if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
@@ -308,7 +335,7 @@
         async function requestNotificationPermission() {
             const statusDiv = document.getElementById('notif-status');
             if (!("Notification" in window)) {
-                statusDiv.innerText = "Error: Browser does not support notifications.";
+                statusDiv.innerText = "Error: Notifications unsupported.";
                 statusDiv.style.color = "#d32f2f";
                 return;
             }
@@ -322,7 +349,7 @@
             }
         }
 
-        async function handleRegister() {
+        async function handleRegisterInit() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const emailUser = document.getElementById('reg-email-user').value.trim();
@@ -330,12 +357,10 @@
             const email = emailUser ? (emailUser + emailDomain) : "";
             
             const errDiv = document.getElementById('reg-error');
-            const succDiv = document.getElementById('reg-success');
             errDiv.innerText = "";
-            succDiv.innerText = "";
 
-            if (!name || !phone) {
-                errDiv.innerText = "Please fill in required fields.";
+            if (!name || !phone || !emailUser) {
+                errDiv.innerText = "Please fill in all fields.";
                 return;
             }
             if (phone.length !== 10) {
@@ -348,19 +373,46 @@
             }
 
             try {
-                const res = await fetch(`${USERS_API}?action=register`, {
+                const res = await fetch(`${USERS_API}?action=register-init`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Registration failed");
+                if (!res.ok) throw new Error(data.error || "Failed to send PIN");
 
-                succDiv.innerText = "Registered successfully! Redirecting...";
-                setTimeout(() => {
-                    document.getElementById('login-phone').value = phone;
-                    switchScreen('login-screen');
-                }, 1200);
+                pendingPhone = phone;
+                document.getElementById('verify-pin-input').value = "";
+                document.getElementById('verify-error').innerText = "";
+                switchScreen('verify-screen');
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleVerifyRegisterSubmit() {
+            const pin = document.getElementById('verify-pin-input').value.trim();
+            const errDiv = document.getElementById('verify-error');
+            errDiv.innerText = "";
+
+            if (pin.length !== 3) {
+                errDiv.innerText = "Please enter the 3-digit PIN.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=verify-register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ phone: pendingPhone, pin })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Verification failed");
+
+                document.getElementById('login-phone').value = pendingPhone;
+                switchScreen('login-screen');
+                document.getElementById('login-error').innerText = "Email verified! You can now log in.";
+                document.getElementById('login-error').style.color = "#2e7d32";
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -370,41 +422,60 @@
             document.getElementById('ae-phone').value = "";
             document.getElementById('ae-email-user').value = "";
             document.getElementById('ae-error').innerText = "";
-            document.getElementById('ae-success').innerText = "";
             switchScreen('add-email-screen');
         }
 
-        async function handleAddEmailSubmit() {
+        async function handleAddEmailInit() {
             const phone = document.getElementById('ae-phone').value.trim();
             const emailUser = document.getElementById('ae-email-user').value.trim();
             const emailDomain = document.getElementById('ae-email-domain').value;
             const errDiv = document.getElementById('ae-error');
-            const succDiv = document.getElementById('ae-success');
             errDiv.innerText = "";
-            succDiv.innerText = "";
 
-            if (!phone || phone.length !== 10) {
-                errDiv.innerText = "Enter a valid 10-digit registered phone number.";
-                return;
-            }
-            if (!emailUser) {
-                errDiv.innerText = "Enter your email username.";
+            if (!phone || phone.length !== 10 || !emailUser) {
+                errDiv.innerText = "Enter valid phone and email.";
                 return;
             }
 
+            pendingPhone = phone;
             const email = emailUser + emailDomain;
 
             try {
-                const res = await fetch(`${USERS_API}?action=update-email`, {
+                const res = await fetch(`${USERS_API}?action=update-email-init`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
                     body: JSON.stringify({ phone, email })
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Failed to update email");
+                if (!res.ok) throw new Error(data.error || "Failed to send PIN");
 
-                succDiv.innerText = "Email successfully linked to your account!";
-                setTimeout(() => { switchScreen('login-screen'); }, 1500);
+                document.getElementById('ae-pin-input').value = "";
+                switchScreen('verify-email-screen');
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleVerifyEmailSubmit() {
+            const pin = document.getElementById('ae-pin-input').value.trim();
+            const errDiv = document.getElementById('ae-verify-error');
+            errDiv.innerText = "";
+
+            if (pin.length !== 3) {
+                errDiv.innerText = "Enter the 3-digit PIN.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=verify-email-update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+                    body: JSON.stringify({ phone: pendingPhone, pin })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "PIN verification failed");
+
+                switchScreen('login-screen');
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -414,6 +485,7 @@
             const phone = document.getElementById('login-phone').value.trim();
             const errDiv = document.getElementById('login-error');
             errDiv.innerText = "";
+            errDiv.style.color = "#d32f2f";
 
             if (!phone || phone.length !== 10) {
                 errDiv.innerText = "Enter a valid 10-digit phone number.";
@@ -424,7 +496,7 @@
                 const res = await fetch(`${USERS_API}?action=login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
-                    body: JSON.stringify({ phone, device_id: getDeviceId() })
+                    body: JSON.stringify({ phone })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Login failed");
@@ -454,7 +526,7 @@
         function startContactsPolling() {
             if (contactsInterval) clearInterval(contactsInterval);
             fetchContacts();
-            contactsInterval = setInterval(fetchContacts, 2500);
+            contactsInterval = setInterval(fetchContacts, 2000);
         }
 
         async function fetchContacts() {
@@ -473,7 +545,7 @@
                     const item = document.createElement('div');
                     item.className = 'contact-item';
                     const emailStatusBadge = c.has_email === 1 
-                        ? `<span class="status-pill active">Email Enabled 🟢</span>` 
+                        ? `<span class="status-pill active">Email Verified 🟢</span>` 
                         : `<span class="status-pill inactive">No Email ⚪</span>`;
 
                     item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
@@ -506,7 +578,8 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 1000);
+            // Ultra-fast 600ms polling for near instant messaging feel
+            syncInterval = setInterval(() => pollChatMessages(false), 600);
         }
 
         function backToContacts() {
@@ -548,9 +621,7 @@
 
                         const msgEl = document.createElement('div');
                         msgEl.className = 'msg';
-                        if (msg.is_emergency === 1) {
-                            msgEl.classList.add('email-alert');
-                        }
+                        if (msg.is_emergency === 1) msgEl.classList.add('email-alert');
 
                         const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         let badgeHTML = msg.is_emergency === 1 ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
