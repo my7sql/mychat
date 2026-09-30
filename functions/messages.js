@@ -33,6 +33,14 @@ export async function onRequest(context) {
         created_at TEXT
       )
     `).run();
+
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS users (
+        phone TEXT PRIMARY KEY,
+        name TEXT,
+        email TEXT
+      )
+    `).run();
   } catch (e) {}
 
   const url = new URL(request.url);
@@ -72,6 +80,11 @@ export async function onRequest(context) {
       await DB.prepare(
         "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
       ).bind(room_id, sender_id, sender_name || "User", "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
+
+      // Automatically register sender or update info if needed
+      await DB.prepare(
+        "INSERT INTO users (phone, name) VALUES (?, ?) ON CONFLICT(phone) DO UPDATE SET name = ?"
+      ).bind(sender_id, sender_name || "User", sender_name || "User").run();
 
       if (send_via_email && recipient_phone) {
         const recipientRes = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
