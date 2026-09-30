@@ -71,24 +71,22 @@ export async function onRequest(context) {
         "INSERT INTO messages (room_id, sender_id, sender_name, recipient_id, message, is_emergency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
       ).bind(room_id, sender_id, sender_name || "User", "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // If "Send via Email" is checked, dispatch email to recipient with anti-spam headers
       if (send_via_email && recipient_phone) {
         const recipientRes = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
         if (recipientRes.results && recipientRes.results.length > 0) {
           const recipient = recipientRes.results[0];
           if (recipient.email && recipient.email.includes("@")) {
             try {
-              // Send via Cloudflare Mailchannels API (optimized to reduce spam flagging)
               await fetch("https://api.mailchannels.net/tx/v1/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   personalizations: [{ to: [{ email: recipient.email, name: recipient.name }] }],
-                  from: { email: "noreply@axtres-messenger.workers.dev", name: "Axtres Emergency Messenger" },
-                  subject: `🚨 Urgent Message from ${sender_name}`,
+                  from: { email: "noreply@axtres-messenger.workers.dev", name: "Axtres Messenger" },
+                  subject: `📧 Secure Message from ${sender_name}`,
                   content: [{
                     type: "text/plain",
-                    value: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to reply.`
+                    value: `Hello ${recipient.name},\n\nYou received a secure message sent via email from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
                   }]
                 })
               });
