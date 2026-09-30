@@ -1,157 +1,124 @@
+// functions/users.js - Complete Backend File for User Authentication & Contacts
+
+const NO_CACHE_HEADERS = {
+  "Content-Type": "application/json",
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  "Pragma": "no-cache",
+  "Expires": "0",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type"
+};
+
 export async function onRequest(context) {
   const { request, env } = context;
-  const DB = env.DB || env.chat;
-  const RESEND_API_KEY = env.RESEND_API_KEY;
+  const url = new URL(request.url);
 
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Cache-Control": "no-store, no-cache, must-revalidate"
-  };
-
-  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (!DB) return new Response(JSON.stringify({ error: "DB missing" }), { status: 500, headers: corsHeaders });
+  // Handle CORS Preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: NO_CACHE_HEADERS });
+  }
 
   try {
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS users (
-        phone TEXT PRIMARY KEY,
-        name TEXT,
-        email TEXT,
-        device_id TEXT,
-        verification_pin TEXT,
-        is_verified INTEGER DEFAULT 0
-      )
-    `).run();
-  } catch (e) {}
+    // GET Request: Fetch Contacts List
+    if (request.method === "GET") {
+      const myPhone = url.searchParams.get("phone");
+      if (!myPhone) {
+        return new Response(JSON.stringify({ error: "Phone number required" }), { status: 400, headers: NO_CACHE_HEADERS });
+      }
 
-  const url = new URL(request.url);
-  const action = url.searchParams.get("action");
+      // Retrieve all other users except the logged-in user
+      const { results } = await env.DB.prepare(
+        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' AND email_verified = 1 THEN 1 ELSE 0 END as has_email FROM users WHERE phone != ?"
+      ).bind(myPhone).all();
 
-  if (request.method === "GET") {
-    const phone = url.searchParams.get("phone");
-    try {
-      const { results } = await DB.prepare("SELECT phone, name, email, is_verified FROM users WHERE phone != ?").bind(phone || "").all();
-      const formatted = (results || []).map(u => ({
-        ...u,
-        has_email: (u.email && u.email.includes("@") && u.is_verified === 1) ? 1 : 0
-      }));
-      return new Response(JSON.stringify(formatted), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+      return new Response(JSON.stringify(results || []), { status: 200, headers: NO_CACHE_HEADERS });
     }
-  }
 
-  if (request.method === "POST") {
-    try {
-      const data = await request.json();
+    // POST Request: Handle Auth & Profile Actions
+    if (request.method === "POST") {
+      const action = url.searchParams.get("action");
+      const body = await request.json();
 
-      // 1. REGISTRATION (Optional Email)
+      // 1. REGISTER
       if (action === "register") {
-        const { name, phone, email, device_id } = data;
-        if (!name || !phone) return new Response(JSON.stringify({ error: "Name and phone required" }), { status: 400, headers: corsHeaders });
-
-        let pin = null;
-        let is_verified = 1; // Auto-verified if no email
-
-        if (email && email.includes("@")) {
-          pin = Math.floor(100 + Math.random() * 900).toString();
-          is_verified = 0; // Requires PIN verification if email provided
+        const { name, phone, email, device_id } = body;
+        if (!name || !phone || phone.length !== 10) {
+          return new Response(JSON.stringify({ error: "Valid name and 10-digit phone required" }), { status: 400, headers: NO_CACHE_HEADERS });
         }
 
-        await DB.prepare(`
-          INSERT INTO users (phone, name, email, device_id, verification_pin, is_verified) 
-          VALUES (?, ?, ?, ?, ?, ?)
-          ON CONFLICT(phone) DO UPDATE SET name = ?, email = ?, device_id = ?, verification_pin = ?, is_verified = ?
-        `).bind(phone, name, email || "", device_id || "", pin, is_verified, name, email || "", device_id || "", pin, is_verified).run();
+        const requires_verification = email && email.length > 0 ? 1 : 0;
+        const pin = requires_verification ? Math.floor(100 + Math.random() * 900).toString() : null;
 
-        // Send Email via Resend if email provided
-        if (email && email.includes("@") && RESEND_API_KEY) {
-          try {
-            await fetch("https://api.resend.com/emails", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${RESEND_API_KEY}` },
-              body: JSON.stringify({
-                from: "Axtres Messenger <onboarding@resend.dev>",
-                to: [email],
-                subject: `🔒 Your Axtres Verification PIN: ${pin}`,
-                text: `Hello ${name},\n\nYour 3-digit verification PIN is: ${pin}`
-              })
-            });
-          } catch (e) {}
-        }
+        await env.DB.prepare(
+          `INSERT INTO users (phone, name, email, email_verified, device_id, pin) 
+           VALUES (?, ?, ?, ?, ?, ?) 
+           ON CONFLICT(phone) DO UPDATE SET name=?, email=?, email_verified=?, device_id=?, pin=?`
+        ).bind(
+          phone, name, email || "", requires_verification ? 0 : 1, device_id || "", pin,
+          name, email || "", requires_verification ? 0 : 1, device_id || "", pin
+        ).run();
 
-        return new Response(JSON.stringify({ success: true, requires_verification: is_verified === 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: true, requires_verification: !!requires_verification, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
       }
 
-      // 2. VERIFY PIN FOR REGISTRATION
+      // 2. VERIFY REGISTER PIN
       if (action === "verify-register") {
-        const { phone, pin } = data;
-        const { results } = await DB.prepare("SELECT verification_pin FROM users WHERE phone = ?").bind(phone).all();
-        if (!results || results.length === 0 || results[0].verification_pin !== pin.trim()) {
-          return new Response(JSON.stringify({ error: "Incorrect 3-digit PIN." }), { status: 400, headers: corsHeaders });
+        const { phone, pin } = body;
+        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+
+        if (!user || user.pin !== pin) {
+          return new Response(JSON.stringify({ error: "Invalid verification PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
         }
-        await DB.prepare("UPDATE users SET is_verified = 1, verification_pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
       }
 
-      // 3. ADD / UPDATE EMAIL LATER (From Sign-In)
-      if (action === "update-email-init") {
-        const { phone, email } = data;
-        if (!phone || !email) return new Response(JSON.stringify({ error: "Phone and email required" }), { status: 400, headers: corsHeaders });
-
-        const check = await DB.prepare("SELECT phone FROM users WHERE phone = ?").bind(phone).all();
-        if (!check.results || check.results.length === 0) {
-          return new Response(JSON.stringify({ error: "Phone number not registered. Please register first." }), { status: 404, headers: corsHeaders });
-        }
-
-        const pin = Math.floor(100 + Math.random() * 900).toString();
-        await DB.prepare("UPDATE users SET email = ?, verification_pin = ?, is_verified = 0 WHERE phone = ?").bind(email, pin, phone).run();
-
-        if (RESEND_API_KEY) {
-          try {
-            await fetch("https://api.resend.com/emails", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${RESEND_API_KEY}` },
-              body: JSON.stringify({
-                from: "Axtres Messenger <onboarding@resend.dev>",
-                to: [email],
-                subject: `🔒 Your Axtres Email Update PIN: ${pin}`,
-                text: `Your 3-digit verification PIN to link this email is: ${pin}`
-              })
-            });
-          } catch (e) {}
-        }
-
-        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-
-      // 4. VERIFY EMAIL UPDATE PIN
-      if (action === "verify-email-update") {
-        const { phone, pin } = data;
-        const { results } = await DB.prepare("SELECT verification_pin FROM users WHERE phone = ?").bind(phone).all();
-        if (!results || results.length === 0 || results[0].verification_pin !== pin.trim()) {
-          return new Response(JSON.stringify({ error: "Incorrect 3-digit PIN." }), { status: 400, headers: corsHeaders });
-        }
-        await DB.prepare("UPDATE users SET is_verified = 1, verification_pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-
-      // 5. LOGIN
+      // 3. LOGIN
       if (action === "login") {
-        const { phone } = data;
-        const { results } = await DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).all();
-        if (!results || results.length === 0) {
-          return new Response(JSON.stringify({ error: "Phone number not found. Please register." }), { status: 404, headers: corsHeaders });
+        const { phone } = body;
+        const user = await env.DB.prepare("SELECT phone, name, email FROM users WHERE phone = ?").bind(phone).first();
+
+        if (!user) {
+          return new Response(JSON.stringify({ error: "User not found. Please register first." }), { status: 404, headers: NO_CACHE_HEADERS });
         }
-        return new Response(JSON.stringify({ success: true, user: results[0] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+        return new Response(JSON.stringify({ success: true, user }), { status: 200, headers: NO_CACHE_HEADERS });
       }
 
-    } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
-    }
-  }
+      // 4. UPDATE EMAIL INITIALIZATION
+      if (action === "update-email-init") {
+        const { phone, email } = body;
+        const pin = Math.floor(100 + Math.random() * 900).toString();
 
-  return new Response(JSON.stringify({ error: "Invalid call" }), { status: 400, headers: corsHeaders });
+        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+        if (!user) {
+          return new Response(JSON.stringify({ error: "Phone number not registered" }), { status: 404, headers: NO_CACHE_HEADERS });
+        }
+
+        await env.DB.prepare("UPDATE users SET email = ?, email_verified = 0, pin = ? WHERE phone = ?").bind(email, pin, phone).run();
+        return new Response(JSON.stringify({ success: true, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
+      }
+
+      // 5. VERIFY EMAIL UPDATE PIN
+      if (action === "verify-email-update") {
+        const { phone, pin } = body;
+        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+
+        if (!user || user.pin !== pin) {
+          return new Response(JSON.stringify({ error: "Invalid PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
+        }
+
+        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
+      }
+
+      return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: NO_CACHE_HEADERS });
+    }
+
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: NO_CACHE_HEADERS });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: NO_CACHE_HEADERS });
+  }
 }
