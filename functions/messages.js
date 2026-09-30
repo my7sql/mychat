@@ -1,4 +1,4 @@
-// functions/users.js - Complete Backend File for User Authentication & Contacts
+// functions/messages.js - Complete Backend File for Messaging & Anti-Cache Sync
 
 const NO_CACHE_HEADERS = {
   "Content-Type": "application/json",
@@ -20,101 +20,46 @@ export async function onRequest(context) {
   }
 
   try {
-    // GET Request: Fetch Contacts List
+    // GET Request: Fetch Chat Room Messages
     if (request.method === "GET") {
-      const myPhone = url.searchParams.get("phone");
-      if (!myPhone) {
-        return new Response(JSON.stringify({ error: "Phone number required" }), { status: 400, headers: NO_CACHE_HEADERS });
+      const roomId = url.searchParams.get("room_id");
+      if (!roomId) {
+        return new Response(JSON.stringify({ error: "room_id parameter is required" }), { status: 400, headers: NO_CACHE_HEADERS });
       }
 
-      // Retrieve all other users except the logged-in user
       const { results } = await env.DB.prepare(
-        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' AND email_verified = 1 THEN 1 ELSE 0 END as has_email FROM users WHERE phone != ?"
-      ).bind(myPhone).all();
+        "SELECT id, room_id, sender_phone, sender_name, recipient_phone, message, is_emergency, created_at FROM messages WHERE room_id = ? ORDER BY id ASC"
+      ).bind(roomId).all();
 
       return new Response(JSON.stringify(results || []), { status: 200, headers: NO_CACHE_HEADERS });
     }
 
-    // POST Request: Handle Auth & Profile Actions
+    // POST Request: Send New Message
     if (request.method === "POST") {
-      const action = url.searchParams.get("action");
       const body = await request.json();
+      const { room_id, sender_id, sender_name, recipient_phone, message, send_via_email, created_at } = body;
 
-      // 1. REGISTER
-      if (action === "register") {
-        const { name, phone, email, device_id } = body;
-        if (!name || !phone || phone.length !== 10) {
-          return new Response(JSON.stringify({ error: "Valid name and 10-digit phone required" }), { status: 400, headers: NO_CACHE_HEADERS });
-        }
-
-        const requires_verification = email && email.length > 0 ? 1 : 0;
-        const pin = requires_verification ? Math.floor(100 + Math.random() * 900).toString() : null;
-
-        await env.DB.prepare(
-          `INSERT INTO users (phone, name, email, email_verified, device_id, pin) 
-           VALUES (?, ?, ?, ?, ?, ?) 
-           ON CONFLICT(phone) DO UPDATE SET name=?, email=?, email_verified=?, device_id=?, pin=?`
-        ).bind(
-          phone, name, email || "", requires_verification ? 0 : 1, device_id || "", pin,
-          name, email || "", requires_verification ? 0 : 1, device_id || "", pin
-        ).run();
-
-        return new Response(JSON.stringify({ success: true, requires_verification: !!requires_verification, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
+      if (!room_id || !sender_id || !message) {
+        return new Response(JSON.stringify({ error: "Missing required message fields" }), { status: 400, headers: NO_CACHE_HEADERS });
       }
 
-      // 2. VERIFY REGISTER PIN
-      if (action === "verify-register") {
-        const { phone, pin } = body;
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+      const isEmergency = send_via_email ? 1 : 0;
+      const timestamp = created_at || new Date().toISOString();
 
-        if (!user || user.pin !== pin) {
-          return new Response(JSON.stringify({ error: "Invalid verification PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
-        }
+      const info = await env.DB.prepare(
+        `INSERT INTO messages (room_id, sender_phone, sender_name, recipient_phone, message, is_emergency, created_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        room_id, 
+        sender_id, 
+        sender_name || "Unknown", 
+        recipient_phone || "", 
+        message, 
+        isEmergency, 
+        timestamp
+      ).run();
 
-        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
-      }
-
-      // 3. LOGIN
-      if (action === "login") {
-        const { phone } = body;
-        const user = await env.DB.prepare("SELECT phone, name, email FROM users WHERE phone = ?").bind(phone).first();
-
-        if (!user) {
-          return new Response(JSON.stringify({ error: "User not found. Please register first." }), { status: 404, headers: NO_CACHE_HEADERS });
-        }
-
-        return new Response(JSON.stringify({ success: true, user }), { status: 200, headers: NO_CACHE_HEADERS });
-      }
-
-      // 4. UPDATE EMAIL INITIALIZATION
-      if (action === "update-email-init") {
-        const { phone, email } = body;
-        const pin = Math.floor(100 + Math.random() * 900).toString();
-
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
-        if (!user) {
-          return new Response(JSON.stringify({ error: "Phone number not registered" }), { status: 404, headers: NO_CACHE_HEADERS });
-        }
-
-        await env.DB.prepare("UPDATE users SET email = ?, email_verified = 0, pin = ? WHERE phone = ?").bind(email, pin, phone).run();
-        return new Response(JSON.stringify({ success: true, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
-      }
-
-      // 5. VERIFY EMAIL UPDATE PIN
-      if (action === "verify-email-update") {
-        const { phone, pin } = body;
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
-
-        if (!user || user.pin !== pin) {
-          return new Response(JSON.stringify({ error: "Invalid PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
-        }
-
-        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
-      }
-
-      return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: NO_CACHE_HEADERS });
+      return new Response(JSON.stringify({ success: true, message_id: info.meta.last_row_id }), { status: 201, headers: NO_CACHE_HEADERS });
     }
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: NO_CACHE_HEADERS });
