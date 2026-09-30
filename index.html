@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
-    <title>Axtres Emergency Secure Messenger</title>
+    <title>Axtres Secure Messenger</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { 
@@ -38,8 +38,12 @@
         .form-content h2 { color: #075e54; font-size: 1.35rem; margin-bottom: 2px; }
         .form-content p.subtitle { color: #666; font-size: 0.82rem; margin-bottom: 2px; }
 
-        input { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
-        input:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+        input, select { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input:focus, select:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+
+        .email-group { display: flex; gap: 6px; }
+        .email-group input { flex: 2; }
+        .email-group select { flex: 1.2; font-size: 0.85rem; }
 
         .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
@@ -65,19 +69,18 @@
         .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
         .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
         
-        /* Emergency Highlight Styles */
-        .msg.emergency-alert { background: #ffdad6 !important; border: 1.5px solid #ba1a1a !important; color: #410002 !important; }
-        .emergency-badge { font-size: 0.65rem; background: #ba1a1a; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
+        .msg.email-alert { background: #e3f2fd !important; border: 1.5px solid #1976d2 !important; color: #0d47a1 !important; }
+        .email-badge { font-size: 0.65rem; background: #1976d2; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
 
         .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
 
-        /* Emergency Panic Mode Toggle Toolbar */
-        .emergency-toolbar { background: #ffebee; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #ffcdd2; font-size: 0.82rem; font-weight: 600; color: #c62828; }
+        /* Send via Email Toggle Toolbar */
+        .email-toolbar { background: #e3f2fd; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #bbdefb; font-size: 0.82rem; font-weight: 600; color: #1565c0; }
         .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #d32f2f; }
+        input:checked + .slider { background-color: #1976d2; }
         input:checked + .slider:before { transform: translateX(20px); }
 
         #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
@@ -93,22 +96,30 @@
     <div class="card">
         <!-- 1. SPLASH -->
         <div id="welcome-screen" class="screen active">
-            <h1>Axtres Emergency</h1>
-            <p>Secure Emergency Messenger</p>
+            <h1>Axtres Messenger</h1>
+            <p>Secure Email & Chat Messenger</p>
             <div class="spinner"></div>
         </div>
 
         <!-- 2. REGISTER SCREEN -->
         <div id="register-screen" class="screen">
-            <div class="header-bar">Emergency Registration</div>
+            <div class="header-bar">Registration</div>
             <div class="form-content">
                 <h2>Sign Up</h2>
-                <p class="subtitle">Notifications are <b>mandatory</b> for emergency alerts.</p>
+                <p class="subtitle">Notifications are required for alerts.</p>
                 <input type="text" id="reg-name" placeholder="Your Full Name">
                 <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <input type="email" id="reg-email" placeholder="Gmail Address (Optional for Email Backup)">
                 
-                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications (Required)</button>
+                <!-- Smart Email Domain Selector -->
+                <div class="email-group">
+                    <input type="text" id="reg-email-user" placeholder="Email username">
+                    <select id="reg-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+                
+                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications</button>
                 <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
 
                 <div class="error-msg" id="reg-error"></div>
@@ -124,7 +135,7 @@
 
         <!-- 3. LOGIN SCREEN -->
         <div id="login-screen" class="screen">
-            <div class="header-bar">Emergency Sign In</div>
+            <div class="header-bar">Sign In</div>
             <div class="form-content">
                 <h2>Welcome Back</h2>
                 <p class="subtitle">Enter your registered 10-digit phone number</p>
@@ -141,10 +152,10 @@
         <!-- 4. CONTACTS LIST SCREEN -->
         <div id="contacts-screen" class="screen">
             <div class="header-bar">
-                <div>Emergency Chats (<span id="my-name-display"></span>)</div>
+                <div>Chats (<span id="my-name-display"></span>)</div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
-            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact for emergency chat:</div>
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact to chat:</div>
             <div id="contacts-container"></div>
         </div>
 
@@ -159,17 +170,17 @@
             </div>
             <div id="messages-container"></div>
             
-            <!-- Manual Emergency Panic Mode Toggle Bar -->
-            <div class="emergency-toolbar">
-                <span>🚨 Emergency Mode (Panic Toggle)</span>
+            <!-- Send via Email Toggle Bar -->
+            <div class="email-toolbar">
+                <span>📧 Send via Email</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="emergency-toggle">
+                    <input type="checkbox" id="email-toggle">
                     <span class="slider"></span>
                 </label>
             </div>
 
             <div id="input-toolbar">
-                <input type="text" id="message-input" placeholder="Type message or emergency help..." onkeypress="checkEnter(event)">
+                <input type="text" id="message-input" placeholder="Type message..." onkeypress="checkEnter(event)">
                 <button id="send-btn" onclick="sendMessage()">&#9658;</button>
             </div>
         </div>
@@ -201,7 +212,7 @@
                 }
                 deferredPrompt = null;
             } else {
-                alert("To install this emergency app, open your browser menu (three dots) and select 'Add to Home Screen' or 'Install App'.");
+                alert("To install this app, open your browser menu and select 'Add to Home Screen' or 'Install App'.");
             }
         }
 
@@ -215,16 +226,9 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('axtres_user');
             getDeviceId();
-            setTimeout(() => {
-                const savedUser = localStorage.getItem('axtres_user');
-                if (savedUser) {
-                    currentUser = JSON.parse(savedUser);
-                    openContactsScreen();
-                } else {
-                    switchScreen('login-screen');
-                }
-            }, 800);
+            setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
         window.addEventListener('focus', () => {
@@ -246,10 +250,10 @@
             }
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
-                statusDiv.innerText = "Status: Notifications Enabled successfully!";
+                statusDiv.innerText = "Status: Notifications Enabled!";
                 statusDiv.style.color = "#2e7d32";
             } else {
-                statusDiv.innerText = "Status: Permission Denied! You must allow notifications.";
+                statusDiv.innerText = "Status: Permission Denied.";
                 statusDiv.style.color = "#d32f2f";
             }
         }
@@ -257,7 +261,10 @@
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
+            const emailUser = document.getElementById('reg-email-user').value.trim();
+            const emailDomain = document.getElementById('reg-email-domain').value;
+            const email = emailUser ? (emailUser + emailDomain) : "";
+            
             const errDiv = document.getElementById('reg-error');
             const succDiv = document.getElementById('reg-success');
             errDiv.innerText = "";
@@ -272,7 +279,7 @@
                 return;
             }
             if (Notification.permission !== "granted") {
-                errDiv.innerText = "Registration Denied: You must click 'Enable Notifications' first!";
+                errDiv.innerText = "You must click 'Enable Notifications' first!";
                 return;
             }
 
@@ -375,7 +382,7 @@
 
             document.getElementById('chat-room-title').innerText = recipient.name;
             switchScreen('chat-screen');
-            document.getElementById('emergency-toggle').checked = false; // Reset toggle
+            document.getElementById('email-toggle').checked = false;
 
             const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
@@ -409,7 +416,7 @@
                         const uniqueKey = `${msg.senderPhone}-${msg.created_at}-${msg.message}`;
                         if (!isInitial && !knownMessages.has(uniqueKey) && msg.senderPhone !== currentUser.phone) {
                             if (Notification.permission === "granted") {
-                                const alertTitle = msg.is_emergency ? `🚨 CRITICAL EMERGENCY from ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
+                                const alertTitle = msg.is_emergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
                                 new Notification(alertTitle, { body: msg.message });
                             }
                         }
@@ -430,19 +437,18 @@
                         const msgEl = document.createElement('div');
                         msgEl.className = 'msg';
                         if (msg.is_emergency === 1) {
-                            msgEl.classList.add('emergency-alert');
+                            msgEl.classList.add('email-alert');
                         }
 
                         const timeStr = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        let emergencyBadgeHTML = msg.is_emergency === 1 ? `<span class="emergency-badge">🚨 EMERGENCY</span><br>` : '';
+                        let badgeHTML = msg.is_emergency === 1 ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
 
                         if (msg.senderPhone === currentUser.phone) {
                             msgEl.classList.add('me');
-                            msgEl.innerHTML = `${emergencyBadgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         } else {
                             msgEl.classList.add('them');
-                            msgEl.innerHTML = `${emergencyBadgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msg.message)}<span class="msg-time">${timeStr}</span>`;
                         }
 
                         messagesDiv.appendChild(msgEl);
@@ -457,12 +463,23 @@
         async function sendMessage() {
             const input = document.getElementById('message-input');
             const text = input.value.trim();
-            const isManualEmergency = document.getElementById('emergency-toggle').checked ? 1 : 0;
+            const sendViaEmail = document.getElementById('email-toggle').checked ? 1 : 0;
             if (!text || !currentRoomId) return;
 
             const timeNow = new Date().toISOString();
             input.value = "";
             input.focus();
+
+            // INSTANT LOCAL RENDER (Fixes lag feel)
+            const messagesDiv = document.getElementById('messages-container');
+            const localMsgEl = document.createElement('div');
+            localMsgEl.className = 'msg me';
+            if (sendViaEmail) localMsgEl.classList.add('email-alert');
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            let badgeHTML = sendViaEmail ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+            localMsgEl.innerHTML = `${badgeHTML}${escapeHtml(text)}<span class="msg-time">${timeStr}</span>`;
+            messagesDiv.appendChild(localMsgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
             try {
                 await fetch(MESSAGES_API, {
@@ -472,12 +489,12 @@
                         room_id: currentRoomId,
                         sender_id: currentUser.phone,
                         sender_name: currentUser.name,
+                        recipient_phone: activeRecipient.phone,
                         message: text,
-                        is_emergency: isManualEmergency,
+                        send_via_email: sendViaEmail,
                         created_at: timeNow
                     })
                 });
-                await pollChatMessages(false);
             } catch (err) {
                 console.error("Failed to send message", err);
             }
