@@ -149,16 +149,14 @@
                 <div class="error-msg" id="login-error"></div>
                 <button class="btn" onclick="handleLogin()">Log In to Chats</button>
                 
-                <!-- Separate Button to Add Email if missing -->
                 <button class="btn-accent" onclick="openAddEmailModal()">➕ Add Email to Account</button>
-
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
             </div>
         </div>
 
-        <!-- 3.5 ADD EMAIL SCREEN (Linked from Sign-In) -->
+        <!-- 3.5 ADD EMAIL SCREEN -->
         <div id="add-email-screen" class="screen">
             <div class="header-bar">
                 <div style="display: flex; align-items: center;">
@@ -187,7 +185,7 @@
             </div>
         </div>
 
-        <!-- 4. CONTACTS LIST SCREEN -->
+        <!-- 4. CONTACTS SCREEN -->
         <div id="contacts-screen" class="screen">
             <div class="header-bar">
                 <div>Chats (<span id="my-name-display"></span>)</div>
@@ -275,24 +273,16 @@
             setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
-        // LOW BATTERY RESILIENCE: Force immediate sync the second the user wakes up their phone screen or app focus
-        window.addEventListener('focus', () => {
+        // AGGRESSIVE MOBILE RESUME / WAKE-UP SYNC HANDLERS
+        function forceSyncOnWake() {
             if (currentRoomId) pollChatMessages(false);
             if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
-        });
+        }
 
+        window.addEventListener('focus', forceSyncOnWake);
+        window.addEventListener('pageshow', (e) => { if (e.persisted) forceSyncOnWake(); });
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible") {
-                if (currentRoomId) pollChatMessages(false);
-                if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
-            }
-        });
-
-        window.addEventListener("pageshow", (event) => {
-            if (event.persisted || document.visibilityState === "visible") {
-                if (currentRoomId) pollChatMessages(false);
-                if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
-            }
+            if (document.visibilityState === "visible") forceSyncOnWake();
         });
 
         function switchScreen(screenId) {
@@ -414,9 +404,7 @@
                 if (!res.ok) throw new Error(data.error || "Failed to update email");
 
                 succDiv.innerText = "Email successfully linked to your account!";
-                setTimeout(() => {
-                    switchScreen('login-screen');
-                }, 1500);
+                setTimeout(() => { switchScreen('login-screen'); }, 1500);
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -442,7 +430,6 @@
                 if (!res.ok) throw new Error(data.error || "Login failed");
 
                 currentUser = data.user;
-                // Persistent localStorage save ensures low battery RAM clearing doesn't log user out
                 localStorage.setItem('axtres_user', JSON.stringify(currentUser));
                 openContactsScreen();
             } catch (err) {
@@ -467,7 +454,7 @@
         function startContactsPolling() {
             if (contactsInterval) clearInterval(contactsInterval);
             fetchContacts();
-            contactsInterval = setInterval(fetchContacts, 2000);
+            contactsInterval = setInterval(fetchContacts, 2500);
         }
 
         async function fetchContacts() {
@@ -519,7 +506,7 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 700);
+            syncInterval = setInterval(() => pollChatMessages(false), 1000);
         }
 
         function backToContacts() {
