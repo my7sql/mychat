@@ -561,50 +561,12 @@
         function startChatPolling() {
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-            syncInterval = setInterval(() => pollChatMessages(false), 800); // Polling every 800ms for instantaneous multi-device feel
+            syncInterval = setInterval(() => pollChatMessages(false), 700); // 700ms polling for instant multi-device message updates
         }
 
         function backToContacts() {
             if (syncInterval) clearInterval(syncInterval);
             openContactsScreen();
-        }
-
-        function appendMessageElement(sender, msgText, createdAt, isEmergency, messageId = null) {
-            const messagesDiv = document.getElementById('messages-container');
-            const cleanSender = String(sender).trim();
-            const cleanMyPhone = String(currentUser.phone).trim();
-            const isMe = cleanSender === cleanMyPhone;
-
-            if (messageId && knownMessageIds.has(messageId)) return;
-            if (messageId) knownMessageIds.add(messageId);
-
-            let timeStr = "";
-            if (createdAt) {
-                const parsedDate = new Date(createdAt);
-                if (!isNaN(parsedDate.getTime())) {
-                    timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-            }
-            if (!timeStr) {
-                timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-
-            const msgEl = document.createElement('div');
-            msgEl.className = 'msg';
-            if (isEmergency === 1 || isEmergency === true) msgEl.classList.add('email-alert');
-
-            let badgeHTML = (isEmergency === 1 || isEmergency === true) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
-
-            if (isMe) {
-                msgEl.classList.add('me');
-                msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-            } else {
-                msgEl.classList.add('them');
-                msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-            }
-
-            messagesDiv.appendChild(msgEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         async function pollChatMessages(isInitial) {
@@ -614,19 +576,28 @@
                 const history = await res.json();
                 
                 if (Array.isArray(history)) {
+                    const messagesDiv = document.getElementById('messages-container');
+                    
                     if (isInitial) {
-                        document.getElementById('messages-container').innerHTML = "";
+                        messagesDiv.innerHTML = "";
                         knownMessageIds.clear();
                     }
+
+                    let shouldScroll = false;
 
                     history.forEach(msg => {
                         const sender = msg.senderPhone || msg.sender_phone || msg.sender_id || msg.sender || msg.phone || "";
                         const msgText = msg.message || msg.text || msg.body || "";
                         const createdAt = msg.created_at || msg.createdAt || msg.timestamp || "";
-                        const uniqueId = msg.id || `${sender}-${createdAt}-${msgText}`;
                         const isEmergency = msg.is_emergency || msg.isEmergency || 0;
                         
+                        // Strict unique signature to prevent any duplicate rendering
+                        const uniqueId = msg.id ? String(msg.id) : `${sender}_${createdAt}_${msgText}`;
+                        
                         if (knownMessageIds.has(uniqueId)) return;
+
+                        knownMessageIds.add(uniqueId);
+                        shouldScroll = true;
 
                         if (!isInitial && String(sender).trim() !== String(currentUser.phone).trim()) {
                             if (Notification.permission === "granted") {
@@ -635,8 +606,41 @@
                             }
                         }
 
-                        appendMessageElement(sender, msgText, createdAt, isEmergency, uniqueId);
+                        let timeStr = "";
+                        if (createdAt) {
+                            const parsedDate = new Date(createdAt);
+                            if (!isNaN(parsedDate.getTime())) {
+                                timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            }
+                        }
+                        if (!timeStr) {
+                            timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+
+                        const cleanSender = String(sender).trim();
+                        const cleanMyPhone = String(currentUser.phone).trim();
+                        const isMe = cleanSender === cleanMyPhone;
+
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'msg';
+                        if (isEmergency === 1 || isEmergency === true) msgEl.classList.add('email-alert');
+
+                        let badgeHTML = (isEmergency === 1 || isEmergency === true) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+
+                        if (isMe) {
+                            msgEl.classList.add('me');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+                        } else {
+                            msgEl.classList.add('them');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+                        }
+
+                        messagesDiv.appendChild(msgEl);
                     });
+
+                    if (shouldScroll || isInitial) {
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
                 }
             } catch (e) {}
         }
@@ -650,10 +654,6 @@
             const timeNow = new Date().toISOString();
             input.value = "";
             input.focus();
-
-            // INSTANT UI INJECTION: Instantly push message to screen without waiting for server poll roundtrip
-            const tempId = `local_${Date.now()}_${Math.random()}`;
-            appendMessageElement(currentUser.phone, text, timeNow, sendViaEmail, tempId);
 
             try {
                 await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
@@ -669,7 +669,7 @@
                         created_at: timeNow
                     })
                 });
-                // Trigger an immediate sync pull after sending
+                // Immediate fetch after sending so it appears instantly without duplication
                 pollChatMessages(false);
             } catch (err) {}
         }
