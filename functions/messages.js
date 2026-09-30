@@ -10,13 +10,8 @@ export async function onRequest(context) {
     "Cache-Control": "no-store, no-cache, must-revalidate"
   };
 
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  if (!DB) {
-    return new Response(JSON.stringify({ error: "Database missing." }), { status: 500, headers: corsHeaders });
-  }
+  if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (!DB) return new Response(JSON.stringify({ error: "DB missing" }), { status: 500, headers: corsHeaders });
 
   try {
     await DB.prepare(`
@@ -41,10 +36,7 @@ export async function onRequest(context) {
     
     try {
       const { results } = await DB.prepare("SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC").bind(room_id).all();
-      const formatted = (results || []).map(m => ({
-        ...m,
-        senderPhone: m.sender_id
-      }));
+      const formatted = (results || []).map(m => ({ ...m, senderPhone: m.sender_id }));
       return new Response(JSON.stringify(formatted), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
@@ -65,12 +57,12 @@ export async function onRequest(context) {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `).bind(room_id, sender_id, sender_name || "User", recipient_phone || "", message, send_via_email ? 1 : 0, created_at || new Date().toISOString()).run();
 
-      // Trigger Email via Resend if toggled on
+      // Dispatch Email via Resend if toggled on
       if (send_via_email && recipient_phone) {
-        const userQuery = await DB.prepare("SELECT email, name FROM users WHERE phone = ?").bind(recipient_phone).all();
+        const userQuery = await DB.prepare("SELECT email, name, is_verified FROM users WHERE phone = ?").bind(recipient_phone).all();
         const recipient = userQuery.results ? userQuery.results[0] : null;
 
-        if (recipient && recipient.email && recipient.email.includes("@")) {
+        if (recipient && recipient.email && recipient.email.includes("@") && recipient.is_verified === 1) {
           if (RESEND_API_KEY) {
             try {
               await fetch("https://api.resend.com/emails", {
@@ -86,9 +78,7 @@ export async function onRequest(context) {
                   text: `Hello ${recipient.name},\n\nYou received a secure message from ${sender_name}:\n\n"${message}"\n\nLog in to your Axtres app to view and reply.`
                 })
               });
-            } catch (mailErr) {
-              console.error("Resend fetch failed:", mailErr);
-            }
+            } catch (mailErr) {}
           }
         }
       }
