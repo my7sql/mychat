@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
-    <title>Axtres Secure Messenger</title>
+    <title>axtres secure messenger</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { 
@@ -103,7 +103,7 @@
 
         <!-- 1. SPLASH -->
         <div id="welcome-screen" class="screen active">
-            <h1>Axtres Messenger</h1>
+            <h1>axtres messenger</h1>
             <p>Secure Email & Chat Messenger</p>
             <div class="spinner"></div>
         </div>
@@ -576,7 +576,6 @@
                 const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { headers: { 'Cache-Control': 'no-cache' } });
                 const history = await res.json();
                 
-                // Debug log to let you see your actual server payload keys in F12 Developer Console
                 if (isInitial) console.log("Axtres API Message Payload Sample:", history);
                 
                 if (Array.isArray(history)) {
@@ -588,13 +587,13 @@
                         knownMessageIds.clear();
                     }
 
+                    // Shared baseline calendar day string so date headers only appear once per calendar day
                     let lastDateLabel = "";
 
                     history.forEach(msg => {
-                        // FIX: Aggressively check every possible key permutation for sender identification
                         const sender = msg.senderPhone || msg.sender_phone || msg.sender_id || msg.sender || msg.phone || "";
                         const msgText = msg.message || msg.text || msg.body || "";
-                        const createdAt = msg.created_at || msg.createdAt || msg.timestamp || new Date().toISOString();
+                        const createdAt = msg.created_at || msg.createdAt || msg.timestamp || "";
                         const uniqueId = msg.id || `${sender}-${createdAt}-${msgText}`;
                         
                         if (knownMessageIds.has(uniqueId)) return;
@@ -602,7 +601,6 @@
                         knownMessageIds.add(uniqueId);
                         hasNewContent = true;
 
-                        // FIX: Clean, strict string comparison trimming whitespace to prevent identity mismatch
                         const cleanSender = String(sender).trim();
                         const cleanMyPhone = String(currentUser.phone).trim();
                         const isMe = cleanSender === cleanMyPhone;
@@ -614,21 +612,21 @@
                             }
                         }
 
-                        // FIX: Bulletproof Date parsing fallback to prevent an isolated date separator on every single message
+                        // Robust fixed date formatting to guarantee single date-separator grouping per day
                         let dateLabel = "Today";
                         let timeStr = "";
-                        try {
+                        
+                        if (createdAt) {
                             const parsedDate = new Date(createdAt);
                             if (!isNaN(parsedDate.getTime())) {
-                                const msgDate = parsedDate.toDateString();
                                 const todayStr = new Date().toDateString();
-                                dateLabel = (msgDate === todayStr) ? "Today" : parsedDate.toLocaleDateString();
+                                const msgDateStr = parsedDate.toDateString();
+                                dateLabel = (msgDateStr === todayStr) ? "Today" : parsedDate.toLocaleDateString();
                                 timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            } else {
-                                timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             }
-                        } catch(err) {
-                            timeStr = "Just now";
+                        }
+                        if (!timeStr) {
+                            timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         }
 
                         if (dateLabel !== lastDateLabel) {
