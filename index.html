@@ -31,6 +31,30 @@
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        #closing-screen {
+            justify-content:center; align-items:center; text-align:center; padding:30px;
+            background:linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e); color:#fff;
+            position:relative; overflow:hidden;
+        }
+        #closing-screen::before {
+            content:""; position:absolute; width:280px; height:280px; border-radius:50%;
+            background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);
+            animation:closingAura 2.1s ease-out both;
+        }
+        .closing-mark { position:relative; z-index:1; font-size:2.45rem; font-weight:850; letter-spacing:-1.2px; animation:closingLogo 1.35s cubic-bezier(.16,1,.3,1) both; }
+        .closing-orbit { position:relative; z-index:1; width:54px; height:54px; margin:22px 0 18px; animation:closingOrbit 1.7s linear infinite; }
+        .closing-orbit::before { content:""; position:absolute; inset:2px; border:2px solid rgba(255,255,255,.18); border-radius:50%; }
+        .closing-orbit span { position:absolute; width:7px; height:7px; border-radius:50%; background:#fff; box-shadow:0 0 12px rgba(255,255,255,.65); }
+        .closing-orbit span:nth-child(1){top:0;left:24px;}
+        .closing-orbit span:nth-child(2){right:2px;bottom:9px;opacity:.75;}
+        .closing-orbit span:nth-child(3){left:2px;bottom:9px;opacity:.45;}
+        .closing-title { position:relative; z-index:1; font-size:1.02rem; font-weight:750; letter-spacing:.2px; animation:closingText 1.05s .15s ease-out both; }
+        .closing-subtitle { position:relative; z-index:1; margin-top:7px; font-size:.78rem; color:rgba(255,255,255,.78); animation:closingText 1.05s .3s ease-out both; }
+        @keyframes closingAura { 0%{opacity:0;transform:scale(.55)} 55%{opacity:1;transform:scale(1)} 100%{opacity:.5;transform:scale(1.12)} }
+        @keyframes closingLogo { 0%{opacity:0;transform:translateY(16px) scale(.94);filter:blur(4px)} 70%{opacity:1;transform:translateY(-1px) scale(1.01);filter:blur(0)} 100%{opacity:1;transform:none} }
+        @keyframes closingOrbit { to { transform:rotate(360deg); } }
+        @keyframes closingText { 0%{opacity:0;transform:translateY(8px)} 100%{opacity:1;transform:none} }
+
         .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
 
@@ -108,7 +132,7 @@
         .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
          .hub-card { background: var(--theme-card); color: var(--theme-text); }
         .yadhu-profile-card {
-            animation: profileCardIn 1.15s cubic-bezier(.16,1,.3,1) both;
+            animation: profileCardIn 1.9s cubic-bezier(.16,1,.3,1) both;
             border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
             position: relative;
             overflow: hidden;
@@ -122,7 +146,7 @@
             inset: -25%;
             background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.08) 42%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.08) 58%, transparent 68%);
             transform: translateX(-125%) rotate(8deg);
-            animation: profileCardShine 2.25s 1.0s cubic-bezier(.2,.7,.2,1) both;
+            animation: profileCardShine 3.8s 1.35s cubic-bezier(.2,.7,.2,1) both;
             pointer-events: none;
             z-index: 0;
         }
@@ -136,7 +160,7 @@
             border-radius: 50%;
             background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
             filter: blur(2px);
-            animation: profileCardGlow 1.4s 0.45s ease-out both;
+            animation: profileCardGlow 2.2s 0.65s cubic-bezier(.16,1,.3,1) both;
             pointer-events: none;
             z-index: 0;
         }
@@ -144,21 +168,22 @@
         .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
         .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
         @keyframes profileCardIn {
-            0% { opacity:0; transform:translateY(28px) scale(.94); filter:blur(4px); }
-            55% { opacity:1; transform:translateY(-3px) scale(1.012); filter:blur(0); }
-            78% { transform:translateY(1px) scale(.998); }
+            0% { opacity:0; transform:translateY(34px) scale(.955); filter:blur(5px); }
+            42% { opacity:.72; transform:translateY(8px) scale(.985); filter:blur(1.5px); }
+            70% { opacity:1; transform:translateY(-2px) scale(1.006); filter:blur(0); }
+            86% { transform:translateY(1px) scale(.999); }
             100% { opacity:1; transform:translateY(0) scale(1); }
         }
         @keyframes profileCardShine {
-            0% { transform:translateX(-125%) rotate(8deg); opacity:0; }
-            12% { opacity:1; }
-            72% { opacity:1; }
-            100% { transform:translateX(125%) rotate(8deg); opacity:0; }
+            0% { transform:translateX(-135%) rotate(8deg); opacity:0; }
+            14% { opacity:.9; }
+            58% { opacity:.95; }
+            100% { transform:translateX(135%) rotate(8deg); opacity:0; }
         }
         @keyframes profileCardGlow {
-            0% { opacity:0; transform:scale(.55); }
-            55% { opacity:1; transform:scale(1); }
-            100% { opacity:.55; transform:scale(1.08); }
+            0% { opacity:0; transform:scale(.45); }
+            52% { opacity:1; transform:scale(1); }
+            100% { opacity:.42; transform:scale(1.12); }
         }
         #contacts-container { background: var(--theme-soft); }
 
@@ -205,17 +230,15 @@
         .settings-close { border:0; background:var(--theme-soft); color:var(--theme-text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.1rem; }
         .theme-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
         .chat-bg-section { margin-top:20px; padding-top:18px; border-top:1px solid rgba(102,119,129,.18); }
-        .chat-bg-title { color:var(--theme-text); font-size:.98rem; font-weight:800; margin-bottom:4px; }
-        .chat-bg-subtitle { color:#667781; font-size:.74rem; line-height:1.4; margin-bottom:12px; }
+        .chat-bg-title { color:var(--theme-text); font-size:1rem; font-weight:850; margin-bottom:11px; letter-spacing:.1px; }
         .chat-bg-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-        .chat-bg-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; transition:.18s ease; }
-        .chat-bg-option.selected { border-color:var(--theme-primary); box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary) 10%,transparent); }
-        .chat-bg-option:hover { transform:translateY(-1px); }
-        .chat-bg-preview { height:58px; border-radius:9px; padding:7px; display:flex; flex-direction:column; justify-content:flex-end; gap:5px; overflow:hidden; }
-        .chat-bg-preview span { display:block; height:11px; border-radius:7px; background:rgba(255,255,255,.9); width:58%; box-shadow:0 1px 2px rgba(0,0,0,.08); }
-        .chat-bg-preview span:last-child { align-self:flex-end; width:48%; background:rgba(220,248,198,.94); }
-        .chat-bg-name { margin-top:6px; font-size:.72rem; font-weight:700; color:var(--theme-text); }
-        .chat-bg-note { margin-top:9px; font-size:.68rem; color:#7a878d; }
+        .chat-bg-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+        .chat-bg-option.selected { border-color:var(--theme-primary); box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary) 14%,transparent), 0 5px 14px rgba(0,0,0,.07); }
+        .chat-bg-option:hover { transform:translateY(-2px); }
+        .chat-bg-preview { height:64px; border-radius:9px; padding:7px; display:flex; flex-direction:column; justify-content:flex-end; gap:5px; overflow:hidden; border:1px solid rgba(0,0,0,.07); position:relative; }
+        .chat-bg-preview span { display:block; height:11px; border-radius:7px; background:rgba(255,255,255,.94); width:58%; box-shadow:0 1px 3px rgba(0,0,0,.12); position:relative; z-index:1; }
+        .chat-bg-preview span:last-child { align-self:flex-end; width:48%; background:rgba(210,242,194,.96); }
+        .chat-bg-name { margin-top:6px; font-size:.73rem; font-weight:750; color:var(--theme-text); }
         .theme-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; }
         .theme-option.selected { border-color:var(--theme-primary); }
         .theme-preview { height:72px; border-radius:10px; overflow:hidden; position:relative; padding:8px; display:flex; flex-direction:column; justify-content:space-between; }
@@ -308,6 +331,14 @@
             <h1>axtres</h1>
             <p>Secure Email & Chat Messenger</p>
             <div class="spinner"></div>
+        </div>
+
+        <!-- EXIT / CLOSING SCREEN -->
+        <div id="closing-screen" class="screen">
+            <div class="closing-mark">axtres</div>
+            <div class="closing-orbit"><span></span><span></span><span></span></div>
+            <div class="closing-title">Closing axtres</div>
+            <div class="closing-subtitle">Thanks for chatting. See you again soon.</div>
         </div>
 
         <!-- 2. REGISTER SCREEN -->
@@ -593,22 +624,20 @@
                 </div>
                 <div id="admin-chat-bg-section" class="chat-bg-section" style="display:none;">
                     <div class="chat-bg-title">Chat Background</div>
-                    <div class="chat-bg-subtitle">Choose a WhatsApp-style background for every conversation. This setting is global and controlled by Admin.</div>
-                    <div class="chat-bg-grid">
-                        <div class="chat-bg-option" data-chat-bg="classic" onclick="selectChatBackground('classic')"><div class="chat-bg-preview" style="background:#efeae2"><span></span><span></span></div><div class="chat-bg-name">Classic</div></div>
-                        <div class="chat-bg-option" data-chat-bg="mint" onclick="selectChatBackground('mint')"><div class="chat-bg-preview" style="background:#e8f3ed"><span></span><span></span></div><div class="chat-bg-name">Mint</div></div>
-                        <div class="chat-bg-option" data-chat-bg="sky" onclick="selectChatBackground('sky')"><div class="chat-bg-preview" style="background:#eaf4f8"><span></span><span></span></div><div class="chat-bg-name">Sky</div></div>
-                        <div class="chat-bg-option" data-chat-bg="sand" onclick="selectChatBackground('sand')"><div class="chat-bg-preview" style="background:#f4eee4"><span></span><span></span></div><div class="chat-bg-name">Sand</div></div>
-                        <div class="chat-bg-option" data-chat-bg="rose" onclick="selectChatBackground('rose')"><div class="chat-bg-preview" style="background:#f7ecee"><span></span><span></span></div><div class="chat-bg-name">Rose</div></div>
-                        <div class="chat-bg-option" data-chat-bg="lavender" onclick="selectChatBackground('lavender')"><div class="chat-bg-preview" style="background:#f0edf7"><span></span><span></span></div><div class="chat-bg-name">Lavender</div></div>
-                        <div class="chat-bg-option" data-chat-bg="slate" onclick="selectChatBackground('slate')"><div class="chat-bg-preview" style="background:#e9edf1"><span></span><span></span></div><div class="chat-bg-name">Slate</div></div>
-                        <div class="chat-bg-option" data-chat-bg="cream" onclick="selectChatBackground('cream')"><div class="chat-bg-preview" style="background:#faf7ef"><span></span><span></span></div><div class="chat-bg-name">Cream</div></div>
-                        <div class="chat-bg-option" data-chat-bg="deep-emerald" onclick="selectChatBackground('deep-emerald')"><div class="chat-bg-preview" style="background:#dcebe7"><span></span><span></span></div><div class="chat-bg-name">Deep Emerald</div></div>
-                        <div class="chat-bg-option" data-chat-bg="navy" onclick="selectChatBackground('navy')"><div class="chat-bg-preview" style="background:#e5e9f1"><span></span><span></span></div><div class="chat-bg-name">Navy</div></div>
-                        <div class="chat-bg-option" data-chat-bg="pearl" onclick="selectChatBackground('pearl')"><div class="chat-bg-preview" style="background:#f3f4f5"><span></span><span></span></div><div class="chat-bg-name">Pearl</div></div>
-                        <div class="chat-bg-option" data-chat-bg="teal" onclick="selectChatBackground('teal')"><div class="chat-bg-preview" style="background:#e1f1f0"><span></span><span></span></div><div class="chat-bg-name">Teal</div></div>
+                                        <div class="chat-bg-grid">
+                        <div class="chat-bg-option" data-chat-bg="classic" onclick="selectChatBackground('classic')"><div class="chat-bg-preview" style="background-color:#efeae2;background-image:radial-gradient(rgba(92,82,69,.18) 1px,transparent 1.1px);background-size:18px 18px"><span></span><span></span></div><div class="chat-bg-name">Classic</div></div>
+                        <div class="chat-bg-option" data-chat-bg="mint" onclick="selectChatBackground('mint')"><div class="chat-bg-preview" style="background-color:#e4f1e9;background-image:radial-gradient(circle at 25% 25%,rgba(7,94,84,.12) 0 1.2px,transparent 1.4px),radial-gradient(circle at 75% 75%,rgba(7,94,84,.08) 0 1px,transparent 1.2px);background-size:28px 28px"><span></span><span></span></div><div class="chat-bg-name">Mint</div></div>
+                        <div class="chat-bg-option" data-chat-bg="sky" onclick="selectChatBackground('sky')"><div class="chat-bg-preview" style="background-color:#e7f2f7;background-image:linear-gradient(30deg,transparent 45%,rgba(22,138,173,.12) 46%,rgba(22,138,173,.12) 54%,transparent 55%);background-size:22px 22px"><span></span><span></span></div><div class="chat-bg-name">Sky</div></div>
+                        <div class="chat-bg-option" data-chat-bg="sand" onclick="selectChatBackground('sand')"><div class="chat-bg-preview" style="background-color:#f3eadc;background-image:linear-gradient(0deg,rgba(126,91,48,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(126,91,48,.07) 1px,transparent 1px);background-size:24px 24px"><span></span><span></span></div><div class="chat-bg-name">Sand</div></div>
+                        <div class="chat-bg-option" data-chat-bg="rose" onclick="selectChatBackground('rose')"><div class="chat-bg-preview" style="background-color:#f5e7ea;background-image:radial-gradient(ellipse at center,rgba(184,72,105,.11) 0 28%,transparent 30%);background-size:28px 24px"><span></span><span></span></div><div class="chat-bg-name">Rose</div></div>
+                        <div class="chat-bg-option" data-chat-bg="lavender" onclick="selectChatBackground('lavender')"><div class="chat-bg-preview" style="background-color:#eee9f6;background-image:linear-gradient(135deg,rgba(99,59,184,.11) 25%,transparent 25%,transparent 50%,rgba(99,59,184,.11) 50%,rgba(99,59,184,.11) 75%,transparent 75%);background-size:24px 24px"><span></span><span></span></div><div class="chat-bg-name">Lavender</div></div>
+                        <div class="chat-bg-option" data-chat-bg="slate" onclick="selectChatBackground('slate')"><div class="chat-bg-preview" style="background-color:#e4e9ee;background-image:linear-gradient(45deg,rgba(55,65,81,.11) 25%,transparent 25%,transparent 75%,rgba(55,65,81,.11) 75%);background-size:20px 20px"><span></span><span></span></div><div class="chat-bg-name">Slate</div></div>
+                        <div class="chat-bg-option" data-chat-bg="cream" onclick="selectChatBackground('cream')"><div class="chat-bg-preview" style="background-color:#faf4e7;background-image:radial-gradient(circle,rgba(128,97,58,.12) 0 1.2px,transparent 1.4px),radial-gradient(circle,rgba(128,97,58,.07) 0 1px,transparent 1.2px);background-size:20px 20px"><span></span><span></span></div><div class="chat-bg-name">Cream</div></div>
+                        <div class="chat-bg-option" data-chat-bg="deep-emerald" onclick="selectChatBackground('deep-emerald')"><div class="chat-bg-preview" style="background-color:#d8e9e4;background-image:radial-gradient(circle at 50% 50%,rgba(7,94,84,.14) 0 2px,transparent 2.4px),linear-gradient(45deg,transparent 47%,rgba(7,94,84,.055) 48%,rgba(7,94,84,.055) 52%,transparent 53%);background-size:24px 24px"><span></span><span></span></div><div class="chat-bg-name">Deep Emerald</div></div>
+                        <div class="chat-bg-option" data-chat-bg="navy" onclick="selectChatBackground('navy')"><div class="chat-bg-preview" style="background-color:#e2e7f0;background-image:linear-gradient(135deg,rgba(38,59,114,.11) 12%,transparent 12%,transparent 50%,rgba(38,59,114,.11) 50%,rgba(38,59,114,.11) 62%,transparent 62%);background-size:26px 26px"><span></span><span></span></div><div class="chat-bg-name">Navy</div></div>
+                        <div class="chat-bg-option" data-chat-bg="pearl" onclick="selectChatBackground('pearl')"><div class="chat-bg-preview" style="background-color:#f1f3f5;background-image:radial-gradient(circle at 20% 30%,rgba(55,65,81,.10) 0 1px,transparent 1.4px),radial-gradient(circle at 80% 70%,rgba(55,65,81,.08) 0 1px,transparent 1.4px);background-size:30px 30px"><span></span><span></span></div><div class="chat-bg-name">Pearl</div></div>
+                        <div class="chat-bg-option" data-chat-bg="teal" onclick="selectChatBackground('teal')"><div class="chat-bg-preview" style="background-color:#dcefee;background-image:linear-gradient(60deg,transparent 42%,rgba(7,94,84,.11) 43%,rgba(7,94,84,.11) 57%,transparent 58%),linear-gradient(-60deg,transparent 42%,rgba(7,94,84,.07) 43%,rgba(7,94,84,.07) 57%,transparent 58%);background-size:26px 22px"><span></span><span></span></div><div class="chat-bg-name">Teal</div></div>
                     </div>
-                    <div class="chat-bg-note">Message bubbles stay high-contrast so the background never interferes with reading.</div>
                 </div>
             </div>
         </div>
@@ -685,18 +714,18 @@
         };
 
         const CHAT_BACKGROUNDS = {
-            classic: { color:'#efeae2', image:'radial-gradient(#d1ccc0 0.75px, transparent 0.75px)', size:'15px 15px' },
-            mint: { color:'#e8f3ed', image:'none', size:'auto' },
-            sky: { color:'#eaf4f8', image:'none', size:'auto' },
-            sand: { color:'#f4eee4', image:'none', size:'auto' },
-            rose: { color:'#f7ecee', image:'none', size:'auto' },
-            lavender: { color:'#f0edf7', image:'none', size:'auto' },
-            slate: { color:'#e9edf1', image:'none', size:'auto' },
-            cream: { color:'#faf7ef', image:'none', size:'auto' },
-            'deep-emerald': { color:'#dcebe7', image:'radial-gradient(rgba(7,94,84,.08) 0.7px, transparent 0.7px)', size:'14px 14px' },
-            navy: { color:'#e5e9f1', image:'none', size:'auto' },
-            pearl: { color:'#f3f4f5', image:'none', size:'auto' },
-            teal: { color:'#e1f1f0', image:'linear-gradient(135deg,rgba(7,94,84,.025) 25%,transparent 25%,transparent 50%,rgba(7,94,84,.025) 50%,rgba(7,94,84,.025) 75%,transparent 75%)', size:'18px 18px' }
+            classic: { color:'#efeae2', image:'radial-gradient(rgba(92,82,69,.18) 1px, transparent 1.1px)', size:'18px 18px' },
+            mint: { color:'#e4f1e9', image:'radial-gradient(circle at 25% 25%, rgba(7,94,84,.12) 0 1.2px, transparent 1.4px), radial-gradient(circle at 75% 75%, rgba(7,94,84,.08) 0 1px, transparent 1.2px)', size:'28px 28px' },
+            sky: { color:'#e7f2f7', image:'linear-gradient(30deg, transparent 45%, rgba(22,138,173,.10) 46%, rgba(22,138,173,.10) 54%, transparent 55%)', size:'22px 22px' },
+            sand: { color:'#f3eadc', image:'linear-gradient(0deg, rgba(126,91,48,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(126,91,48,.06) 1px, transparent 1px)', size:'24px 24px' },
+            rose: { color:'#f5e7ea', image:'radial-gradient(ellipse at center, rgba(184,72,105,.10) 0 28%, transparent 30%)', size:'28px 24px' },
+            lavender: { color:'#eee9f6', image:'linear-gradient(135deg, rgba(99,59,184,.10) 25%, transparent 25%, transparent 50%, rgba(99,59,184,.10) 50%, rgba(99,59,184,.10) 75%, transparent 75%)', size:'24px 24px' },
+            slate: { color:'#e4e9ee', image:'linear-gradient(45deg, rgba(55,65,81,.10) 25%, transparent 25%, transparent 75%, rgba(55,65,81,.10) 75%)', size:'20px 20px' },
+            cream: { color:'#faf4e7', image:'radial-gradient(circle, rgba(128,97,58,.12) 0 1.2px, transparent 1.4px), radial-gradient(circle, rgba(128,97,58,.07) 0 1px, transparent 1.2px)', size:'20px 20px, 20px 20px', position:'0 0, 10px 10px' },
+            'deep-emerald': { color:'#d8e9e4', image:'radial-gradient(circle at 50% 50%, rgba(7,94,84,.14) 0 2px, transparent 2.4px), linear-gradient(45deg, transparent 47%, rgba(7,94,84,.055) 48%, rgba(7,94,84,.055) 52%, transparent 53%)', size:'24px 24px' },
+            navy: { color:'#e2e7f0', image:'linear-gradient(135deg, rgba(38,59,114,.10) 12%, transparent 12%, transparent 50%, rgba(38,59,114,.10) 50%, rgba(38,59,114,.10) 62%, transparent 62%)', size:'26px 26px' },
+            pearl: { color:'#f1f3f5', image:'radial-gradient(circle at 20% 30%, rgba(55,65,81,.09) 0 1px, transparent 1.4px), radial-gradient(circle at 80% 70%, rgba(55,65,81,.07) 0 1px, transparent 1.4px)', size:'30px 30px' },
+            teal: { color:'#dcefee', image:'linear-gradient(60deg, transparent 42%, rgba(7,94,84,.10) 43%, rgba(7,94,84,.10) 57%, transparent 58%), linear-gradient(-60deg, transparent 42%, rgba(7,94,84,.06) 43%, rgba(7,94,84,.06) 57%, transparent 58%)', size:'26px 22px' }
         };
 
         let adminSettingsMode = false;
@@ -855,29 +884,35 @@
                 }
             }
 
-            // Always show the axtres loading page first.
-            switchScreen('welcome-screen');
+            // Build a small in-app browser history. The sentinel lets the phone
+            // back button close axtres gracefully instead of closing the web page immediately.
+            history.replaceState({ axtres: true, sentinel: true }, '', location.href);
+            history.pushState({ axtres: true, screen: 'welcome-screen' }, '', location.href);
+            axtresHistoryReady = true;
+
+            switchScreen('welcome-screen', { silent: true });
             loadDefaultTheme();
 
             setTimeout(() => {
+                // Keep Sign In as the first return point even when a saved session
+                // automatically opens the user's hub after the splash.
+                switchScreen('login-screen', { replace: true });
                 if (currentUser && currentUser.phone && currentUser.name) {
-                    navigateAfterAuth();
-                } else {
-                    switchScreen('login-screen');
+                    navigateAfterAuth(false);
                 }
             }, 1700);
         });
 
-        function navigateAfterAuth() {
+        function navigateAfterAuth(replaceHistory = false) {
             if (String(currentUser.phone).trim() === YADHU_PHONE) {
-                openContactsScreen();
+                openContactsScreen(replaceHistory);
             } else {
-                openHubScreen();
+                openHubScreen(replaceHistory);
             }
         }
 
-        function openHubScreen() {
-            switchScreen('hub-screen');
+        function openHubScreen(replaceHistory = false) {
+            switchScreen('hub-screen', replaceHistory ? { replace:true } : {});
             document.getElementById('hub-welcome-text').innerText = `Welcome, ${currentUser.name}!`;
             document.getElementById('hub-user-name').innerText = 'Yadhu Krishna';
             document.getElementById('hub-user-phone').innerText = '+91 70257 07720';
@@ -957,10 +992,48 @@
             if (document.visibilityState === "visible") forceSyncOnWake();
         });
 
-        function switchScreen(screenId) {
+        let axtresHistoryReady = false;
+        let axtresClosing = false;
+
+        function switchScreen(screenId, options = {}) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+
+            if (!options.silent && axtresHistoryReady && screenId !== 'welcome-screen' && screenId !== 'closing-screen') {
+                const state = { axtres: true, screen: screenId };
+                if (options.replace) history.replaceState(state, '', location.href);
+                else history.pushState(state, '', location.href);
+            }
         }
+
+        function showClosingScreen() {
+            if (axtresClosing) return;
+            axtresClosing = true;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('closing-screen').classList.add('active');
+
+            // Give the closing animation the same deliberate 1.7s timing as the splash.
+            setTimeout(() => {
+                try { window.close(); } catch (e) {}
+                // Normal browser tabs usually block window.close(). In that case,
+                // move back to the page that opened axtres rather than leaving a dead history state.
+                try { history.back(); } catch (e) {}
+            }, 1700);
+        }
+
+        window.addEventListener('popstate', (event) => {
+            if (axtresClosing) return;
+
+            const state = event.state;
+            if (state && state.axtres && state.screen) {
+                switchScreen(state.screen, { silent: true });
+                return;
+            }
+
+            // No previous axtres screen remains: show the professional exit page.
+            showClosingScreen();
+        });
 
         function interceptEmailInput(e) {
             const input = e.target;
@@ -1293,8 +1366,8 @@
             return String(phone || '');
         }
 
-        async function openContactsScreen() {
-            switchScreen('contacts-screen');
+        async function openContactsScreen(replaceHistory = false) {
+            switchScreen('contacts-screen', replaceHistory ? { replace:true } : {});
             startContactsPolling();
         }
 
