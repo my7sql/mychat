@@ -11,13 +11,20 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
         }
 
         :root {
             --theme-primary: #075e54;
             --theme-secondary: #128c7e;
-            --theme-page: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364);
+            --theme-page: linear-gradient(
+                135deg,
+                #063f38,
+                #075e54,
+                #0b806f,
+                #128c7e
+            );
             --theme-soft: #f0f2f5;
             --theme-card: #ffffff;
             --theme-text: #111b21;
@@ -75,14 +82,18 @@
             display: flex;
         }
 
-        /* LOADING PAGE */
+        /* LOADING */
 
         #welcome-screen {
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 30px;
-            background: linear-gradient(135deg, #075e54, #128c7e);
+            background: linear-gradient(
+                135deg,
+                #075e54,
+                #128c7e
+            );
             color: white;
         }
 
@@ -92,11 +103,6 @@
             font-weight: 800;
         }
 
-        #welcome-screen p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
         .spinner {
             width: 40px;
             height: 40px;
@@ -104,7 +110,7 @@
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-top: 20px;
+            margin-top: 18px;
         }
 
         @keyframes spin {
@@ -125,7 +131,6 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
         }
 
         .header-bar span {
@@ -174,7 +179,8 @@
         select:focus {
             border-color: var(--theme-primary);
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
+            box-shadow:
+                0 0 0 3px rgba(7, 94, 84, 0.1);
         }
 
         .email-group {
@@ -190,6 +196,8 @@
             flex: 1.2;
             font-size: 0.85rem;
         }
+
+        /* BUTTONS */
 
         .btn {
             background: var(--theme-primary);
@@ -217,6 +225,10 @@
             font-weight: 600;
         }
 
+        .btn-secondary:hover {
+            background: #183d63;
+        }
+
         .btn-accent {
             background: #d84315;
             color: white;
@@ -228,8 +240,16 @@
             font-weight: 600;
         }
 
+        .btn-accent:hover {
+            background: #bf360c;
+        }
+
         .btn-install {
-            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            background: linear-gradient(
+                135deg,
+                #ff9966,
+                #ff5e62
+            );
             color: white;
             border: none;
             padding: 9px;
@@ -241,28 +261,8 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-        }
-
-        .switch-text {
-            text-align: center;
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .switch-text a {
-            color: var(--theme-primary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .error-msg {
-            color: #d32f2f;
-            font-size: 0.78rem;
-            text-align: center;
-            min-height: 16px;
+            box-shadow:
+                0 4px 10px rgba(255, 94, 98, 0.3);
         }
 
         /* HUB */
@@ -271,12 +271,13 @@
             font-size: 1.65rem;
             font-weight: 800;
             color: var(--theme-primary);
-            margin-bottom: 18px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
         .hub-card {
-            background: linear-gradient(145deg, #ffffff, #f5f8fb);
+            background: var(--theme-card);
+            color: var(--theme-text);
             border: 1px solid rgba(7, 94, 84, 0.14);
             border-radius: 16px;
             padding: 22px 20px;
@@ -286,14 +287,36 @@
             text-align: center;
             gap: 8px;
             margin-bottom: 16px;
-            box-shadow: 0 10px 28px rgba(15, 32, 39, 0.08);
+            box-shadow:
+                0 10px 28px rgba(15, 32, 39, 0.08);
+        }
+
+        .yadhu-profile-card {
+            animation: profileCardIn 0.55s ease-out both;
+            border-color: color-mix(
+                in srgb,
+                var(--theme-primary) 18%,
+                transparent
+            );
+        }
+
+        @keyframes profileCardIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .hub-user-name {
             font-size: 1.35rem;
-            font-weight: 750;
-            color: #111b21;
-            margin-bottom: 2px;
+            font-weight: 800;
+            color: var(--theme-text);
+            letter-spacing: 0.2px;
         }
 
         .hub-user-phone {
@@ -329,12 +352,9 @@
             gap: 8px;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-            transition: 0.2s;
-        }
-
-        .btn-hub:hover {
-            transform: translateY(-1px);
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.06);
+            transition: background 0.2s;
         }
 
         .btn-hub-primary {
@@ -352,305 +372,30 @@
             border: 1px solid #ccc;
         }
 
-        .settings-footer {
-            margin-top: auto;
-            padding-top: 20px;
-            width: 100%;
-        }
-
-        .settings-button {
-            width: 100%;
-            height: 43px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            background: var(--theme-card);
-            color: var(--theme-primary);
-            border-radius: 11px;
-            font-size: 0.84rem;
-            font-weight: 650;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        /* DIRECTORY */
-
-        #contacts-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: var(--theme-soft);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .contact-item {
-            background: var(--theme-card);
-            padding: 14px 18px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: background 0.2s;
-        }
-
-        .contact-item:hover {
-            background: var(--theme-soft);
-        }
-
-        .contact-name {
-            font-weight: 600;
-            color: var(--theme-text);
-            font-size: 1.05rem;
-        }
-
-        .contact-phone {
-            font-size: 0.85rem;
-            color: #667781;
-        }
-
-        .status-pill {
-            font-size: 0.72rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .status-pill.active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-pill.inactive {
-            background: #f5f5f5;
-            color: #757575;
-        }
-
-        /* DIRECTORY PIN */
-
-        #directory-pin-screen {
-            position: absolute;
-            inset: 0;
-            background: rgba(7, 24, 32, 0.48);
-            backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            z-index: 50;
-        }
-
-        .directory-pin-card {
-            width: 100%;
-            max-width: 300px;
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 24px 22px;
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
-            text-align: center;
-        }
-
-        .directory-pin-card h2 {
-            color: #075e54;
-            font-size: 1.25rem;
-            margin-bottom: 18px;
-        }
-
-        .directory-pin-card input {
-            width: 100%;
-            text-align: center;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            background: #f8fafb;
-        }
-
-        .directory-pin-card .error-msg {
-            min-height: 18px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-
-        /* DIRECTORY RETURN */
-
-        .directory-return {
-            margin: 10px 15px 0;
-            align-self: flex-start;
-            border: none;
-            background: transparent;
-            color: var(--theme-primary);
-            font-size: 0.82rem;
-            font-weight: 650;
-            cursor: pointer;
-            padding: 4px 0;
-        }
-
-        /* CHAT */
-
-        #messages-container {
-            flex: 1;
-            padding: 15px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: #efeae2;
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px);
-            background-size: 15px 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .msg {
-            max-width: 78%;
-            padding: 8px 12px 6px;
-            border-radius: 7.5px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
-        }
-
-        .msg.me {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #111b21;
-            border-top-right-radius: 0;
-        }
-
-        .msg.them {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #111b21;
-            border-top-left-radius: 0;
-        }
-
-        .msg.email-alert {
-            background: #e3f2fd !important;
-            border: 1.5px solid #1976d2 !important;
-            color: #0d47a1 !important;
-        }
-
-        .email-badge {
-            font-size: 0.65rem;
-            background: #1976d2;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 3px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            color: #667781;
-            float: right;
-            margin-left: 12px;
-            margin-top: 4px;
-        }
-
-        .email-toolbar {
-            background: #e3f2fd;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid #bbdefb;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1565c0;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 42px;
-            height: 22px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .3s;
-            border-radius: 22px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #1976d2;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        #input-toolbar {
-            display: flex;
-            padding: 10px 15px;
-            background: #f0f2f5;
-            gap: 10px;
-            align-items: center;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        #message-input {
-            flex: 1;
-            border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        #send-btn {
-            background: var(--theme-primary);
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .chat-back {
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            color: white;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-right: 9px;
-            padding: 5px 7px;
+        .btn-hub-secondary:hover {
+            background: #e4e6eb;
         }
 
         /* SETTINGS */
+
+        .settings-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .settings-button {
+            border: 1px solid rgba(7, 94, 84, 0.16);
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--theme-primary);
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 0.84rem;
+            font-weight: 650;
+            cursor: pointer;
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.06);
+        }
 
         .settings-overlay {
             position: absolute;
@@ -674,7 +419,8 @@
             background: var(--theme-card);
             border-radius: 22px 22px 0 0;
             padding: 22px 18px 24px;
-            box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.22);
+            box-shadow:
+                0 -15px 50px rgba(0, 0, 0, 0.22);
         }
 
         .settings-head {
@@ -752,6 +498,307 @@
             color: var(--theme-text);
         }
 
+        /* DIRECTORY PIN */
+
+        .directory-pin-card {
+            width: 100%;
+            max-width: 300px;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 22px;
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, 0.22);
+            text-align: center;
+        }
+
+        .directory-pin-card h2 {
+            color: var(--theme-primary);
+            font-size: 1.25rem;
+            margin-bottom: 18px;
+        }
+
+        .directory-pin-card input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            background: #f8fafb;
+        }
+
+        .directory-pin-card .error-msg {
+            min-height: 18px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* DIRECTORY */
+
+        #contacts-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: var(--theme-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .directory-return {
+            margin: 10px 15px 0;
+            width: calc(100% - 30px);
+            height: 42px;
+            border: 1px solid #d9dfe3;
+            border-radius: 10px;
+            background: var(--theme-card);
+            color: var(--theme-primary);
+            font-weight: 650;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .directory-return:hover {
+            background: #f5f7f8;
+        }
+
+        .directory-return:active {
+            transform: scale(0.98);
+        }
+
+        .contact-item {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: background 0.2s;
+        }
+
+        .contact-item:hover {
+            background: #f5f6f6;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            color: #111b21;
+            font-size: 1.05rem;
+        }
+
+        .contact-phone {
+            font-size: 0.85rem;
+            color: #667781;
+        }
+
+        .status-pill {
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .status-pill.active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-pill.inactive {
+            background: #f5f5f5;
+            color: #757575;
+        }
+
+        /* CHAT */
+
+        #messages-container {
+            flex: 1;
+            padding: 15px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #efeae2;
+            background-image:
+                radial-gradient(
+                    #d1ccc0 0.75px,
+                    transparent 0.75px
+                );
+            background-size: 15px 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .msg {
+            max-width: 78%;
+            padding: 8px 12px 6px 12px;
+            border-radius: 7.5px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            box-shadow:
+                0 1px 0.5px rgba(0, 0, 0, 0.13);
+        }
+
+        .msg.me {
+            background: #dcf8c6;
+            align-self: flex-end;
+            color: #111b21;
+            border-top-right-radius: 0;
+        }
+
+        .msg.them {
+            background: #ffffff;
+            align-self: flex-start;
+            color: #111b21;
+            border-top-left-radius: 0;
+        }
+
+        .msg.email-alert {
+            background: #e3f2fd !important;
+            border: 1.5px solid #1976d2 !important;
+            color: #0d47a1 !important;
+        }
+
+        .email-badge {
+            font-size: 0.65rem;
+            background: #1976d2;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        .msg-time {
+            font-size: 0.65rem;
+            color: #667781;
+            float: right;
+            margin-left: 12px;
+            margin-top: 4px;
+        }
+
+        .email-toolbar {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #bbdefb;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #1565c0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 22px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1976d2;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        #input-toolbar {
+            display: flex;
+            padding: 10px 15px;
+            background: #f0f2f5;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        #message-input {
+            flex: 1;
+            border-radius: 20px;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        #send-btn {
+            background: var(--theme-primary);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .back-arrow {
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        .error-msg {
+            color: #d32f2f;
+            font-size: 0.78rem;
+            text-align: center;
+        }
+
+        .switch-text {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .switch-text a {
+            color: var(--theme-primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch-text a:hover {
+            text-decoration: underline;
+        }
+
         .notice-toast {
             position: absolute;
             top: 10px;
@@ -764,7 +811,8 @@
             font-size: 0.78rem;
             z-index: 99;
             display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -777,21 +825,18 @@
         Email extension is handled by the dropdown menu.
     </div>
 
-    <!-- 1. LOADING PAGE -->
+    <!-- LOADING SCREEN -->
 
     <div id="welcome-screen" class="screen active">
         <h1>axtres</h1>
-        <p>Secure Email & Chat Messenger</p>
+        <p>Secure Email &amp; Chat Messenger</p>
         <div class="spinner"></div>
     </div>
 
-    <!-- 2. REGISTER -->
+    <!-- REGISTER -->
 
     <div id="register-screen" class="screen">
-
-        <div class="header-bar">
-            Registration
-        </div>
+        <div class="header-bar">Registration</div>
 
         <div class="form-content">
 
@@ -813,7 +858,7 @@
                 placeholder="10-digit Phone Number"
                 maxlength="10"
                 inputmode="numeric"
-                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             >
 
             <div class="email-group">
@@ -829,7 +874,6 @@
                     <option value="@gmail.com" selected>
                         @gmail.com
                     </option>
-
                     <option value="@outlook.com">
                         @outlook.com
                     </option>
@@ -851,15 +895,9 @@
                 Status: Not Enabled
             </div>
 
-            <div
-                class="error-msg"
-                id="reg-error"
-            ></div>
+            <div class="error-msg" id="reg-error"></div>
 
-            <button
-                class="btn"
-                onclick="handleRegister()"
-            >
+            <button class="btn" onclick="handleRegister()">
                 Complete Sign Up
             </button>
 
@@ -881,7 +919,7 @@
         </div>
     </div>
 
-    <!-- 2.5 VERIFY REGISTER -->
+    <!-- REGISTER PIN -->
 
     <div id="verify-screen" class="screen">
 
@@ -894,9 +932,7 @@
             style="text-align:center;"
         >
 
-            <h2>
-                Enter 3-Digit PIN
-            </h2>
+            <h2>Enter 3-Digit PIN</h2>
 
             <p class="subtitle">
                 Check your email inbox for the verification code.
@@ -927,7 +963,7 @@
         </div>
     </div>
 
-    <!-- 3. LOGIN -->
+    <!-- LOGIN -->
 
     <div id="login-screen" class="screen">
 
@@ -937,9 +973,7 @@
 
         <div class="form-content">
 
-            <h2>
-                Welcome Back
-            </h2>
+            <h2>Welcome Back</h2>
 
             <input
                 type="tel"
@@ -947,7 +981,7 @@
                 placeholder="Enter your registered phone number"
                 maxlength="10"
                 inputmode="numeric"
-                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             >
 
             <div
@@ -987,7 +1021,7 @@
         </div>
     </div>
 
-    <!-- 3.5 ADD EMAIL -->
+    <!-- ADD EMAIL -->
 
     <div id="add-email-screen" class="screen">
 
@@ -1002,9 +1036,7 @@
                     &#8592;
                 </span>
 
-                <div>
-                    Link Email
-                </div>
+                <div>Link Email</div>
 
             </div>
 
@@ -1012,9 +1044,7 @@
 
         <div class="form-content">
 
-            <h2>
-                Update Email
-            </h2>
+            <h2>Update Email</h2>
 
             <p class="subtitle">
                 Enter phone and new email
@@ -1026,7 +1056,7 @@
                 placeholder="10-digit Phone Number"
                 maxlength="10"
                 inputmode="numeric"
-                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             >
 
             <div class="email-group">
@@ -1040,10 +1070,7 @@
 
                 <select id="ae-email-domain">
 
-                    <option
-                        value="@gmail.com"
-                        selected
-                    >
+                    <option value="@gmail.com" selected>
                         @gmail.com
                     </option>
 
@@ -1070,7 +1097,7 @@
         </div>
     </div>
 
-    <!-- 3.6 VERIFY EMAIL -->
+    <!-- VERIFY UPDATED EMAIL -->
 
     <div id="verify-email-screen" class="screen">
 
@@ -1083,9 +1110,7 @@
             style="text-align:center;"
         >
 
-            <h2>
-                Enter 3-Digit PIN
-            </h2>
+            <h2>Enter 3-Digit PIN</h2>
 
             <p class="subtitle">
                 Auto-submits when 3 digits are entered.
@@ -1116,15 +1141,13 @@
         </div>
     </div>
 
-    <!-- 4. YOUR HUB -->
+    <!-- HUB -->
 
     <div id="hub-screen" class="screen">
 
         <div class="header-bar">
 
-            <div>
-                axtres
-            </div>
+            <div>axtres</div>
 
             <span onclick="handleLogout()">
                 Sign Out
@@ -1141,37 +1164,26 @@
                 class="hub-welcome"
                 id="hub-welcome-text"
             >
-                Welcome, User!
+                Welcome!
             </div>
 
-            <!-- THIS CARD IS FOR THE LOGGED-IN USER -->
+            <!-- YADHU CARD -->
 
-            <div class="hub-card">
+            <div class="hub-card yadhu-profile-card">
 
-                <div
-                    class="hub-user-name"
-                    id="hub-user-name"
-                >
-                    Your Name
+                <div class="hub-user-name">
+                    Yadhu Krishna
                 </div>
 
-                <div
-                    class="hub-user-phone"
-                    id="hub-user-phone"
-                >
-                    Your Phone
+                <div class="hub-user-phone">
+                    7025707720
                 </div>
 
-                <div
-                    class="hub-user-email"
-                    id="hub-user-email"
-                >
-                    Your Email
+                <div class="hub-user-email">
+                    yadhukrishnabp777@gmail.com
                 </div>
 
             </div>
-
-            <!-- YADHU ACTION -->
 
             <div class="hub-actions">
 
@@ -1190,8 +1202,6 @@
                 </button>
 
             </div>
-
-            <!-- SETTINGS -->
 
             <div class="settings-footer">
 
@@ -1213,6 +1223,16 @@
         id="directory-pin-screen"
         class="screen"
         onclick="handleDirectoryBackdrop(event)"
+        style="
+            position:absolute;
+            inset:0;
+            background:rgba(7,24,32,0.48);
+            backdrop-filter:blur(8px);
+            align-items:center;
+            justify-content:center;
+            padding:24px;
+            z-index:50;
+        "
     >
 
         <div
@@ -1220,9 +1240,7 @@
             onclick="event.stopPropagation()"
         >
 
-            <h2>
-                Directory
-            </h2>
+            <h2>Directory</h2>
 
             <input
                 type="tel"
@@ -1231,6 +1249,7 @@
                 inputmode="numeric"
                 autocomplete="off"
                 oninput="handleDirectoryPinInput(event)"
+                autofocus
             >
 
             <div
@@ -1242,12 +1261,9 @@
 
     </div>
 
-    <!-- 5. DIRECTORY -->
+    <!-- DIRECTORY -->
 
-    <div
-        id="contacts-screen"
-        class="screen"
-    >
+    <div id="contacts-screen" class="screen">
 
         <div class="header-bar">
 
@@ -1273,6 +1289,8 @@
         >
             Select a contact to start chatting:
         </div>
+
+        <!-- RETURN BUTTON -->
 
         <button
             class="directory-return"
@@ -1300,9 +1318,7 @@
 
             <div class="settings-head">
 
-                <h2>
-                    Appearance
-                </h2>
+                <h2>Appearance</h2>
 
                 <button
                     class="settings-close"
@@ -1320,19 +1336,14 @@
                     data-theme="emerald"
                     onclick="selectTheme('emerald')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#075e54,#128c7e);"
+                        style="background:linear-gradient(135deg,#075e54,#128c7e)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Emerald
-                    </div>
-
+                    <div class="preview-name">Emerald</div>
                 </div>
 
                 <div
@@ -1340,19 +1351,14 @@
                     data-theme="midnight"
                     onclick="selectTheme('midnight')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#070b16,#3f5fa8);"
+                        style="background:linear-gradient(135deg,#0b1020,#1d2745)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Midnight
-                    </div>
-
+                    <div class="preview-name">Midnight</div>
                 </div>
 
                 <div
@@ -1360,19 +1366,14 @@
                     data-theme="ocean"
                     onclick="selectTheme('ocean')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#082f49,#087ea4);"
+                        style="background:linear-gradient(135deg,#0b3d62,#168aad)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Ocean
-                    </div>
-
+                    <div class="preview-name">Ocean</div>
                 </div>
 
                 <div
@@ -1380,19 +1381,14 @@
                     data-theme="graphite"
                     onclick="selectTheme('graphite')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#111827,#4b5563);"
+                        style="background:linear-gradient(135deg,#202124,#4b5563)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Graphite
-                    </div>
-
+                    <div class="preview-name">Graphite</div>
                 </div>
 
                 <div
@@ -1400,19 +1396,14 @@
                     data-theme="royal"
                     onclick="selectTheme('royal')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#35205f,#7c3aed);"
+                        style="background:linear-gradient(135deg,#35205f,#7c3aed)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Royal
-                    </div>
-
+                    <div class="preview-name">Royal</div>
                 </div>
 
                 <div
@@ -1420,44 +1411,34 @@
                     data-theme="ivory"
                     onclick="selectTheme('ivory')"
                 >
-
                     <div
                         class="theme-preview"
-                        style="background:linear-gradient(135deg,#6b4f2a,#a37b4b);"
+                        style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
                     >
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-
-                    <div class="preview-name">
-                        Ivory
-                    </div>
-
+                    <div class="preview-name">Ivory</div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- 6. CHAT -->
+    <!-- CHAT -->
 
-    <div
-        id="chat-screen"
-        class="screen"
-    >
+    <div id="chat-screen" class="screen">
 
         <div class="header-bar">
 
-            <div
-                style="display:flex;align-items:center;"
-            >
+            <div style="display:flex;align-items:center;">
 
-                <button
-                    class="chat-back"
+                <span
+                    class="back-arrow"
                     onclick="handleChatBack()"
                 >
-                    &#8592; Back
-                </button>
+                    &#8592;
+                </span>
 
                 <div id="chat-room-title">
                     Chat
@@ -1518,27 +1499,78 @@
 
 const USERS_API = "/users";
 const MESSAGES_API = "/messages";
+
 const YADHU_PHONE = "7025707720";
 
 let currentUser = null;
 let activeRecipient = null;
 let currentRoomId = null;
 let pendingPhone = null;
+
 let syncInterval = null;
 let contactsInterval = null;
+
 let knownMessageIds = new Set();
 let deferredPrompt = null;
 
-/* =========================================================
-   THEMES
-========================================================= */
+
+/* PWA */
+
+window.addEventListener(
+    "beforeinstallprompt",
+    (e) => {
+
+        e.preventDefault();
+
+        deferredPrompt = e;
+
+        document
+            .querySelectorAll(".btn-install")
+            .forEach(
+                btn => btn.style.display = "flex"
+            );
+    }
+);
+
+
+async function installPWA() {
+
+    if (deferredPrompt) {
+
+        deferredPrompt.prompt();
+
+        const { outcome } =
+            await deferredPrompt.userChoice;
+
+        if (outcome === "accepted") {
+
+            document
+                .querySelectorAll(".btn-install")
+                .forEach(
+                    btn => btn.style.display = "none"
+                );
+        }
+
+        deferredPrompt = null;
+
+    } else {
+
+        alert(
+            "Open browser menu and select 'Add to Home Screen' or 'Install App'."
+        );
+    }
+}
+
+
+/* THEMES */
 
 const THEMES = {
 
     emerald: {
         primary: "#075e54",
         secondary: "#128c7e",
-        page: "linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364)",
+        page:
+            "linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e)",
         soft: "#f0f2f5",
         card: "#ffffff",
         text: "#111b21"
@@ -1547,7 +1579,8 @@ const THEMES = {
     midnight: {
         primary: "#263b72",
         secondary: "#3f5fa8",
-        page: "linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
+        page:
+            "linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
         soft: "#151d2b",
         card: "#101827",
         text: "#eef3ff"
@@ -1556,7 +1589,8 @@ const THEMES = {
     ocean: {
         primary: "#087ea4",
         secondary: "#168aad",
-        page: "linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
+        page:
+            "linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
         soft: "#edf7fa",
         card: "#ffffff",
         text: "#102a43"
@@ -1565,7 +1599,8 @@ const THEMES = {
     graphite: {
         primary: "#374151",
         secondary: "#4b5563",
-        page: "linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
+        page:
+            "linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
         soft: "#20242b",
         card: "#181b20",
         text: "#f1f5f9"
@@ -1574,7 +1609,8 @@ const THEMES = {
     royal: {
         primary: "#633bb8",
         secondary: "#7c3aed",
-        page: "linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
+        page:
+            "linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
         soft: "#f3effb",
         card: "#ffffff",
         text: "#211534"
@@ -1583,19 +1619,22 @@ const THEMES = {
     ivory: {
         primary: "#80613a",
         secondary: "#a37b4b",
-        page: "linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
+        page:
+            "linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
         soft: "#f6f1e9",
         card: "#fffdf8",
         text: "#2f271f"
     }
-
 };
+
 
 function applyTheme(name) {
 
-    const theme = THEMES[name] || THEMES.emerald;
+    const theme =
+        THEMES[name] || THEMES.emerald;
 
-    const root = document.documentElement;
+    const root =
+        document.documentElement;
 
     root.style.setProperty(
         "--theme-primary",
@@ -1627,27 +1666,28 @@ function applyTheme(name) {
         theme.text
     );
 
-    document.body.style.background = theme.page;
+    document.body.style.background =
+        theme.page;
 
-    document.body.dataset.theme = name;
+    document.body.dataset.theme =
+        name;
 
     document
         .querySelectorAll(".theme-option")
-        .forEach(el => {
-
-            el.classList.toggle(
-                "selected",
-                el.dataset.theme === name
-            );
-
-        });
+        .forEach(
+            el =>
+                el.classList.toggle(
+                    "selected",
+                    el.dataset.theme === name
+                )
+        );
 
     localStorage.setItem(
         "axtres_theme",
         name
     );
-
 }
+
 
 function openSettings() {
 
@@ -1656,111 +1696,47 @@ function openSettings() {
         .classList.add("active");
 
     const current =
-        localStorage.getItem("axtres_theme")
-        || "emerald";
+        localStorage.getItem("axtres_theme") ||
+        "emerald";
 
     document
         .querySelectorAll(".theme-option")
-        .forEach(el => {
-
-            el.classList.toggle(
-                "selected",
-                el.dataset.theme === current
-            );
-
-        });
-
+        .forEach(
+            el =>
+                el.classList.toggle(
+                    "selected",
+                    el.dataset.theme === current
+                )
+        );
 }
+
 
 function closeSettings() {
 
     document
         .getElementById("settings-overlay")
         .classList.remove("active");
-
 }
+
 
 function handleSettingsBackdrop(e) {
 
     if (
-        e.target.id === "settings-overlay"
+        e.target.id ===
+        "settings-overlay"
     ) {
-
         closeSettings();
-
     }
-
 }
+
 
 function selectTheme(name) {
 
     applyTheme(name);
-
 }
 
-/* =========================================================
-   PWA
-========================================================= */
 
-window.addEventListener(
-    "beforeinstallprompt",
-    e => {
-
-        e.preventDefault();
-
-        deferredPrompt = e;
-
-        document
-            .querySelectorAll(".btn-install")
-            .forEach(btn => {
-
-                btn.style.display = "flex";
-
-            });
-
-    }
-);
-
-async function installPWA() {
-
-    if (deferredPrompt) {
-
-        deferredPrompt.prompt();
-
-        const {
-            outcome
-        } =
-            await deferredPrompt.userChoice;
-
-        if (
-            outcome === "accepted"
-        ) {
-
-            document
-                .querySelectorAll(".btn-install")
-                .forEach(btn => {
-
-                    btn.style.display = "none";
-
-                });
-
-        }
-
-        deferredPrompt = null;
-
-    } else {
-
-        alert(
-            "Open browser menu and select 'Add to Home Screen' or 'Install App'."
-        );
-
-    }
-
-}
-
-/* =========================================================
-   DEVICE
-========================================================= */
+/* DEVICE */
 
 function getDeviceId() {
 
@@ -1783,16 +1759,13 @@ function getDeviceId() {
             "axtres_device_id",
             deviceId
         );
-
     }
 
     return deviceId;
-
 }
 
-/* =========================================================
-   STARTUP
-========================================================= */
+
+/* STARTUP */
 
 window.addEventListener(
     "DOMContentLoaded",
@@ -1800,11 +1773,17 @@ window.addEventListener(
 
         getDeviceId();
 
-        applyTheme(
+        /*
+         * Emerald is always the default.
+         * A previously selected theme is restored
+         * only if the user already selected one.
+         */
+        const savedTheme =
             localStorage.getItem(
                 "axtres_theme"
-            ) || "emerald"
-        );
+            ) || "emerald";
+
+        applyTheme(savedTheme);
 
         const savedUser =
             localStorage.getItem(
@@ -1825,15 +1804,11 @@ window.addEventListener(
                 localStorage.removeItem(
                     "axtres_user"
                 );
-
             }
-
         }
 
         /*
-         * IMPORTANT:
-         * Always show the original axtres
-         * loading page first.
+         * ALWAYS show the loading page first.
          */
 
         switchScreen(
@@ -1856,69 +1831,27 @@ window.addEventListener(
                     switchScreen(
                         "login-screen"
                     );
-
                 }
 
             },
             800
         );
-
     }
 );
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
 
-function switchScreen(screenId) {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(s => {
-
-            s.classList.remove(
-                "active"
-            );
-
-        });
-
-    const screen =
-        document.getElementById(
-            screenId
-        );
-
-    if (screen) {
-
-        screen.classList.add(
-            "active"
-        );
-
-    }
-
-}
+/* AUTH ROUTING */
 
 function navigateAfterAuth() {
 
-    if (
-        currentUser &&
-        String(
-            currentUser.phone
-        ).trim() === YADHU_PHONE
-    ) {
+    /*
+     * Normal users get the Hub.
+     * The Hub contains the Yadhu Krishna card.
+     */
 
-        openContactsScreen();
-
-    } else {
-
-        openHubScreen();
-
-    }
-
+    openHubScreen();
 }
 
-/* =========================================================
-   YOUR HUB
-========================================================= */
 
 function openHubScreen() {
 
@@ -1926,35 +1859,16 @@ function openHubScreen() {
         "hub-screen"
     );
 
-    document.getElementById(
-        "hub-welcome-text"
-    ).innerText =
-        `Welcome, ${currentUser.name}!`;
-
-    /*
-     * The card is for YOU,
-     * the currently logged-in user.
-     */
-
-    document.getElementById(
-        "hub-user-name"
-    ).innerText =
-        currentUser.name ||
-        "User";
-
-    document.getElementById(
-        "hub-user-phone"
-    ).innerText =
-        currentUser.phone ||
-        "";
-
-    document.getElementById(
-        "hub-user-email"
-    ).innerText =
-        currentUser.email ||
-        "No email linked";
-
+    document
+        .getElementById(
+            "hub-welcome-text"
+        )
+        .innerText =
+            `Welcome, ${currentUser.name}!`;
 }
+
+
+/* CHAT WITH YADHU */
 
 function chatWithYadhu() {
 
@@ -1965,14 +1879,11 @@ function chatWithYadhu() {
         phone: YADHU_PHONE,
 
         has_email: 1
-
     });
-
 }
 
-/* =========================================================
-   DIRECTORY PIN
-========================================================= */
+
+/* DIRECTORY PIN */
 
 function openDirectoryWithPin() {
 
@@ -1995,21 +1906,19 @@ function openDirectoryWithPin() {
     );
 
     setTimeout(
-        () => {
-            input.focus();
-        },
+        () => input.focus(),
         50
     );
-
 }
+
 
 function closeDirectoryPin() {
 
     switchScreen(
         "hub-screen"
     );
-
 }
+
 
 function handleDirectoryBackdrop(e) {
 
@@ -2019,10 +1928,9 @@ function handleDirectoryBackdrop(e) {
     ) {
 
         closeDirectoryPin();
-
     }
-
 }
+
 
 function handleDirectoryPinInput(e) {
 
@@ -2039,6 +1947,10 @@ function handleDirectoryPinInput(e) {
             .slice(0, 3);
 
     error.innerText = "";
+
+    /*
+     * Correct PIN is 257.
+     */
 
     if (
         input.value.length === 3
@@ -2060,21 +1972,18 @@ function handleDirectoryPinInput(e) {
             input.value = "";
 
             setTimeout(
-                () => {
-                    input.focus();
-                },
+                () => input.focus(),
                 50
             );
-
         }
-
     }
-
 }
 
-/* =========================================================
-   DIRECTORY RETURN
-========================================================= */
+
+/*
+ * Returning to Hub means the next time
+ * Directory is opened, the PIN is required again.
+ */
 
 function returnFromDirectory() {
 
@@ -2085,16 +1994,31 @@ function returnFromDirectory() {
         );
 
         contactsInterval = null;
+    }
 
+    const input =
+        document.getElementById(
+            "directory-pin-input"
+        );
+
+    const error =
+        document.getElementById(
+            "directory-pin-error"
+        );
+
+    if (input) {
+        input.value = "";
+    }
+
+    if (error) {
+        error.innerText = "";
     }
 
     openHubScreen();
-
 }
 
-/* =========================================================
-   CHAT BACK
-========================================================= */
+
+/* CHAT BACK */
 
 function handleChatBack() {
 
@@ -2105,38 +2029,46 @@ function handleChatBack() {
         );
 
         syncInterval = null;
-
     }
 
-    currentRoomId = null;
-    activeRecipient = null;
-
-    if (
-        String(
-            currentUser.phone
-        ).trim() === YADHU_PHONE
-    ) {
-
-        openContactsScreen();
-
-    } else {
-
-        openHubScreen();
-
-    }
-
+    openHubScreen();
 }
 
-/* =========================================================
-   WAKE / FOCUS
-========================================================= */
+
+/* SCREEN */
+
+function switchScreen(screenId) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(
+            s =>
+                s.classList.remove(
+                    "active"
+                )
+        );
+
+    const target =
+        document.getElementById(
+            screenId
+        );
+
+    if (target) {
+
+        target.classList.add(
+            "active"
+        );
+    }
+}
+
+
+/* SYNC */
 
 function forceSyncOnWake() {
 
     if (currentRoomId) {
 
         pollChatMessages(false);
-
     }
 
     if (
@@ -2145,21 +2077,19 @@ function forceSyncOnWake() {
             .getElementById(
                 "contacts-screen"
             )
-            .classList.contains(
-                "active"
-            )
+            .classList.contains("active")
     ) {
 
         fetchContacts();
-
     }
-
 }
+
 
 window.addEventListener(
     "focus",
     forceSyncOnWake
 );
+
 
 document.addEventListener(
     "visibilitychange",
@@ -2171,15 +2101,12 @@ document.addEventListener(
         ) {
 
             forceSyncOnWake();
-
         }
-
     }
 );
 
-/* =========================================================
-   EMAIL INPUT
-========================================================= */
+
+/* EMAIL INPUT */
 
 function interceptEmailInput(e) {
 
@@ -2201,10 +2128,9 @@ function interceptEmailInput(e) {
         showToast(
             "Email extension handled by dropdown."
         );
-
     }
-
 }
+
 
 function showToast(msg) {
 
@@ -2215,23 +2141,20 @@ function showToast(msg) {
 
     toast.innerText = msg;
 
-    toast.style.display = "block";
+    toast.style.display =
+        "block";
 
     setTimeout(
         () => {
-
             toast.style.display =
                 "none";
-
         },
         2500
     );
-
 }
 
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
+
+/* NOTIFICATIONS */
 
 async function requestNotificationPermission() {
 
@@ -2244,11 +2167,7 @@ async function requestNotificationPermission() {
         !("Notification" in window)
     ) {
 
-        statusDiv.innerText =
-            "Status: Not supported";
-
         return;
-
     }
 
     const permission =
@@ -2256,23 +2175,17 @@ async function requestNotificationPermission() {
 
     statusDiv.innerText =
         permission === "granted"
-            ?
-            "Status: Notifications Enabled!"
-            :
-            "Status: Denied.";
+            ? "Status: Notifications Enabled!"
+            : "Status: Denied.";
 
     statusDiv.style.color =
         permission === "granted"
-            ?
-            "#2e7d32"
-            :
-            "#d32f2f";
-
+            ? "#2e7d32"
+            : "#d32f2f";
 }
 
-/* =========================================================
-   REGISTER
-========================================================= */
+
+/* REGISTER */
 
 async function handleRegister() {
 
@@ -2290,23 +2203,19 @@ async function handleRegister() {
 
     const emailUser =
         document
-            .getElementById(
-                "reg-email-user"
-            )
+            .getElementById("reg-email-user")
             .value
             .trim();
 
     const emailDomain =
-        document.getElementById(
-            "reg-email-domain"
-        ).value;
+        document
+            .getElementById("reg-email-domain")
+            .value;
 
     const email =
         emailUser
-            ?
-            emailUser + emailDomain
-            :
-            "";
+            ? emailUser + emailDomain
+            : "";
 
     const errDiv =
         document.getElementById(
@@ -2321,7 +2230,6 @@ async function handleRegister() {
             "Name and phone are required.";
 
         return;
-
     }
 
     if (phone.length !== 10) {
@@ -2330,7 +2238,6 @@ async function handleRegister() {
             "Phone number must be 10 digits.";
 
         return;
-
     }
 
     try {
@@ -2348,13 +2255,11 @@ async function handleRegister() {
                             "no-cache, no-store"
                     },
                     body: JSON.stringify({
-
                         name,
                         phone,
                         email,
                         device_id:
                             getDeviceId()
-
                     })
                 }
             );
@@ -2368,7 +2273,6 @@ async function handleRegister() {
                 data.error ||
                 "Registration failed"
             );
-
         }
 
         pendingPhone = phone;
@@ -2377,13 +2281,17 @@ async function handleRegister() {
             data.requires_verification
         ) {
 
-            document.getElementById(
-                "verify-pin-input"
-            ).value = "";
+            document
+                .getElementById(
+                    "verify-pin-input"
+                )
+                .value = "";
 
-            document.getElementById(
-                "verify-error"
-            ).innerText = "";
+            document
+                .getElementById(
+                    "verify-error"
+                )
+                .innerText = "";
 
             switchScreen(
                 "verify-screen"
@@ -2391,9 +2299,11 @@ async function handleRegister() {
 
         } else {
 
-            document.getElementById(
-                "login-phone"
-            ).value = phone;
+            document
+                .getElementById(
+                    "login-phone"
+                )
+                .value = phone;
 
             switchScreen(
                 "login-screen"
@@ -2409,21 +2319,17 @@ async function handleRegister() {
 
             loginError.style.color =
                 "#2e7d32";
-
         }
 
     } catch (err) {
 
         errDiv.innerText =
             err.message;
-
     }
-
 }
 
-/* =========================================================
-   VERIFY REGISTER
-========================================================= */
+
+/* REGISTER VERIFICATION */
 
 async function handleAutoVerifyRegister(e) {
 
@@ -2461,13 +2367,10 @@ async function handleAutoVerifyRegister(e) {
                                 "no-cache, no-store"
                         },
                         body: JSON.stringify({
-
                             phone:
                                 pendingPhone,
-
                             pin:
                                 input.value
-
                         })
                     }
                 );
@@ -2481,12 +2384,13 @@ async function handleAutoVerifyRegister(e) {
                     data.error ||
                     "Incorrect PIN"
                 );
-
             }
 
-            document.getElementById(
-                "login-phone"
-            ).value =
+            document
+                .getElementById(
+                    "login-phone"
+                )
+                .value =
                 pendingPhone;
 
             switchScreen(
@@ -2510,59 +2414,51 @@ async function handleAutoVerifyRegister(e) {
                 err.message;
 
             input.value = "";
-
         }
-
     }
-
 }
 
-/* =========================================================
-   ADD EMAIL
-========================================================= */
+
+/* ADD EMAIL */
 
 function openAddEmailModal() {
 
-    document.getElementById(
-        "ae-phone"
-    ).value = "";
+    document
+        .getElementById("ae-phone")
+        .value = "";
 
-    document.getElementById(
-        "ae-email-user"
-    ).value = "";
+    document
+        .getElementById("ae-email-user")
+        .value = "";
 
-    document.getElementById(
-        "ae-error"
-    ).innerText = "";
+    document
+        .getElementById("ae-error")
+        .innerText = "";
 
     switchScreen(
         "add-email-screen"
     );
-
 }
+
 
 async function handleAddEmailInit() {
 
     const phone =
         document
-            .getElementById(
-                "ae-phone"
-            )
+            .getElementById("ae-phone")
             .value
             .trim();
 
     const emailUser =
         document
-            .getElementById(
-                "ae-email-user"
-            )
+            .getElementById("ae-email-user")
             .value
             .trim();
 
     const emailDomain =
-        document.getElementById(
-            "ae-email-domain"
-        ).value;
+        document
+            .getElementById("ae-email-domain")
+            .value;
 
     const errDiv =
         document.getElementById(
@@ -2581,7 +2477,6 @@ async function handleAddEmailInit() {
             "Enter valid phone and email.";
 
         return;
-
     }
 
     pendingPhone = phone;
@@ -2619,12 +2514,13 @@ async function handleAddEmailInit() {
                 data.error ||
                 "Failed to send PIN"
             );
-
         }
 
-        document.getElementById(
-            "ae-pin-input"
-        ).value = "";
+        document
+            .getElementById(
+                "ae-pin-input"
+            )
+            .value = "";
 
         switchScreen(
             "verify-email-screen"
@@ -2634,14 +2530,11 @@ async function handleAddEmailInit() {
 
         errDiv.innerText =
             err.message;
-
     }
-
 }
 
-/* =========================================================
-   VERIFY EMAIL
-========================================================= */
+
+/* VERIFY UPDATED EMAIL */
 
 async function handleAutoVerifyEmail(e) {
 
@@ -2679,13 +2572,10 @@ async function handleAutoVerifyEmail(e) {
                                 "no-cache, no-store"
                         },
                         body: JSON.stringify({
-
                             phone:
                                 pendingPhone,
-
                             pin:
                                 input.value
-
                         })
                     }
                 );
@@ -2699,7 +2589,6 @@ async function handleAutoVerifyEmail(e) {
                     data.error ||
                     "Incorrect PIN"
                 );
-
             }
 
             switchScreen(
@@ -2723,24 +2612,18 @@ async function handleAutoVerifyEmail(e) {
                 err.message;
 
             input.value = "";
-
         }
-
     }
-
 }
 
-/* =========================================================
-   LOGIN
-========================================================= */
+
+/* LOGIN */
 
 async function handleLogin() {
 
     const phone =
         document
-            .getElementById(
-                "login-phone"
-            )
+            .getElementById("login-phone")
             .value
             .trim();
 
@@ -2763,7 +2646,6 @@ async function handleLogin() {
             "Enter a valid 10-digit phone number.";
 
         return;
-
     }
 
     try {
@@ -2795,7 +2677,6 @@ async function handleLogin() {
                 data.error ||
                 "Login failed"
             );
-
         }
 
         currentUser =
@@ -2814,14 +2695,11 @@ async function handleLogin() {
 
         errDiv.innerText =
             err.message;
-
     }
-
 }
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+
+/* LOGOUT */
 
 function handleLogout() {
 
@@ -2830,8 +2708,6 @@ function handleLogout() {
     );
 
     currentUser = null;
-    activeRecipient = null;
-    currentRoomId = null;
 
     if (syncInterval) {
 
@@ -2840,7 +2716,6 @@ function handleLogout() {
         );
 
         syncInterval = null;
-
     }
 
     if (contactsInterval) {
@@ -2850,18 +2725,15 @@ function handleLogout() {
         );
 
         contactsInterval = null;
-
     }
 
     switchScreen(
         "login-screen"
     );
-
 }
 
-/* =========================================================
-   DIRECTORY
-========================================================= */
+
+/* DIRECTORY */
 
 async function openContactsScreen() {
 
@@ -2869,14 +2741,16 @@ async function openContactsScreen() {
         "contacts-screen"
     );
 
-    document.getElementById(
-        "my-name-display"
-    ).innerText =
-        currentUser.name;
+    document
+        .getElementById(
+            "my-name-display"
+        )
+        .innerText =
+            currentUser.name;
 
     startContactsPolling();
-
 }
+
 
 function startContactsPolling() {
 
@@ -2885,7 +2759,6 @@ function startContactsPolling() {
         clearInterval(
             contactsInterval
         );
-
     }
 
     fetchContacts();
@@ -2895,8 +2768,8 @@ function startContactsPolling() {
             fetchContacts,
             1000
         );
-
 }
+
 
 async function fetchContacts() {
 
@@ -2932,18 +2805,19 @@ async function fetchContacts() {
         ) {
 
             container.innerHTML = `
-                <div style="
-                    text-align:center;
-                    padding:20px;
-                    color:#667781;
-                    font-size:0.9rem;
-                ">
+                <div
+                    style="
+                        text-align:center;
+                        padding:20px;
+                        color:#667781;
+                        font-size:0.9rem;
+                    "
+                >
                     No other contacts found yet.
                 </div>
             `;
 
             return;
-
         }
 
         contacts.forEach(
@@ -2959,23 +2833,25 @@ async function fetchContacts() {
 
                 const emailStatusBadge =
                     c.has_email === 1
-                        ?
-                        `
-                        <span class="status-pill active">
-                            Email Verified 🟢
-                        </span>
-                        `
-                        :
-                        `
-                        <span class="status-pill inactive">
-                            No Email ⚪
-                        </span>
-                        `;
+
+                        ? `
+                            <span
+                                class="status-pill active"
+                            >
+                                Email Verified 🟢
+                            </span>
+                          `
+
+                        : `
+                            <span
+                                class="status-pill inactive"
+                            >
+                                No Email ⚪
+                            </span>
+                          `;
 
                 item.innerHTML = `
-
                     <div>
-
                         <div class="contact-name">
                             ${escapeHtml(c.name)}
                         </div>
@@ -2985,17 +2861,17 @@ async function fetchContacts() {
                         </div>
 
                         ${emailStatusBadge}
-
                     </div>
 
-                    <span style="
-                        color:var(--theme-primary);
-                        font-weight:600;
-                        font-size:0.9rem;
-                    ">
+                    <span
+                        style="
+                            color:#075e54;
+                            font-weight:600;
+                            font-size:0.9rem;
+                        "
+                    >
                         Chat &rarr;
                     </span>
-
                 `;
 
                 item.onclick =
@@ -3004,24 +2880,16 @@ async function fetchContacts() {
                 container.appendChild(
                     item
                 );
-
             }
         );
 
     } catch (e) {
-
-        console.error(
-            "Contacts error:",
-            e
-        );
-
+        /* Keep UI alive if polling fails. */
     }
-
 }
 
-/* =========================================================
-   CHAT
-========================================================= */
+
+/* START CHAT */
 
 function startChatWith(recipient) {
 
@@ -3035,7 +2903,6 @@ function startChatWith(recipient) {
         );
 
         contactsInterval = null;
-
     }
 
     const sortedPhones =
@@ -3047,18 +2914,22 @@ function startChatWith(recipient) {
     currentRoomId =
         `room_${sortedPhones[0]}_${sortedPhones[1]}`;
 
-    document.getElementById(
-        "chat-room-title"
-    ).innerText =
-        recipient.name;
+    document
+        .getElementById(
+            "chat-room-title"
+        )
+        .innerText =
+            recipient.name;
 
     switchScreen(
         "chat-screen"
     );
 
-    document.getElementById(
-        "email-toggle"
-    ).checked = false;
+    document
+        .getElementById(
+            "email-toggle"
+        )
+        .checked = false;
 
     const messagesDiv =
         document.getElementById(
@@ -3070,8 +2941,10 @@ function startChatWith(recipient) {
     knownMessageIds.clear();
 
     startChatPolling();
-
 }
+
+
+/* CHAT POLLING */
 
 function startChatPolling() {
 
@@ -3080,27 +2953,25 @@ function startChatPolling() {
         clearInterval(
             syncInterval
         );
-
     }
 
     pollChatMessages(true);
 
     syncInterval =
         setInterval(
-            () => pollChatMessages(false),
+            () =>
+                pollChatMessages(false),
             600
         );
-
 }
+
 
 async function pollChatMessages(
     isInitial
 ) {
 
     if (!currentRoomId) {
-
         return;
-
     }
 
     try {
@@ -3122,12 +2993,8 @@ async function pollChatMessages(
         const history =
             await res.json();
 
-        if (
-            !Array.isArray(history)
-        ) {
-
+        if (!Array.isArray(history)) {
             return;
-
         }
 
         const messagesDiv =
@@ -3137,15 +3004,12 @@ async function pollChatMessages(
 
         if (isInitial) {
 
-            messagesDiv.innerHTML =
-                "";
+            messagesDiv.innerHTML = "";
 
             knownMessageIds.clear();
-
         }
 
-        let shouldScroll =
-            false;
+        let shouldScroll = false;
 
         history.forEach(
             msg => {
@@ -3170,10 +3034,8 @@ async function pollChatMessages(
 
                 const uniqueId =
                     msg.id
-                        ?
-                        String(msg.id)
-                        :
-                        `${sender}_${createdAt}_${msgText}`;
+                        ? String(msg.id)
+                        : `${sender}_${createdAt}_${msgText}`;
 
                 if (
                     knownMessageIds.has(
@@ -3182,7 +3044,6 @@ async function pollChatMessages(
                 ) {
 
                     return;
-
                 }
 
                 knownMessageIds.add(
@@ -3194,9 +3055,7 @@ async function pollChatMessages(
                 if (
                     !isInitial &&
                     String(sender).trim() !==
-                    String(
-                        currentUser.phone
-                    ).trim()
+                    String(currentUser.phone).trim()
                 ) {
 
                     if (
@@ -3207,10 +3066,8 @@ async function pollChatMessages(
 
                         const alertTitle =
                             isEmergency
-                                ?
-                                `📧 Email Sent by ${activeRecipient.name}`
-                                :
-                                `💬 New Message from ${activeRecipient.name}`;
+                                ? `📧 Email Sent by ${activeRecipient.name}`
+                                : `💬 New Message from ${activeRecipient.name}`;
 
                         new Notification(
                             alertTitle,
@@ -3218,9 +3075,7 @@ async function pollChatMessages(
                                 body: msgText
                             }
                         );
-
                     }
-
                 }
 
                 let timeStr = "";
@@ -3242,13 +3097,13 @@ async function pollChatMessages(
                             parsedDate.toLocaleTimeString(
                                 [],
                                 {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
+                                    hour:
+                                        "2-digit",
+                                    minute:
+                                        "2-digit"
                                 }
                             );
-
                     }
-
                 }
 
                 if (!timeStr) {
@@ -3258,11 +3113,12 @@ async function pollChatMessages(
                             .toLocaleTimeString(
                                 [],
                                 {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
+                                    hour:
+                                        "2-digit",
+                                    minute:
+                                        "2-digit"
                                 }
                             );
-
                 }
 
                 const cleanSender =
@@ -3293,7 +3149,6 @@ async function pollChatMessages(
                     msgEl.classList.add(
                         "email-alert"
                     );
-
                 }
 
                 const badgeHTML =
@@ -3301,15 +3156,15 @@ async function pollChatMessages(
                         isEmergency === 1 ||
                         isEmergency === true
                     )
-                        ?
-                        `
-                        <span class="email-badge">
-                            📧 SENT VIA EMAIL
-                        </span>
-                        <br>
-                        `
-                        :
-                        "";
+
+                        ? `
+                            <span class="email-badge">
+                                📧 SENT VIA EMAIL
+                            </span>
+                            <br>
+                          `
+
+                        : "";
 
                 if (isMe) {
 
@@ -3317,21 +3172,22 @@ async function pollChatMessages(
                         "me"
                     );
 
+                    msgEl.innerHTML =
+                        `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+
                 } else {
 
                     msgEl.classList.add(
                         "them"
                     );
 
+                    msgEl.innerHTML =
+                        `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
                 }
-
-                msgEl.innerHTML =
-                    `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
 
                 messagesDiv.appendChild(
                     msgEl
                 );
-
             }
         );
 
@@ -3342,23 +3198,15 @@ async function pollChatMessages(
 
             messagesDiv.scrollTop =
                 messagesDiv.scrollHeight;
-
         }
 
     } catch (e) {
-
-        console.error(
-            "Message polling error:",
-            e
-        );
-
+        /* Keep polling alive. */
     }
-
 }
 
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
+
+/* SEND MESSAGE */
 
 async function sendMessage() {
 
@@ -3371,13 +3219,13 @@ async function sendMessage() {
         input.value.trim();
 
     const sendViaEmail =
-        document.getElementById(
-            "email-toggle"
-        ).checked
-            ?
-            1
-            :
-            0;
+        document
+            .getElementById(
+                "email-toggle"
+            )
+            .checked
+            ? 1
+            : 0;
 
     if (
         !text ||
@@ -3385,7 +3233,6 @@ async function sendMessage() {
     ) {
 
         return;
-
     }
 
     const timeNow =
@@ -3430,25 +3277,19 @@ async function sendMessage() {
 
                     created_at:
                         timeNow
-
                 })
             }
         );
 
-        pollChatMessages(
-            false
-        );
+        pollChatMessages(false);
 
     } catch (err) {
-
-        console.error(
-            "Send error:",
-            err
-        );
-
+        /* Keep UI responsive. */
     }
-
 }
+
+
+/* ENTER TO SEND */
 
 function checkEnter(e) {
 
@@ -3457,18 +3298,16 @@ function checkEnter(e) {
     ) {
 
         sendMessage();
-
     }
-
 }
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
+
+/* ESCAPE HTML */
 
 function escapeHtml(text) {
 
     const map = {
+
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
@@ -3476,14 +3315,12 @@ function escapeHtml(text) {
         "'": "&apos;"
     };
 
-    return String(text)
-        .replace(
-            /[\n&<>"']/g,
-            function (m) {
-                return map[m] || m;
-            }
-        );
-
+    return String(text).replace(
+        /[\n&<>"']/g,
+        function (m) {
+            return map[m] || m;
+        }
+    );
 }
 
 </script>
