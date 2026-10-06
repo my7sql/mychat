@@ -7,768 +7,805 @@
 <title>axtres</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
 
 :root{
---theme-primary:#075e54;
---theme-secondary:#128c7e;
---theme-page:linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364);
---theme-soft:#f0f2f5;
---theme-card:#fff;
---theme-text:#111b21;
+    --theme-primary:#075e54;
+    --theme-secondary:#128c7e;
+    --theme-page:linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364);
+    --theme-soft:#f0f2f5;
+    --theme-card:#ffffff;
+    --theme-text:#111b21;
 
---theme-chat-bg:#efeae2;
---theme-chat-dot:#d1ccc0;
---theme-chat-surface:#fff;
---theme-my-bubble:#dcf8c6;
---theme-their-bubble:#fff;
---theme-chat-text:#111b21;
---theme-msg-time:#667781;
---theme-chat-toolbar:#f0f2f5;
---theme-chat-border:#e0e0e0;
---theme-input-bg:#fff;
---theme-input-border:#ccc;
---theme-placeholder:#7a858c;
---theme-email-bg:#e3f2fd;
---theme-email-border:#bbdefb;
---theme-email-text:#1565c0
+    --chat-bg:#efeae2;
+    --chat-dot:#d1ccc0;
+    --chat-surface:#ffffff;
+    --chat-mine:#dcf8c6;
+    --chat-theirs:#ffffff;
+    --chat-text:#111b21;
+    --chat-time:#667781;
+    --chat-toolbar:#f0f2f5;
+    --chat-border:#e0e0e0;
+    --chat-input:#ffffff;
+    --chat-input-border:#cccccc;
+    --chat-placeholder:#7a858c;
+    --chat-email-bg:#e3f2fd;
+    --chat-email-border:#bbdefb;
+    --chat-email-text:#1565c0;
 }
 
 body{
-background:var(--theme-page);
-background-size:400% 400%;
-animation:gradientShift 15s ease infinite;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-color:#333;
-overflow:hidden
+    background:var(--theme-page);
+    background-size:400% 400%;
+    animation:gradientShift 15s ease infinite;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:#333;
+    overflow:hidden;
 }
 
 @keyframes gradientShift{
-0%{background-position:0 50%}
-50%{background-position:100% 50%}
-100%{background-position:0 50%}
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }
 
 .card{
-background:rgba(255,255,255,.95);
-backdrop-filter:blur(10px);
-width:100%;
-max-width:420px;
-height:92vh;
-max-height:820px;
-border-radius:20px;
-box-shadow:0 12px 40px rgba(0,0,0,.25);
-display:flex;
-flex-direction:column;
-overflow:hidden;
-position:relative
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);
+    width:100%;
+    max-width:420px;
+    height:92vh;
+    max-height:820px;
+    border-radius:20px;
+    box-shadow:0 12px 40px rgba(0,0,0,.25);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
 }
 
 .screen{
-display:none;
-flex-direction:column;
-height:100%;
-width:100%
+    display:none;
+    flex-direction:column;
+    height:100%;
+    width:100%;
 }
 
-.screen.active{display:flex}
+.screen.active{
+    display:flex;
+}
+
+/* SPLASH */
 
 #welcome-screen{
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:30px;
-background:linear-gradient(135deg,var(--theme-primary),var(--theme-secondary));
-color:#fff
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:30px;
+    background:linear-gradient(135deg,var(--theme-primary),var(--theme-secondary));
+    color:white;
 }
 
 #welcome-screen h1{
-font-size:2.3rem;
-margin-bottom:10px;
-font-weight:800
+    font-size:2.3rem;
+    margin-bottom:10px;
+    font-weight:800;
 }
 
 .spinner{
-width:40px;
-height:40px;
-border:4px solid rgba(255,255,255,.3);
-border-radius:50%;
-border-top-color:#fff;
-animation:spin 1s ease-in-out infinite;
-margin-top:20px
+    width:40px;
+    height:40px;
+    border:4px solid rgba(255,255,255,.3);
+    border-radius:50%;
+    border-top-color:white;
+    animation:spin 1s ease-in-out infinite;
+    margin-top:20px;
 }
 
-@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+/* HEADER */
 
 .header-bar{
-background:var(--theme-primary);
-color:#fff;
-padding:15px 20px;
-font-size:1.1rem;
-font-weight:600;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 2px 5px rgba(0,0,0,.1)
+    background:var(--theme-primary);
+    color:white;
+    padding:15px 20px;
+    font-size:1.1rem;
+    font-weight:600;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+    flex-shrink:0;
 }
 
 .header-bar span{
-font-size:.85rem;
-opacity:.9;
-font-weight:normal;
-cursor:pointer;
-text-decoration:underline
+    font-size:.85rem;
+    opacity:.9;
+    font-weight:normal;
+    cursor:pointer;
+    text-decoration:underline;
 }
 
+/* FORMS */
+
 .form-content{
-padding:18px 25px;
-display:flex;
-flex-direction:column;
-gap:8px;
-justify-content:center;
-flex:1;
-overflow-y:auto
+    padding:18px 25px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    justify-content:center;
+    flex:1;
+    overflow-y:auto;
 }
 
 .form-content h2{
-color:var(--theme-primary);
-font-size:1.35rem;
-margin-bottom:2px
+    color:var(--theme-primary);
+    font-size:1.35rem;
+    margin-bottom:2px;
 }
 
 .form-content p.subtitle{
-color:#666;
-font-size:.82rem;
-margin-bottom:2px
+    color:#666;
+    font-size:.82rem;
+    margin-bottom:2px;
 }
 
-input,select{
-padding:10px 14px;
-border:1.5px solid #ddd;
-border-radius:10px;
-font-size:.95rem;
-outline:none;
-background:#fafafa
+input,
+select{
+    padding:10px 14px;
+    border:1.5px solid #ddd;
+    border-radius:10px;
+    font-size:.95rem;
+    outline:none;
+    background:#fafafa;
 }
 
-input:focus,select:focus{
-border-color:var(--theme-primary);
-background:#fff;
-box-shadow:0 0 0 3px rgba(7,94,84,.1)
+input:focus,
+select:focus{
+    border-color:var(--theme-primary);
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(7,94,84,.1);
 }
 
 .email-group{
-display:flex;
-gap:6px
+    display:flex;
+    gap:6px;
 }
 
-.email-group input{flex:2}
-.email-group select{flex:1.2;font-size:.85rem}
+.email-group input{
+    flex:2;
+}
+
+.email-group select{
+    flex:1.2;
+    font-size:.85rem;
+}
 
 .btn{
-background:var(--theme-primary);
-color:#fff;
-border:none;
-padding:11px;
-border-radius:10px;
-font-size:.95rem;
-cursor:pointer;
-font-weight:600
+    background:var(--theme-primary);
+    color:white;
+    border:none;
+    padding:11px;
+    border-radius:10px;
+    font-size:.95rem;
+    cursor:pointer;
+    font-weight:600;
 }
 
-.btn:hover{background:var(--theme-secondary)}
+.btn:hover{
+    background:var(--theme-secondary);
+}
 
 .btn-secondary{
-background:#205081;
-color:#fff;
-border:none;
-padding:8px;
-border-radius:10px;
-font-size:.82rem;
-cursor:pointer;
-font-weight:600
+    background:#205081;
+    color:white;
+    border:none;
+    padding:8px;
+    border-radius:10px;
+    font-size:.82rem;
+    cursor:pointer;
+    font-weight:600;
 }
 
 .btn-accent{
-background:#d84315;
-color:#fff;
-border:none;
-padding:9px;
-border-radius:10px;
-font-size:.85rem;
-cursor:pointer;
-font-weight:600
+    background:#d84315;
+    color:white;
+    border:none;
+    padding:9px;
+    border-radius:10px;
+    font-size:.85rem;
+    cursor:pointer;
+    font-weight:600;
 }
 
 .btn-install{
-background:linear-gradient(135deg,#ff9966,#ff5e62);
-color:#fff;
-border:none;
-padding:9px;
-border-radius:10px;
-font-size:.85rem;
-cursor:pointer;
-font-weight:700;
-display:none;
-align-items:center;
-justify-content:center;
-gap:8px;
-box-shadow:0 4px 10px rgba(255,94,98,.3)
+    background:linear-gradient(135deg,#ff9966,#ff5e62);
+    color:white;
+    border:none;
+    padding:9px;
+    border-radius:10px;
+    font-size:.85rem;
+    cursor:pointer;
+    font-weight:700;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    box-shadow:0 4px 10px rgba(255,94,98,.3);
 }
 
 /* HUB */
 
 .hub-welcome{
-font-size:1.55rem;
-font-weight:800;
-color:var(--theme-primary);
-margin:6px 0 18px;
-text-align:center
+    font-size:1.55rem;
+    font-weight:800;
+    color:var(--theme-primary);
+    margin:6px 0 18px;
+    text-align:center;
 }
 
 .hub-card{
-position:relative;
-background:var(--theme-card);
-border:1px solid rgba(7,94,84,.16);
-border-radius:18px;
-padding:24px 22px;
-display:flex;
-flex-direction:column;
-align-items:center;
-text-align:center;
-gap:7px;
-margin-bottom:18px;
-box-shadow:0 14px 35px rgba(15,32,39,.1),0 2px 8px rgba(15,32,39,.05);
-overflow:hidden;
-opacity:0;
-transform:translateY(14px) scale(.985);
-transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1)
+    position:relative;
+    background:var(--theme-card);
+    color:var(--theme-text);
+    border:1px solid rgba(7,94,84,.16);
+    border-radius:18px;
+    padding:25px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:7px;
+    margin-bottom:18px;
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.10),
+        0 3px 10px rgba(0,0,0,.05);
+    overflow:hidden;
+    opacity:0;
+    transform:translateY(14px) scale(.985);
+    transition:
+        opacity .4s ease,
+        transform .4s cubic-bezier(.2,.8,.2,1);
 }
 
 .hub-card::before{
-content:"";
-position:absolute;
-top:0;
-left:0;
-right:0;
-height:4px;
-background:linear-gradient(90deg,var(--theme-primary),var(--theme-secondary))
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:4px;
+    background:linear-gradient(
+        90deg,
+        var(--theme-primary),
+        var(--theme-secondary)
+    );
 }
 
 .hub-card.visible{
-opacity:1;
-transform:translateY(0) scale(1)
+    opacity:1;
+    transform:translateY(0) scale(1);
 }
 
 .hub-user-label{
-font-size:.70rem;
-text-transform:uppercase;
-letter-spacing:.13em;
-color:#7a8a93;
-font-weight:700;
-margin-top:3px
+    font-size:.70rem;
+    text-transform:uppercase;
+    letter-spacing:.13em;
+    color:#7a8a93;
+    font-weight:700;
+    margin-top:3px;
 }
 
 .hub-user-name{
-font-size:1.45rem;
-font-weight:800;
-color:var(--theme-text)
+    font-size:1.45rem;
+    font-weight:800;
+    color:var(--theme-text);
 }
 
 .hub-user-phone{
-font-size:.95rem;
-color:#53636d;
-font-weight:550
+    font-size:.95rem;
+    color:#53636d;
+    font-weight:550;
 }
 
 .hub-user-email{
-font-size:.87rem;
-color:#667781;
-font-weight:500;
-word-break:break-word
+    font-size:.87rem;
+    color:#667781;
+    font-weight:500;
+    word-break:break-word;
 }
 
 .hub-actions{
-display:flex;
-flex-direction:column;
-gap:10px;
-width:100%
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
 }
 
 .btn-hub{
-width:100%;
-height:48px;
-padding:12px 16px;
-border-radius:11px;
-border:none;
-font-size:.95rem;
-font-weight:650;
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-transition:transform .18s ease,box-shadow .18s ease
+    width:100%;
+    height:48px;
+    padding:12px 16px;
+    border-radius:11px;
+    border:none;
+    font-size:.95rem;
+    font-weight:650;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
 }
 
 .btn-hub:hover{
-transform:translateY(-1px);
-box-shadow:0 7px 18px rgba(0,0,0,.1)
+    transform:translateY(-1px);
+    box-shadow:0 7px 18px rgba(0,0,0,.10);
 }
 
 .btn-hub-primary{
-background:var(--theme-primary);
-color:#fff
+    background:var(--theme-primary);
+    color:white;
 }
 
 .btn-hub-secondary{
-background:var(--theme-soft);
-color:var(--theme-text);
-border:1px solid rgba(0,0,0,.08)
+    background:var(--theme-soft);
+    color:var(--theme-text);
+    border:1px solid rgba(0,0,0,.08);
 }
 
+/* SETTINGS AT BOTTOM */
+
 .settings-footer{
-margin-top:auto;
-padding-top:22px;
-width:100%
+    margin-top:auto;
+    padding-top:22px;
+    width:100%;
 }
 
 .settings-button{
-width:100%;
-height:43px;
-border:1px solid rgba(0,0,0,.08);
-background:var(--theme-card);
-color:var(--theme-primary);
-border-radius:11px;
-font-size:.84rem;
-font-weight:650;
-cursor:pointer;
-box-shadow:0 4px 12px rgba(0,0,0,.05);
-transition:background .2s ease,transform .18s ease
+    width:100%;
+    height:43px;
+    border:1px solid rgba(0,0,0,.08);
+    background:var(--theme-card);
+    color:var(--theme-primary);
+    border-radius:11px;
+    font-size:.84rem;
+    font-weight:650;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
+    transition:
+        background .2s ease,
+        transform .18s ease;
 }
 
 .settings-button:hover{
-background:var(--theme-soft);
-transform:translateY(-1px)
-}
-
-/* DIRECTORY PIN */
-
-#directory-pin-screen{
-position:absolute;
-inset:0;
-background:rgba(7,24,32,.48);
-backdrop-filter:blur(8px);
-align-items:center;
-justify-content:center;
-padding:24px;
-z-index:50
-}
-
-.directory-pin-card{
-width:100%;
-max-width:300px;
-background:#fff;
-border-radius:18px;
-padding:24px 22px;
-box-shadow:0 18px 50px rgba(0,0,0,.22);
-text-align:center
-}
-
-.directory-pin-card h2{
-color:#075e54;
-font-size:1.25rem;
-margin-bottom:18px
-}
-
-.directory-pin-card input{
-width:100%;
-text-align:center;
-font-size:1.8rem;
-letter-spacing:4px;
-background:#f8fafb
-}
-
-.directory-pin-card .error-msg{
-min-height:18px;
-margin-top:8px;
-font-weight:600
+    background:var(--theme-soft);
+    transform:translateY(-1px);
 }
 
 /* DIRECTORY */
 
 #contacts-container{
-flex:1;
-padding:15px;
-overflow-y:auto;
-background:var(--theme-soft);
-display:flex;
-flex-direction:column;
-gap:10px
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+    background:var(--theme-soft);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
 .contact-item{
-background:var(--theme-card);
-padding:14px 18px;
-border-radius:12px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-cursor:pointer;
-box-shadow:0 1px 3px rgba(0,0,0,.08);
-transition:background .2s
+    background:var(--theme-card);
+    padding:14px 18px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+    transition:background .2s;
+}
+
+.contact-item:hover{
+    background:var(--theme-soft);
 }
 
 .contact-name{
-font-weight:600;
-color:var(--theme-text);
-font-size:1.05rem
+    font-weight:600;
+    color:var(--theme-text);
+    font-size:1.05rem;
 }
 
 .contact-phone{
-font-size:.85rem;
-color:#667781
+    font-size:.85rem;
+    color:#667781;
 }
 
 .status-pill{
-font-size:.72rem;
-padding:2px 8px;
-border-radius:10px;
-font-weight:600;
-display:inline-block;
-margin-top:3px
+    font-size:.72rem;
+    padding:2px 8px;
+    border-radius:10px;
+    font-weight:600;
+    display:inline-block;
+    margin-top:3px;
 }
 
 .status-pill.active{
-background:#e8f5e9;
-color:#2e7d32
+    background:#e8f5e9;
+    color:#2e7d32;
 }
 
 .status-pill.inactive{
-background:#f5f5f5;
-color:#757575
+    background:#f5f5f5;
+    color:#757575;
 }
 
-/* SETTINGS */
+/* DIRECTORY PIN */
 
-.settings-overlay{
-position:absolute;
-inset:0;
-z-index:60;
-background:rgba(8,18,24,.52);
-backdrop-filter:blur(10px);
-display:none;
-align-items:flex-end;
-justify-content:center
+#directory-pin-screen{
+    position:absolute;
+    inset:0;
+    background:rgba(7,24,32,.48);
+    backdrop-filter:blur(8px);
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:50;
 }
 
-.settings-overlay.active{display:flex}
-
-.settings-panel{
-width:100%;
-max-height:88%;
-overflow-y:auto;
-background:var(--theme-card);
-border-radius:22px 22px 0 0;
-padding:22px 18px 24px;
-box-shadow:0 -15px 50px rgba(0,0,0,.22)
+.directory-pin-card{
+    width:100%;
+    max-width:300px;
+    background:#fff;
+    border-radius:18px;
+    padding:24px 22px;
+    box-shadow:0 18px 50px rgba(0,0,0,.22);
+    text-align:center;
 }
 
-.settings-head{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:16px
+.directory-pin-card h2{
+    color:#075e54;
+    font-size:1.25rem;
+    margin-bottom:18px;
 }
 
-.settings-head h2{
-color:var(--theme-primary);
-font-size:1.25rem
+.directory-pin-card input{
+    width:100%;
+    text-align:center;
+    font-size:1.8rem;
+    letter-spacing:4px;
+    background:#f8fafb;
 }
 
-.settings-close{
-border:0;
-background:var(--theme-soft);
-color:var(--theme-text);
-width:34px;
-height:34px;
-border-radius:50%;
-cursor:pointer;
-font-size:1.1rem
-}
-
-.theme-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px
-}
-
-.theme-option{
-border:2px solid transparent;
-border-radius:14px;
-padding:7px;
-background:var(--theme-soft);
-cursor:pointer;
-text-align:left
-}
-
-.theme-option.selected{
-border-color:var(--theme-primary)
-}
-
-.theme-preview{
-height:72px;
-border-radius:10px;
-overflow:hidden;
-position:relative;
-padding:8px;
-display:flex;
-flex-direction:column;
-justify-content:space-between
-}
-
-.preview-bar{
-height:9px;
-width:62%;
-border-radius:5px;
-background:rgba(255,255,255,.9)
-}
-
-.preview-bubble{
-align-self:flex-end;
-width:48%;
-height:20px;
-border-radius:8px;
-background:rgba(255,255,255,.86)
-}
-
-.preview-name{
-margin-top:7px;
-font-size:.78rem;
-font-weight:650;
-color:var(--theme-text)
+.directory-pin-card .error-msg{
+    min-height:18px;
+    margin-top:8px;
+    font-weight:600;
 }
 
 /* CHAT */
 
 #chat-screen{
-background:var(--theme-chat-surface)
+    background:var(--chat-surface);
 }
 
 .chat-back-button{
-border:0;
-background:rgba(255,255,255,.14);
-color:#fff;
-border-radius:8px;
-padding:5px 9px;
-margin-right:9px;
-font-size:.76rem;
-font-weight:650;
-cursor:pointer
+    border:0;
+    background:rgba(255,255,255,.14);
+    color:white;
+    border-radius:8px;
+    padding:5px 9px;
+    margin-right:9px;
+    font-size:.76rem;
+    font-weight:650;
+    cursor:pointer;
 }
 
 .chat-back-button:hover{
-background:rgba(255,255,255,.23)
+    background:rgba(255,255,255,.23);
 }
 
 #messages-container{
-flex:1;
-padding:15px 20px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:6px;
-background:var(--theme-chat-bg);
-background-image:radial-gradient(var(--theme-chat-dot) .75px,transparent .75px);
-background-size:15px 15px;
--webkit-overflow-scrolling:touch
+    flex:1;
+    padding:15px 20px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:var(--chat-bg);
+    background-image:
+        radial-gradient(
+            var(--chat-dot) .75px,
+            transparent .75px
+        );
+    background-size:15px 15px;
+    -webkit-overflow-scrolling:touch;
 }
 
 .msg{
-max-width:78%;
-padding:8px 12px 6px;
-border-radius:8px;
-font-size:.95rem;
-line-height:1.4;
-word-wrap:break-word;
-box-shadow:0 1px .5px rgba(0,0,0,.13)
+    max-width:78%;
+    padding:8px 12px 6px;
+    border-radius:8px;
+    font-size:.95rem;
+    line-height:1.4;
+    word-wrap:break-word;
+    box-shadow:0 1px .5px rgba(0,0,0,.13);
 }
 
 .msg.me{
-background:var(--theme-my-bubble);
-color:var(--theme-chat-text);
-align-self:flex-end;
-border-top-right-radius:0
+    background:var(--chat-mine);
+    color:var(--chat-text);
+    align-self:flex-end;
+    border-top-right-radius:0;
 }
 
 .msg.them{
-background:var(--theme-their-bubble);
-color:var(--theme-chat-text);
-align-self:flex-start;
-border-top-left-radius:0
+    background:var(--chat-theirs);
+    color:var(--chat-text);
+    align-self:flex-start;
+    border-top-left-radius:0;
 }
 
 .msg-time{
-font-size:.65rem;
-color:var(--theme-msg-time);
-float:right;
-margin-left:12px;
-margin-top:4px
+    font-size:.65rem;
+    color:var(--chat-time);
+    float:right;
+    margin-left:12px;
+    margin-top:4px;
 }
 
 .msg.email-alert{
-background:var(--theme-email-bg)!important;
-border:1.5px solid var(--theme-email-text)!important;
-color:var(--theme-chat-text)!important
+    background:var(--chat-email-bg)!important;
+    border:1.5px solid var(--chat-email-text)!important;
+    color:var(--chat-text)!important;
 }
 
 .email-badge{
-font-size:.65rem;
-background:var(--theme-email-text);
-color:#fff;
-padding:1px 6px;
-border-radius:4px;
-font-weight:bold;
-display:inline-block;
-margin-bottom:3px
+    font-size:.65rem;
+    background:var(--chat-email-text);
+    color:white;
+    padding:1px 6px;
+    border-radius:4px;
+    font-weight:bold;
+    display:inline-block;
+    margin-bottom:3px;
 }
 
 .email-toolbar{
-background:var(--theme-email-bg);
-padding:8px 15px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-border-top:1px solid var(--theme-email-border);
-font-size:.82rem;
-font-weight:600;
-color:var(--theme-email-text)
+    background:var(--chat-email-bg);
+    padding:8px 15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-top:1px solid var(--chat-email-border);
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--chat-email-text);
 }
 
 .toggle-switch{
-position:relative;
-display:inline-block;
-width:42px;
-height:22px
+    position:relative;
+    display:inline-block;
+    width:42px;
+    height:22px;
 }
 
 .toggle-switch input{
-opacity:0;
-width:0;
-height:0
+    opacity:0;
+    width:0;
+    height:0;
 }
 
 .slider{
-position:absolute;
-cursor:pointer;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#ccc;
-transition:.3s;
-border-radius:22px
+    position:absolute;
+    cursor:pointer;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#ccc;
+    transition:.3s;
+    border-radius:22px;
 }
 
 .slider:before{
-position:absolute;
-content:"";
-height:16px;
-width:16px;
-left:3px;
-bottom:3px;
-background:#fff;
-transition:.3s;
-border-radius:50%
+    position:absolute;
+    content:"";
+    height:16px;
+    width:16px;
+    left:3px;
+    bottom:3px;
+    background:white;
+    transition:.3s;
+    border-radius:50%;
 }
 
-.toggle-switch input:checked+.slider{
-background:var(--theme-primary)
+.toggle-switch input:checked + .slider{
+    background:var(--theme-primary);
 }
 
-.toggle-switch input:checked+.slider:before{
-transform:translateX(20px)
+.toggle-switch input:checked + .slider:before{
+    transform:translateX(20px);
 }
 
 #input-toolbar{
-display:flex;
-padding:10px 15px;
-background:var(--theme-chat-toolbar);
-gap:10px;
-align-items:center;
-border-top:1px solid var(--theme-chat-border)
+    display:flex;
+    padding:10px 15px;
+    background:var(--chat-toolbar);
+    gap:10px;
+    align-items:center;
+    border-top:1px solid var(--chat-border);
 }
 
 #message-input{
-flex:1;
-border-radius:20px;
-padding:10px 16px;
-border:1px solid var(--theme-input-border);
-background:var(--theme-input-bg);
-color:var(--theme-chat-text);
-font-size:.95rem
+    flex:1;
+    border-radius:20px;
+    padding:10px 16px;
+    border:1px solid var(--chat-input-border);
+    background:var(--chat-input);
+    color:var(--chat-text);
+    font-size:.95rem;
 }
 
 #message-input::placeholder{
-color:var(--theme-placeholder)
+    color:var(--chat-placeholder);
 }
 
 #send-btn{
-background:var(--theme-primary);
-color:#fff;
-border:none;
-width:42px;
-height:42px;
-border-radius:50%;
-display:flex;
-justify-content:center;
-align-items:center;
-cursor:pointer;
-font-size:1.1rem
-}
-
-.switch-text{
-text-align:center;
-font-size:.82rem;
-color:#666;
-margin-top:2px
-}
-
-.switch-text a{
-color:var(--theme-primary);
-text-decoration:none;
-font-weight:600;
-cursor:pointer
+    background:var(--theme-primary);
+    color:white;
+    border:none;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    font-size:1.1rem;
 }
 
 .back-arrow{
-cursor:pointer;
-font-size:1.2rem;
-margin-right:10px
+    cursor:pointer;
+    font-size:1.2rem;
+    margin-right:10px;
 }
 
 .error-msg{
-color:#d32f2f;
-font-size:.78rem;
-text-align:center
+    color:#d32f2f;
+    font-size:.78rem;
+    text-align:center;
 }
 
 .notice-toast{
-position:absolute;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-background:#323232;
-color:#fff;
-padding:8px 16px;
-border-radius:20px;
-font-size:.78rem;
-z-index:99;
-display:none;
-box-shadow:0 4px 12px rgba(0,0,0,.2)
+    position:absolute;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#323232;
+    color:white;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:.78rem;
+    z-index:99;
+    display:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+
+/* SETTINGS */
+
+.settings-overlay{
+    position:absolute;
+    inset:0;
+    z-index:60;
+    background:rgba(8,18,24,.52);
+    backdrop-filter:blur(10px);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.settings-overlay.active{
+    display:flex;
+}
+
+.settings-panel{
+    width:100%;
+    max-height:88%;
+    overflow-y:auto;
+    background:var(--theme-card);
+    border-radius:22px 22px 0 0;
+    padding:22px 18px 24px;
+    box-shadow:0 -15px 50px rgba(0,0,0,.22);
+}
+
+.settings-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+}
+
+.settings-head h2{
+    color:var(--theme-primary);
+    font-size:1.25rem;
+}
+
+.settings-close{
+    border:0;
+    background:var(--theme-soft);
+    color:var(--theme-text);
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:1.1rem;
+}
+
+.theme-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.theme-option{
+    border:2px solid transparent;
+    border-radius:14px;
+    padding:7px;
+    background:var(--theme-soft);
+    cursor:pointer;
+    text-align:left;
+}
+
+.theme-option.selected{
+    border-color:var(--theme-primary);
+}
+
+.theme-preview{
+    height:72px;
+    border-radius:10px;
+    overflow:hidden;
+    position:relative;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.preview-bar{
+    height:9px;
+    width:62%;
+    border-radius:5px;
+    background:rgba(255,255,255,.9);
+}
+
+.preview-bubble{
+    align-self:flex-end;
+    width:48%;
+    height:20px;
+    border-radius:8px;
+    background:rgba(255,255,255,.86);
+}
+
+.preview-name{
+    margin-top:7px;
+    font-size:.78rem;
+    font-weight:650;
+    color:var(--theme-text);
 }
 </style>
 </head>
@@ -777,21 +814,34 @@ box-shadow:0 4px 12px rgba(0,0,0,.2)
 
 <div class="card">
 
-<div id="toast-notification" class="notice-toast">
+<div
+id="toast-notification"
+class="notice-toast"
+>
 Email extension is handled by the dropdown menu.
 </div>
 
-<!-- WELCOME -->
-<div id="welcome-screen" class="screen active">
+<!-- SPLASH -->
+
+<div
+id="welcome-screen"
+class="screen active"
+>
 <h1>axtres</h1>
 <p>Secure Email & Chat Messenger</p>
 <div class="spinner"></div>
 </div>
 
 <!-- REGISTER -->
-<div id="register-screen" class="screen">
 
-<div class="header-bar">Registration</div>
+<div
+id="register-screen"
+class="screen"
+>
+
+<div class="header-bar">
+Registration
+</div>
 
 <div class="form-content">
 
@@ -826,8 +876,18 @@ oninput="interceptEmailInput(event)"
 >
 
 <select id="reg-email-domain">
-<option value="@gmail.com" selected>@gmail.com</option>
-<option value="@outlook.com">@outlook.com</option>
+
+<option
+value="@gmail.com"
+selected
+>
+@gmail.com
+</option>
+
+<option value="@outlook.com">
+@outlook.com
+</option>
+
 </select>
 
 </div>
@@ -846,9 +906,15 @@ style="font-size:.75rem;text-align:center;color:#666"
 Status: Not Enabled
 </div>
 
-<div class="error-msg" id="reg-error"></div>
+<div
+class="error-msg"
+id="reg-error"
+></div>
 
-<button class="btn" onclick="handleRegister()">
+<button
+class="btn"
+onclick="handleRegister()"
+>
 Complete Sign Up
 </button>
 
@@ -862,20 +928,33 @@ onclick="installPWA()"
 
 <div class="switch-text">
 Already registered?
-<a onclick="switchScreen('login-screen')">Log In here</a>
+<a onclick="switchScreen('login-screen')">
+Log In here
+</a>
 </div>
 
 </div>
 </div>
 
 <!-- VERIFY REGISTER -->
-<div id="verify-screen" class="screen">
 
-<div class="header-bar">Verify Email</div>
+<div
+id="verify-screen"
+class="screen"
+>
 
-<div class="form-content" style="text-align:center">
+<div class="header-bar">
+Verify Email
+</div>
 
-<h2>Enter 3-Digit PIN</h2>
+<div
+class="form-content"
+style="text-align:center"
+>
+
+<h2>
+Enter 3-Digit PIN
+</h2>
 
 <p class="subtitle">
 Check your email inbox for the verification code.
@@ -891,7 +970,10 @@ style="text-align:center;font-size:1.8rem;letter-spacing:10px"
 oninput="handleAutoVerifyRegister(event)"
 >
 
-<div class="error-msg" id="verify-error"></div>
+<div
+class="error-msg"
+id="verify-error"
+></div>
 
 <button
 class="btn-secondary"
@@ -904,13 +986,21 @@ Back
 </div>
 
 <!-- LOGIN -->
-<div id="login-screen" class="screen">
 
-<div class="header-bar">Sign In</div>
+<div
+id="login-screen"
+class="screen"
+>
+
+<div class="header-bar">
+Sign In
+</div>
 
 <div class="form-content">
 
-<h2>Welcome Back</h2>
+<h2>
+Welcome Back
+</h2>
 
 <input
 type="tel"
@@ -921,9 +1011,15 @@ inputmode="numeric"
 oninput="this.value=this.value.replace(/[^0-9]/g,'')"
 >
 
-<div class="error-msg" id="login-error"></div>
+<div
+class="error-msg"
+id="login-error"
+></div>
 
-<button class="btn" onclick="handleLogin()">
+<button
+class="btn"
+onclick="handleLogin()"
+>
 Log In to Chats
 </button>
 
@@ -952,12 +1048,18 @@ Register here
 </div>
 </div>
 
-<!-- LINK EMAIL -->
-<div id="add-email-screen" class="screen">
+<!-- ADD EMAIL -->
+
+<div
+id="add-email-screen"
+class="screen"
+>
 
 <div class="header-bar">
 
-<div style="display:flex;align-items:center">
+<div
+style="display:flex;align-items:center"
+>
 
 <span
 class="back-arrow"
@@ -966,7 +1068,9 @@ onclick="switchScreen('login-screen')"
 &#8592;
 </span>
 
-<div>Link Email</div>
+<div>
+Link Email
+</div>
 
 </div>
 
@@ -974,7 +1078,9 @@ onclick="switchScreen('login-screen')"
 
 <div class="form-content">
 
-<h2>Update Email</h2>
+<h2>
+Update Email
+</h2>
 
 <p class="subtitle">
 Enter phone and new email
@@ -999,13 +1105,26 @@ oninput="interceptEmailInput(event)"
 >
 
 <select id="ae-email-domain">
-<option value="@gmail.com" selected>@gmail.com</option>
-<option value="@outlook.com">@outlook.com</option>
+
+<option
+value="@gmail.com"
+selected
+>
+@gmail.com
+</option>
+
+<option value="@outlook.com">
+@outlook.com
+</option>
+
 </select>
 
 </div>
 
-<div class="error-msg" id="ae-error"></div>
+<div
+class="error-msg"
+id="ae-error"
+></div>
 
 <button
 class="btn"
@@ -1018,7 +1137,11 @@ Send Verification PIN
 </div>
 
 <!-- VERIFY EMAIL -->
-<div id="verify-email-screen" class="screen">
+
+<div
+id="verify-email-screen"
+class="screen"
+>
 
 <div class="header-bar">
 Confirm Email PIN
@@ -1029,7 +1152,9 @@ class="form-content"
 style="text-align:center"
 >
 
-<h2>Enter 3-Digit PIN</h2>
+<h2>
+Enter 3-Digit PIN
+</h2>
 
 <p class="subtitle">
 Auto-submits when 3 digits are entered.
@@ -1045,7 +1170,10 @@ style="text-align:center;font-size:1.8rem;letter-spacing:10px"
 oninput="handleAutoVerifyEmail(event)"
 >
 
-<div class="error-msg" id="ae-verify-error"></div>
+<div
+class="error-msg"
+id="ae-verify-error"
+></div>
 
 <button
 class="btn-secondary"
@@ -1058,11 +1186,17 @@ Cancel
 </div>
 
 <!-- HUB -->
-<div id="hub-screen" class="screen">
+
+<div
+id="hub-screen"
+class="screen"
+>
 
 <div class="header-bar">
 
-<div>axtres</div>
+<div>
+axtres
+</div>
 
 <span onclick="handleLogout()">
 Sign Out
@@ -1143,6 +1277,7 @@ onclick="openSettings()"
 </div>
 
 <!-- DIRECTORY PIN -->
+
 <div
 id="directory-pin-screen"
 class="screen"
@@ -1154,7 +1289,9 @@ class="directory-pin-card"
 onclick="event.stopPropagation()"
 >
 
-<h2>Directory</h2>
+<h2>
+Directory
+</h2>
 
 <input
 type="tel"
@@ -1174,7 +1311,11 @@ id="directory-pin-error"
 </div>
 
 <!-- DIRECTORY -->
-<div id="contacts-screen" class="screen">
+
+<div
+id="contacts-screen"
+class="screen"
+>
 
 <div class="header-bar">
 
@@ -1195,7 +1336,7 @@ padding:10px 15px;
 background:var(--theme-card);
 font-size:.85rem;
 color:var(--theme-text);
-border-bottom:1px solid var(--theme-chat-border)
+border-bottom:1px solid var(--chat-border)
 "
 >
 Select a contact to start chatting:
@@ -1206,6 +1347,7 @@ Select a contact to start chatting:
 </div>
 
 <!-- SETTINGS -->
+
 <div
 id="settings-overlay"
 class="settings-overlay"
@@ -1219,7 +1361,9 @@ onclick="event.stopPropagation()"
 
 <div class="settings-head">
 
-<h2>Appearance</h2>
+<h2>
+Appearance
+</h2>
 
 <button
 class="settings-close"
@@ -1237,14 +1381,21 @@ class="theme-option"
 data-theme="emerald"
 onclick="selectTheme('emerald')"
 >
+
 <div
 class="theme-preview"
 style="background:linear-gradient(135deg,#075e54,#128c7e)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Emerald</div>
+
+<div class="preview-name">
+Emerald
+</div>
+
 </div>
 
 <div
@@ -1252,14 +1403,21 @@ class="theme-option"
 data-theme="midnight"
 onclick="selectTheme('midnight')"
 >
+
 <div
 class="theme-preview"
-style="background:linear-gradient(135deg,#0b1020,#1d2745)"
+style="background:linear-gradient(135deg,#070b16,#3f5fa8)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Midnight</div>
+
+<div class="preview-name">
+Midnight
+</div>
+
 </div>
 
 <div
@@ -1267,14 +1425,21 @@ class="theme-option"
 data-theme="ocean"
 onclick="selectTheme('ocean')"
 >
+
 <div
 class="theme-preview"
-style="background:linear-gradient(135deg,#0b3d62,#168aad)"
+style="background:linear-gradient(135deg,#082f49,#087ea4)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Ocean</div>
+
+<div class="preview-name">
+Ocean
+</div>
+
 </div>
 
 <div
@@ -1282,14 +1447,21 @@ class="theme-option"
 data-theme="graphite"
 onclick="selectTheme('graphite')"
 >
+
 <div
 class="theme-preview"
-style="background:linear-gradient(135deg,#202124,#4b5563)"
+style="background:linear-gradient(135deg,#111827,#4b5563)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Graphite</div>
+
+<div class="preview-name">
+Graphite
+</div>
+
 </div>
 
 <div
@@ -1297,14 +1469,21 @@ class="theme-option"
 data-theme="royal"
 onclick="selectTheme('royal')"
 >
+
 <div
 class="theme-preview"
 style="background:linear-gradient(135deg,#35205f,#7c3aed)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Royal</div>
+
+<div class="preview-name">
+Royal
+</div>
+
 </div>
 
 <div
@@ -1312,14 +1491,21 @@ class="theme-option"
 data-theme="ivory"
 onclick="selectTheme('ivory')"
 >
+
 <div
 class="theme-preview"
-style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
+style="background:linear-gradient(135deg,#6b4f2a,#a37b4b)"
 >
+
 <div class="preview-bar"></div>
 <div class="preview-bubble"></div>
+
 </div>
-<div class="preview-name">Ivory</div>
+
+<div class="preview-name">
+Ivory
+</div>
+
 </div>
 
 </div>
@@ -1327,7 +1513,11 @@ style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
 </div>
 
 <!-- CHAT -->
-<div id="chat-screen" class="screen">
+
+<div
+id="chat-screen"
+class="screen"
+>
 
 <div class="header-bar">
 
@@ -1361,7 +1551,9 @@ Sign Out
 
 <div class="email-toolbar">
 
-<span>📧 Send via Email</span>
+<span>
+📧 Send via Email
+</span>
 
 <label class="toggle-switch">
 
@@ -1413,36 +1605,9 @@ let contactsInterval=null;
 let knownMessageIds=new Set();
 let deferredPrompt=null;
 
-/* PWA */
-
-window.addEventListener("beforeinstallprompt",e=>{
-e.preventDefault();
-deferredPrompt=e;
-
-document.querySelectorAll(".btn-install")
-.forEach(btn=>btn.style.display="flex");
-});
-
-async function installPWA(){
-
-if(!deferredPrompt){
-alert("Open browser menu and select 'Add to Home Screen' or 'Install App'.");
-return;
-}
-
-deferredPrompt.prompt();
-
-const {outcome}=await deferredPrompt.userChoice;
-
-if(outcome==="accepted"){
-document.querySelectorAll(".btn-install")
-.forEach(btn=>btn.style.display="none");
-}
-
-deferredPrompt=null;
-}
-
-/* THEMES */
+/* =========================================================
+   THEMES
+========================================================= */
 
 const THEMES={
 
@@ -1453,7 +1618,23 @@ page:"linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364)",
 soft:"#f0f2f5",
 card:"#ffffff",
 text:"#111b21",
-chat:["#efeae2","#d1ccc0","#ffffff","#dcf8c6","#ffffff","#111b21","#667781","#f0f2f5","#e0e0e0","#ffffff","#cccccc","#7a858c","#e3f2fd","#bbdefb","#1565c0"]
+chat:{
+bg:"#efeae2",
+dot:"#d1ccc0",
+surface:"#ffffff",
+mine:"#dcf8c6",
+theirs:"#ffffff",
+text:"#111b21",
+time:"#667781",
+toolbar:"#f0f2f5",
+border:"#e0e0e0",
+input:"#ffffff",
+inputBorder:"#cccccc",
+placeholder:"#7a858c",
+email:"#e3f2fd",
+emailBorder:"#bbdefb",
+emailText:"#1565c0"
+}
 },
 
 midnight:{
@@ -1463,7 +1644,23 @@ page:"linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
 soft:"#151d2b",
 card:"#101827",
 text:"#eef3ff",
-chat:["#0d1422","#26344d","#101827","#1b6b63","#182338","#eef3ff","#9eacc3","#111927","#263247","#121b2a","#3a4a63","#9eacc3","#162b45","#28496b","#8fc7ff"]
+chat:{
+bg:"#0d1422",
+dot:"#26344d",
+surface:"#101827",
+mine:"#1b6b63",
+theirs:"#182338",
+text:"#eef3ff",
+time:"#9eacc3",
+toolbar:"#111927",
+border:"#263247",
+input:"#121b2a",
+inputBorder:"#3a4a63",
+placeholder:"#9eacc3",
+email:"#162b45",
+emailBorder:"#28496b",
+emailText:"#8fc7ff"
+}
 },
 
 ocean:{
@@ -1473,7 +1670,23 @@ page:"linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
 soft:"#edf7fa",
 card:"#ffffff",
 text:"#102a43",
-chat:["#e8f5f8","#b8dce5","#ffffff","#c7f0e6","#ffffff","#102a43","#627d98","#edf7fa","#c9e3ea","#ffffff","#b8cbd3","#627d98","#e3f2fd","#bbdefb","#1565c0"]
+chat:{
+bg:"#e8f5f8",
+dot:"#b8dce5",
+surface:"#ffffff",
+mine:"#c7f0e6",
+theirs:"#ffffff",
+text:"#102a43",
+time:"#627d98",
+toolbar:"#edf7fa",
+border:"#c9e3ea",
+input:"#ffffff",
+inputBorder:"#b8cbd3",
+placeholder:"#627d98",
+email:"#e3f2fd",
+emailBorder:"#bbdefb",
+emailText:"#1565c0"
+}
 },
 
 graphite:{
@@ -1483,7 +1696,23 @@ page:"linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
 soft:"#20242b",
 card:"#181b20",
 text:"#f1f5f9",
-chat:["#171a20","#343a46","#1b1f26","#344b58","#272c35","#f1f5f9","#aeb8c6","#20242b","#343a46","#181b20","#414956","#aeb8c6","#202c3d","#3b4c61","#a8c7ff"]
+chat:{
+bg:"#171a20",
+dot:"#343a46",
+surface:"#1b1f26",
+mine:"#344b58",
+theirs:"#272c35",
+text:"#f1f5f9",
+time:"#aeb8c6",
+toolbar:"#20242b",
+border:"#343a46",
+input:"#181b20",
+inputBorder:"#414956",
+placeholder:"#aeb8c6",
+email:"#202c3d",
+emailBorder:"#3b4c61",
+emailText:"#a8c7ff"
+}
 },
 
 royal:{
@@ -1493,7 +1722,23 @@ page:"linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
 soft:"#f3effb",
 card:"#ffffff",
 text:"#211534",
-chat:["#eee9f7","#c9b9e8","#ffffff","#e2d4ff","#ffffff","#211534","#76668a","#f3effb","#ddd2ee","#ffffff","#c8bdd8","#76668a","#eee7fb","#d8caee","#633bb8"]
+chat:{
+bg:"#eee9f7",
+dot:"#c9b9e8",
+surface:"#ffffff",
+mine:"#e2d4ff",
+theirs:"#ffffff",
+text:"#211534",
+time:"#76668a",
+toolbar:"#f3effb",
+border:"#ddd2ee",
+input:"#ffffff",
+inputBorder:"#c8bdd8",
+placeholder:"#76668a",
+email:"#eee7fb",
+emailBorder:"#d8caee",
+emailText:"#633bb8"
+}
 },
 
 ivory:{
@@ -1503,7 +1748,23 @@ page:"linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
 soft:"#f6f1e9",
 card:"#fffdf8",
 text:"#2f271f",
-chat:["#f1ece4","#d2c2ad","#fffdf8","#eadfcf","#fffdf8","#2f271f","#776b5e","#f6f1e9","#ded3c5","#fffdf8","#cfc2b2","#776b5e","#f1eadf","#d9c9b5","#80613a"]
+chat:{
+bg:"#f1ece4",
+dot:"#d2c2ad",
+surface:"#fffdf8",
+mine:"#eadfcf",
+theirs:"#fffdf8",
+text:"#2f271f",
+time:"#776b5e",
+toolbar:"#f6f1e9",
+border:"#ded3c5",
+input:"#fffdf8",
+inputBorder:"#cfc2b2",
+placeholder:"#776b5e",
+email:"#f1eadf",
+emailBorder:"#d9c9b5",
+emailText:"#80613a"
+}
 }
 
 };
@@ -1511,41 +1772,118 @@ chat:["#f1ece4","#d2c2ad","#fffdf8","#eadfcf","#fffdf8","#2f271f","#776b5e","#f6
 function applyTheme(name){
 
 const theme=THEMES[name]||THEMES.emerald;
+
 const root=document.documentElement;
 
-root.style.setProperty("--theme-primary",theme.primary);
-root.style.setProperty("--theme-secondary",theme.secondary);
-root.style.setProperty("--theme-page",theme.page);
-root.style.setProperty("--theme-soft",theme.soft);
-root.style.setProperty("--theme-card",theme.card);
-root.style.setProperty("--theme-text",theme.text);
+root.style.setProperty(
+"--theme-primary",
+theme.primary
+);
 
-const keys=[
-"--theme-chat-bg",
-"--theme-chat-dot",
-"--theme-chat-surface",
-"--theme-my-bubble",
-"--theme-their-bubble",
-"--theme-chat-text",
-"--theme-msg-time",
-"--theme-chat-toolbar",
-"--theme-chat-border",
-"--theme-input-bg",
-"--theme-input-border",
-"--theme-placeholder",
-"--theme-email-bg",
-"--theme-email-border",
-"--theme-email-text"
-];
+root.style.setProperty(
+"--theme-secondary",
+theme.secondary
+);
 
-theme.chat.forEach((value,i)=>{
-root.style.setProperty(keys[i],value);
-});
+root.style.setProperty(
+"--theme-page",
+theme.page
+);
 
-document.body.style.background=theme.page;
+root.style.setProperty(
+"--theme-soft",
+theme.soft
+);
+
+root.style.setProperty(
+"--theme-card",
+theme.card
+);
+
+root.style.setProperty(
+"--theme-text",
+theme.text
+);
+
+root.style.setProperty(
+"--chat-bg",
+theme.chat.bg
+);
+
+root.style.setProperty(
+"--chat-dot",
+theme.chat.dot
+);
+
+root.style.setProperty(
+"--chat-surface",
+theme.chat.surface
+);
+
+root.style.setProperty(
+"--chat-mine",
+theme.chat.mine
+);
+
+root.style.setProperty(
+"--chat-theirs",
+theme.chat.theirs
+);
+
+root.style.setProperty(
+"--chat-text",
+theme.chat.text
+);
+
+root.style.setProperty(
+"--chat-time",
+theme.chat.time
+);
+
+root.style.setProperty(
+"--chat-toolbar",
+theme.chat.toolbar
+);
+
+root.style.setProperty(
+"--chat-border",
+theme.chat.border
+);
+
+root.style.setProperty(
+"--chat-input",
+theme.chat.input
+);
+
+root.style.setProperty(
+"--chat-input-border",
+theme.chat.inputBorder
+);
+
+root.style.setProperty(
+"--chat-placeholder",
+theme.chat.placeholder
+);
+
+root.style.setProperty(
+"--chat-email-bg",
+theme.chat.email
+);
+
+root.style.setProperty(
+"--chat-email-border",
+theme.chat.emailBorder
+);
+
+root.style.setProperty(
+"--chat-email-text",
+theme.chat.emailText
+);
+
 document.body.dataset.theme=name;
 
-document.querySelectorAll(".theme-option")
+document
+.querySelectorAll(".theme-option")
 .forEach(el=>{
 el.classList.toggle(
 "selected",
@@ -1553,7 +1891,11 @@ el.dataset.theme===name
 );
 });
 
-localStorage.setItem("axtres_theme",name);
+localStorage.setItem(
+"axtres_theme",
+name
+);
+
 }
 
 function openSettings(){
@@ -1563,21 +1905,26 @@ document
 .classList.add("active");
 
 const current=
-localStorage.getItem("axtres_theme")||"emerald";
+localStorage.getItem("axtres_theme")
+||"emerald";
 
-document.querySelectorAll(".theme-option")
+document
+.querySelectorAll(".theme-option")
 .forEach(el=>{
 el.classList.toggle(
 "selected",
 el.dataset.theme===current
 );
 });
+
 }
 
 function closeSettings(){
+
 document
 .getElementById("settings-overlay")
 .classList.remove("active");
+
 }
 
 function handleSettingsBackdrop(e){
@@ -1585,71 +1932,197 @@ function handleSettingsBackdrop(e){
 if(e.target.id==="settings-overlay"){
 closeSettings();
 }
+
 }
 
 function selectTheme(name){
+
 applyTheme(name);
+
 }
 
-/* DEVICE */
+/* =========================================================
+   PWA
+========================================================= */
+
+window.addEventListener(
+"beforeinstallprompt",
+e=>{
+
+e.preventDefault();
+
+deferredPrompt=e;
+
+document
+.querySelectorAll(".btn-install")
+.forEach(btn=>{
+btn.style.display="flex";
+});
+
+}
+);
+
+async function installPWA(){
+
+if(!deferredPrompt){
+
+alert(
+"Open browser menu and select 'Add to Home Screen' or 'Install App'."
+);
+
+return;
+
+}
+
+deferredPrompt.prompt();
+
+const result=
+await deferredPrompt.userChoice;
+
+if(result.outcome==="accepted"){
+
+document
+.querySelectorAll(".btn-install")
+.forEach(btn=>{
+btn.style.display="none";
+});
+
+}
+
+deferredPrompt=null;
+
+}
+
+/* =========================================================
+   DEVICE
+========================================================= */
 
 function getDeviceId(){
 
 let deviceId=
-localStorage.getItem("axtres_device_id");
+localStorage.getItem(
+"axtres_device_id"
+);
 
 if(!deviceId){
 
 deviceId=
 "dev_"+
-Math.random().toString(36).substring(2)+
-Date.now().toString(36);
+Math.random()
+.toString(36)
+.substring(2)+
+Date.now()
+.toString(36);
 
 localStorage.setItem(
 "axtres_device_id",
 deviceId
 );
+
 }
 
 return deviceId;
+
 }
 
-/* STARTUP */
+/* =========================================================
+   STARTUP
+========================================================= */
 
-window.addEventListener("DOMContentLoaded",()=>{
+window.addEventListener(
+"DOMContentLoaded",
+function(){
+
+try{
 
 getDeviceId();
 
 applyTheme(
-localStorage.getItem("axtres_theme")||"emerald"
+localStorage.getItem("axtres_theme")
+||"emerald"
 );
 
 const savedUser=
-localStorage.getItem("axtres_user");
+localStorage.getItem(
+"axtres_user"
+);
 
 if(savedUser){
 
 try{
 
-currentUser=JSON.parse(savedUser);
-navigateAfterAuth();
-return;
+const parsed=
+JSON.parse(savedUser);
 
-}catch(e){}
+if(
+parsed &&
+parsed.phone &&
+parsed.name
+){
+
+currentUser=parsed;
+
+navigateAfterAuth();
+
+return;
 
 }
 
-setTimeout(()=>{
-switchScreen("login-screen");
-},800);
+}catch(e){
 
+localStorage.removeItem(
+"axtres_user"
+);
+
+}
+
+}
+
+switchScreen(
+"login-screen"
+);
+
+}catch(error){
+
+console.error(
+"axtres startup error:",
+error
+);
+
+switchScreen(
+"login-screen"
+);
+
+}
+
+}
+);
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function switchScreen(screenId){
+
+document
+.querySelectorAll(".screen")
+.forEach(s=>{
+s.classList.remove("active");
 });
 
-/* NAVIGATION */
+const screen=
+document.getElementById(screenId);
+
+if(screen){
+screen.classList.add("active");
+}
+
+}
 
 function navigateAfterAuth(){
 
 if(
+currentUser &&
 String(currentUser.phone).trim()===YADHU_PHONE
 ){
 
@@ -1663,18 +2136,9 @@ openHubScreen();
 
 }
 
-function switchScreen(screenId){
-
-document
-.querySelectorAll(".screen")
-.forEach(s=>s.classList.remove("active"));
-
-document
-.getElementById(screenId)
-.classList.add("active");
-}
-
-/* HUB */
+/* =========================================================
+   HUB
+========================================================= */
 
 function openHubScreen(){
 
@@ -1701,28 +2165,41 @@ document.getElementById(
 currentUser.email||"No email linked";
 
 const card=
-document.getElementById("hub-user-card");
+document.getElementById(
+"hub-user-card"
+);
 
 card.classList.remove("visible");
 
 requestAnimationFrame(()=>{
+
 requestAnimationFrame(()=>{
+
 card.classList.add("visible");
+
 });
+
 });
+
 }
 
 function chatWithYadhu(){
 
 startChatWith({
+
 name:"Yadhu Krishna",
+
 phone:YADHU_PHONE,
+
 has_email:1
+
 });
 
 }
 
-/* DIRECTORY PIN */
+/* =========================================================
+   DIRECTORY PIN
+========================================================= */
 
 function openDirectoryWithPin(){
 
@@ -1743,20 +2220,31 @@ switchScreen(
 "directory-pin-screen"
 );
 
-setTimeout(()=>{
+setTimeout(
+()=>{
 input.focus();
-},50);
+},
+50
+);
 
 }
 
 function closeDirectoryPin(){
-switchScreen("hub-screen");
+
+switchScreen(
+"hub-screen"
+);
+
 }
 
 function handleDirectoryBackdrop(e){
 
-if(e.target.id==="directory-pin-screen"){
+if(
+e.target.id==="directory-pin-screen"
+){
+
 closeDirectoryPin();
+
 }
 
 }
@@ -1782,16 +2270,21 @@ if(input.value.length===3){
 if(input.value==="257"){
 
 closeDirectoryPin();
+
 openContactsScreen();
 
 }else{
 
 error.innerText="Wrong PIN";
+
 input.value="";
 
-setTimeout(()=>{
+setTimeout(
+()=>{
 input.focus();
-},50);
+},
+50
+);
 
 }
 
@@ -1799,18 +2292,27 @@ input.focus();
 
 }
 
-/* CHAT BACK */
+/* =========================================================
+   CHAT BACK
+========================================================= */
 
 function handleChatBack(){
 
 if(syncInterval){
-clearInterval(syncInterval);
+
+clearInterval(
+syncInterval
+);
+
+syncInterval=null;
+
 }
 
 currentRoomId=null;
 activeRecipient=null;
 
 if(
+currentUser &&
 String(currentUser.phone).trim()===YADHU_PHONE
 ){
 
@@ -1824,12 +2326,16 @@ openHubScreen();
 
 }
 
-/* FOCUS / VISIBILITY */
+/* =========================================================
+   WAKE / FOCUS
+========================================================= */
 
 function forceSyncOnWake(){
 
 if(currentRoomId){
+
 pollChatMessages(false);
+
 }
 
 if(
@@ -1853,13 +2359,21 @@ forceSyncOnWake
 document.addEventListener(
 "visibilitychange",
 ()=>{
-if(document.visibilityState==="visible"){
+
+if(
+document.visibilityState==="visible"
+){
+
 forceSyncOnWake();
+
 }
+
 }
 );
 
-/* EMAIL INPUT */
+/* =========================================================
+   EMAIL INPUT
+========================================================= */
 
 function interceptEmailInput(e){
 
@@ -1891,15 +2405,21 @@ document.getElementById(
 );
 
 toast.innerText=msg;
+
 toast.style.display="block";
 
-setTimeout(()=>{
+setTimeout(
+()=>{
 toast.style.display="none";
-},2500);
+},
+2500
+);
 
 }
 
-/* NOTIFICATIONS */
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
 
 async function requestNotificationPermission(){
 
@@ -1909,7 +2429,12 @@ document.getElementById(
 );
 
 if(!("Notification" in window)){
+
+statusDiv.innerText=
+"Status: Not supported";
+
 return;
+
 }
 
 const permission=
@@ -1917,42 +2442,57 @@ await Notification.requestPermission();
 
 statusDiv.innerText=
 permission==="granted"
-?"Status: Notifications Enabled!"
-:"Status: Denied.";
+?
+"Status: Notifications Enabled!"
+:
+"Status: Denied.";
 
 statusDiv.style.color=
 permission==="granted"
-?"#2e7d32"
-:"#d32f2f";
+?
+"#2e7d32"
+:
+"#d32f2f";
 
 }
 
-/* REGISTER */
+/* =========================================================
+   REGISTER
+========================================================= */
 
 async function handleRegister(){
 
 const name=
-document.getElementById("reg-name")
+document
+.getElementById("reg-name")
 .value.trim();
 
 const phone=
-document.getElementById("reg-phone")
+document
+.getElementById("reg-phone")
 .value.trim();
 
 const emailUser=
-document.getElementById("reg-email-user")
+document
+.getElementById("reg-email-user")
 .value.trim();
 
 const emailDomain=
-document.getElementById("reg-email-domain")
+document
+.getElementById("reg-email-domain")
 .value;
 
 const email=
-emailUser?
-emailUser+emailDomain:"";
+emailUser
+?
+emailUser+emailDomain
+:
+"";
 
 const errDiv=
-document.getElementById("reg-error");
+document.getElementById(
+"reg-error"
+);
 
 errDiv.innerText="";
 
@@ -1983,24 +2523,32 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
 body:JSON.stringify({
+
 name,
 phone,
 email,
 device_id:getDeviceId()
+
 })
 }
 );
 
-const data=await res.json();
+const data=
+await res.json();
 
 if(!res.ok){
+
 throw new Error(
-data.error||"Registration failed"
+data.error||
+"Registration failed"
 );
+
 }
 
 pendingPhone=phone;
@@ -2015,7 +2563,9 @@ document.getElementById(
 "verify-error"
 ).innerText="";
 
-switchScreen("verify-screen");
+switchScreen(
+"verify-screen"
+);
 
 }else{
 
@@ -2023,7 +2573,9 @@ document.getElementById(
 "login-phone"
 ).value=phone;
 
-switchScreen("login-screen");
+switchScreen(
+"login-screen"
+);
 
 const loginError=
 document.getElementById(
@@ -2033,26 +2585,33 @@ document.getElementById(
 loginError.innerText=
 "Registered successfully! Please log in.";
 
-loginError.style.color="#2e7d32";
+loginError.style.color=
+"#2e7d32";
 
 }
 
 }catch(err){
 
-errDiv.innerText=err.message;
+errDiv.innerText=
+err.message;
 
 }
 
 }
 
-/* VERIFY REGISTER */
+/* =========================================================
+   VERIFY REGISTER
+========================================================= */
 
 async function handleAutoVerifyRegister(e){
 
 const input=e.target;
 
 input.value=
-input.value.replace(/[^0-9]/g,"");
+input.value.replace(
+/[^0-9]/g,
+""
+);
 
 const errDiv=
 document.getElementById(
@@ -2072,29 +2631,40 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
 body:JSON.stringify({
+
 phone:pendingPhone,
 pin:input.value
+
 })
 }
 );
 
-const data=await res.json();
+const data=
+await res.json();
 
 if(!res.ok){
+
 throw new Error(
-data.error||"Incorrect PIN"
+data.error||
+"Incorrect PIN"
 );
+
 }
 
 document.getElementById(
 "login-phone"
-).value=pendingPhone;
+).value=
+pendingPhone;
 
-switchScreen("login-screen");
+switchScreen(
+"login-screen"
+);
 
 const loginError=
 document.getElementById(
@@ -2104,11 +2674,14 @@ document.getElementById(
 loginError.innerText=
 "Email verified successfully! Log in now.";
 
-loginError.style.color="#2e7d32";
+loginError.style.color=
+"#2e7d32";
 
 }catch(err){
 
-errDiv.innerText=err.message;
+errDiv.innerText=
+err.message;
+
 input.value="";
 
 }
@@ -2117,7 +2690,9 @@ input.value="";
 
 }
 
-/* ADD EMAIL */
+/* =========================================================
+   ADD EMAIL
+========================================================= */
 
 function openAddEmailModal(){
 
@@ -2133,26 +2708,33 @@ document.getElementById(
 "ae-error"
 ).innerText="";
 
-switchScreen("add-email-screen");
+switchScreen(
+"add-email-screen"
+);
 
 }
 
 async function handleAddEmailInit(){
 
 const phone=
-document.getElementById("ae-phone")
+document
+.getElementById("ae-phone")
 .value.trim();
 
 const emailUser=
-document.getElementById("ae-email-user")
+document
+.getElementById("ae-email-user")
 .value.trim();
 
 const emailDomain=
-document.getElementById("ae-email-domain")
+document
+.getElementById("ae-email-domain")
 .value;
 
 const errDiv=
-document.getElementById("ae-error");
+document.getElementById(
+"ae-error"
+);
 
 errDiv.innerText="";
 
@@ -2183,8 +2765,10 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
 body:JSON.stringify({
 phone,
@@ -2193,36 +2777,48 @@ email
 }
 );
 
-const data=await res.json();
+const data=
+await res.json();
 
 if(!res.ok){
+
 throw new Error(
-data.error||"Failed to send PIN"
+data.error||
+"Failed to send PIN"
 );
+
 }
 
 document.getElementById(
 "ae-pin-input"
 ).value="";
 
-switchScreen("verify-email-screen");
+switchScreen(
+"verify-email-screen"
+);
 
 }catch(err){
 
-errDiv.innerText=err.message;
+errDiv.innerText=
+err.message;
 
 }
 
 }
 
-/* VERIFY EMAIL */
+/* =========================================================
+   VERIFY EMAIL
+========================================================= */
 
 async function handleAutoVerifyEmail(e){
 
 const input=e.target;
 
 input.value=
-input.value.replace(/[^0-9]/g,"");
+input.value.replace(
+/[^0-9]/g,
+""
+);
 
 const errDiv=
 document.getElementById(
@@ -2242,25 +2838,35 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
 body:JSON.stringify({
+
 phone:pendingPhone,
 pin:input.value
+
 })
 }
 );
 
-const data=await res.json();
+const data=
+await res.json();
 
 if(!res.ok){
+
 throw new Error(
-data.error||"Incorrect PIN"
+data.error||
+"Incorrect PIN"
 );
+
 }
 
-switchScreen("login-screen");
+switchScreen(
+"login-screen"
+);
 
 const loginError=
 document.getElementById(
@@ -2270,11 +2876,14 @@ document.getElementById(
 loginError.innerText=
 "Email linked and verified!";
 
-loginError.style.color="#2e7d32";
+loginError.style.color=
+"#2e7d32";
 
 }catch(err){
 
-errDiv.innerText=err.message;
+errDiv.innerText=
+err.message;
+
 input.value="";
 
 }
@@ -2283,21 +2892,31 @@ input.value="";
 
 }
 
-/* LOGIN */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 async function handleLogin(){
 
 const phone=
-document.getElementById("login-phone")
+document
+.getElementById("login-phone")
 .value.trim();
 
 const errDiv=
-document.getElementById("login-error");
+document.getElementById(
+"login-error"
+);
 
 errDiv.innerText="";
-errDiv.style.color="#d32f2f";
 
-if(!phone||phone.length!==10){
+errDiv.style.color=
+"#d32f2f";
+
+if(
+!phone||
+phone.length!==10
+){
 
 errDiv.innerText=
 "Enter a valid 10-digit phone number.";
@@ -2315,39 +2934,52 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
-body:JSON.stringify({phone})
+body:JSON.stringify({
+phone
+})
 }
 );
 
-const data=await res.json();
+const data=
+await res.json();
 
 if(!res.ok){
+
 throw new Error(
-data.error||"Login failed"
+data.error||
+"Login failed"
 );
+
 }
 
 currentUser=data.user;
 
 localStorage.setItem(
 "axtres_user",
-JSON.stringify(currentUser)
+JSON.stringify(
+currentUser
+)
 );
 
 navigateAfterAuth();
 
 }catch(err){
 
-errDiv.innerText=err.message;
+errDiv.innerText=
+err.message;
 
 }
 
 }
 
-/* LOGOUT */
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 function handleLogout(){
 
@@ -2360,26 +2992,45 @@ activeRecipient=null;
 currentRoomId=null;
 
 if(syncInterval){
-clearInterval(syncInterval);
+
+clearInterval(
+syncInterval
+);
+
+syncInterval=null;
+
 }
 
 if(contactsInterval){
-clearInterval(contactsInterval);
+
+clearInterval(
+contactsInterval
+);
+
+contactsInterval=null;
+
 }
 
-switchScreen("login-screen");
+switchScreen(
+"login-screen"
+);
 
 }
 
-/* DIRECTORY */
+/* =========================================================
+   DIRECTORY
+========================================================= */
 
 async function openContactsScreen(){
 
-switchScreen("contacts-screen");
+switchScreen(
+"contacts-screen"
+);
 
 document.getElementById(
 "my-name-display"
-).innerText=currentUser.name;
+).innerText=
+currentUser.name;
 
 startContactsPolling();
 
@@ -2388,7 +3039,11 @@ startContactsPolling();
 function startContactsPolling(){
 
 if(contactsInterval){
-clearInterval(contactsInterval);
+
+clearInterval(
+contactsInterval
+);
+
 }
 
 fetchContacts();
@@ -2411,13 +3066,16 @@ await fetch(
 {
 cache:"no-store",
 headers:{
-"Cache-Control":"no-cache, no-store",
-"Pragma":"no-cache"
+"Cache-Control":
+"no-cache, no-store",
+"Pragma":
+"no-cache"
 }
 }
 );
 
-const contacts=await res.json();
+const contacts=
+await res.json();
 
 const container=
 document.getElementById(
@@ -2431,13 +3089,12 @@ if(
 contacts.length===0
 ){
 
-container.innerHTML=
-`
+container.innerHTML=`
 <div style="
 text-align:center;
 padding:20px;
 color:#667781;
-font-size:.9rem
+font-size:.9rem;
 ">
 No other contacts found yet.
 </div>
@@ -2450,20 +3107,32 @@ return;
 contacts.forEach(c=>{
 
 const item=
-document.createElement("div");
+document.createElement(
+"div"
+);
 
-item.className="contact-item";
+item.className=
+"contact-item";
 
 const emailStatusBadge=
 c.has_email===1
 ?
-`<span class="status-pill active">Email Verified 🟢</span>`
-:
-`<span class="status-pill inactive">No Email ⚪</span>`;
-
-item.innerHTML=
 `
+<span class="status-pill active">
+Email Verified 🟢
+</span>
+`
+:
+`
+<span class="status-pill inactive">
+No Email ⚪
+</span>
+`;
+
+item.innerHTML=`
+
 <div>
+
 <div class="contact-name">
 ${escapeHtml(c.name)}
 </div>
@@ -2479,10 +3148,11 @@ ${emailStatusBadge}
 <span style="
 color:var(--theme-primary);
 font-weight:600;
-font-size:.9rem
+font-size:.9rem;
 ">
 Chat &rarr;
 </span>
+
 `;
 
 item.onclick=()=>{
@@ -2493,18 +3163,33 @@ container.appendChild(item);
 
 });
 
-}catch(e){}
+}catch(e){
+
+console.error(
+"Contacts error:",
+e
+);
 
 }
 
-/* CHAT */
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
 
 function startChatWith(recipient){
 
 activeRecipient=recipient;
 
 if(contactsInterval){
-clearInterval(contactsInterval);
+
+clearInterval(
+contactsInterval
+);
+
+contactsInterval=null;
+
 }
 
 const sortedPhones=
@@ -2519,9 +3204,12 @@ currentRoomId=
 document.getElementById(
 "chat-room-title"
 ).innerText=
-recipient.name;
+recipient.name||
+"Chat";
 
-switchScreen("chat-screen");
+switchScreen(
+"chat-screen"
+);
 
 document.getElementById(
 "email-toggle"
@@ -2543,7 +3231,11 @@ startChatPolling();
 function startChatPolling(){
 
 if(syncInterval){
-clearInterval(syncInterval);
+
+clearInterval(
+syncInterval
+);
+
 }
 
 pollChatMessages(true);
@@ -2551,15 +3243,22 @@ pollChatMessages(true);
 syncInterval=
 setInterval(
 ()=>{
-pollChatMessages(false),
+pollChatMessages(false);
+},
 600
 );
 
 }
 
-async function pollChatMessages(isInitial){
+async function pollChatMessages(
+isInitial
+){
 
-if(!currentRoomId)return;
+if(!currentRoomId){
+
+return;
+
+}
 
 try{
 
@@ -2569,16 +3268,21 @@ await fetch(
 {
 cache:"no-store",
 headers:{
-"Cache-Control":"no-cache, no-store",
-"Pragma":"no-cache"
+"Cache-Control":
+"no-cache, no-store",
+"Pragma":
+"no-cache"
 }
 }
 );
 
-const history=await res.json();
+const history=
+await res.json();
 
 if(!Array.isArray(history)){
+
 return;
+
 }
 
 const messagesDiv=
@@ -2589,6 +3293,7 @@ document.getElementById(
 if(isInitial){
 
 messagesDiv.innerHTML="";
+
 knownMessageIds.clear();
 
 }
@@ -2604,24 +3309,36 @@ msg.sender_id||
 "";
 
 const msgText=
-msg.message||"";
+msg.message||
+"";
 
 const createdAt=
-msg.created_at||"";
+msg.created_at||
+"";
 
 const isEmergency=
-msg.is_emergency||0;
+msg.is_emergency||
+0;
 
 const uniqueId=
 msg.id
-?String(msg.id)
-:`${sender}_${createdAt}_${msgText}`;
+?
+String(msg.id)
+:
+`${sender}_${createdAt}_${msgText}`;
 
-if(knownMessageIds.has(uniqueId)){
+if(
+knownMessageIds.has(uniqueId)
+){
+
 return;
+
 }
 
-knownMessageIds.add(uniqueId);
+knownMessageIds.add(
+uniqueId
+);
+
 shouldScroll=true;
 
 if(
@@ -2644,7 +3361,9 @@ isEmergency
 
 new Notification(
 alertTitle,
-{body:msgText}
+{
+body:msgText
+}
 );
 
 }
@@ -2658,7 +3377,11 @@ if(createdAt){
 const parsedDate=
 new Date(createdAt);
 
-if(!isNaN(parsedDate.getTime())){
+if(
+!isNaN(
+parsedDate.getTime()
+)
+){
 
 timeStr=
 parsedDate.toLocaleTimeString(
@@ -2676,7 +3399,8 @@ minute:"2-digit"
 if(!timeStr){
 
 timeStr=
-new Date().toLocaleTimeString(
+new Date()
+.toLocaleTimeString(
 [],
 {
 hour:"2-digit",
@@ -2696,7 +3420,9 @@ const isMe=
 cleanSender===cleanMyPhone;
 
 const msgEl=
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 msgEl.className="msg";
 
@@ -2717,41 +3443,62 @@ isEmergency===1||
 isEmergency===true
 )
 ?
-`<span class="email-badge">📧 SENT VIA EMAIL</span><br>`
-:"";
+`
+<span class="email-badge">
+📧 SENT VIA EMAIL
+</span>
+<br>
+`
+:
+"";
+
+msgEl.innerHTML=
+`${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
 
 if(isMe){
 
-msgEl.classList.add("me");
-
-msgEl.innerHTML=
-`${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+msgEl.classList.add(
+"me"
+);
 
 }else{
 
-msgEl.classList.add("them");
-
-msgEl.innerHTML=
-`${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+msgEl.classList.add(
+"them"
+);
 
 }
 
-messagesDiv.appendChild(msgEl);
+messagesDiv.appendChild(
+msgEl
+);
 
 });
 
-if(shouldScroll||isInitial){
+if(
+shouldScroll||
+isInitial
+){
 
 messagesDiv.scrollTop=
 messagesDiv.scrollHeight;
 
 }
 
-}catch(e){}
+}catch(e){
+
+console.error(
+"Message polling error:",
+e
+);
 
 }
 
-/* SEND MESSAGE */
+}
+
+/* =========================================================
+   SEND
+========================================================= */
 
 async function sendMessage(){
 
@@ -2767,17 +3514,25 @@ const sendViaEmail=
 document.getElementById(
 "email-toggle"
 ).checked
-?1
-:0;
+?
+1
+:
+0;
 
-if(!text||!currentRoomId){
+if(
+!text||
+!currentRoomId
+){
+
 return;
+
 }
 
 const timeNow=
 new Date().toISOString();
 
 input.value="";
+
 input.focus();
 
 try{
@@ -2788,12 +3543,15 @@ await fetch(
 method:"POST",
 cache:"no-store",
 headers:{
-"Content-Type":"application/json",
-"Cache-Control":"no-cache, no-store"
+"Content-Type":
+"application/json",
+"Cache-Control":
+"no-cache, no-store"
 },
 body:JSON.stringify({
 
-room_id:currentRoomId,
+room_id:
+currentRoomId,
 
 sender_id:
 currentUser.phone,
@@ -2804,7 +3562,8 @@ currentUser.name,
 recipient_phone:
 activeRecipient.phone,
 
-message:text,
+message:
+text,
 
 send_via_email:
 sendViaEmail,
@@ -2818,17 +3577,32 @@ timeNow
 
 pollChatMessages(false);
 
-}catch(err){}
+}catch(err){
+
+console.error(
+"Send error:",
+err
+);
+
+}
 
 }
 
 function checkEnter(e){
 
-if(e.key==="Enter"){
+if(
+e.key==="Enter"
+){
+
 sendMessage();
+
 }
 
 }
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
 function escapeHtml(text){
 
@@ -2840,9 +3614,12 @@ const map={
 "'":"&apos;"
 };
 
-return String(text).replace(
+return String(text)
+.replace(
 /[\n&<>"']/g,
-m=>map[m]||m
+function(m){
+return map[m]||m;
+}
 );
 
 }
