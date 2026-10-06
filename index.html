@@ -1039,6 +1039,7 @@
             setTimeout(() => {
                 switchScreen('login-screen', { silent: true });
                 immediateBackTarget = null;
+                armLoginExitTrap();
 
                 if (currentUser && currentUser.phone && currentUser.name) {
                     navigateAfterAuth(false);
@@ -1200,13 +1201,22 @@
 
             const target = immediateBackTarget || LOGICAL_BACK_TARGETS[currentScreenId] || null;
 
-            if (!target || currentScreenId === 'login-screen') {
+            if (currentScreenId === 'login-screen' || !target) {
                 showClosingScreen();
                 return;
             }
 
             switchScreen(target, { silent: true });
             immediateBackTarget = LOGICAL_BACK_TARGETS[target] ?? null;
+        }
+
+        function armLoginExitTrap() {
+            // Only the Sign In screen gets an exit trap. No internal screen is
+            // written into browser history, so Back never replays visited pages.
+            try {
+                history.replaceState({ axtres: true, loginRoot: true }, '', location.href);
+                history.pushState({ axtres: true, loginExitTrap: true }, '', location.href);
+            } catch (e) {}
         }
 
         function signOutToLogin() {
@@ -1234,43 +1244,57 @@
             const settingsOverlay = document.getElementById('settings-overlay');
             if (settingsOverlay) settingsOverlay.classList.remove('active');
 
+            axtresClosing = false;
             immediateBackTarget = null;
             switchScreen('login-screen', { silent: true });
 
-            // Reset the login form so the next session starts cleanly.
             const loginInput = document.getElementById('login-phone');
             if (loginInput) loginInput.value = '';
 
             const loginError = document.getElementById('login-error');
             if (loginError) loginError.innerText = '';
+
+            // Re-arm the exit trap every time a user/admin is signed out.
+            armLoginExitTrap();
         }
 
         function showClosingScreen() {
             if (axtresClosing) return;
 
             axtresClosing = true;
-            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+
             const closing = document.getElementById('closing-screen');
-            if (closing) {
-                closing.classList.remove('active');
-                void closing.offsetWidth;
-                closing.classList.add('active');
-            }
+            if (!closing) return;
+
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+
+            // Force a fresh render/animation every time.
+            closing.classList.remove('active');
+            void closing.offsetWidth;
+            closing.classList.add('active');
             currentScreenId = 'closing-screen';
 
+            // Keep the closing screen visible. Do not call history.back(), because
+            // that can immediately navigate away on some mobile browsers.
             setTimeout(() => {
-                // Keep the closing screen visible after the 1.7-second animation.
-                // If this was a script-created tab/window, the browser may allow it
-                // to close; otherwise we intentionally leave the closing page visible.
                 try { window.close(); } catch (e) {}
             }, 1700);
         }
 
-        // axtres uses one browser-history sentinel only. Internal screens never
-        // create browser-history entries, so Back always means "previous app screen".
+        // One history trap exists only for the Sign In root. The popstate event
+        // restores the trap immediately, then opens the closing screen.
         window.addEventListener('popstate', () => {
             if (axtresClosing) return;
 
+            if (currentScreenId === 'login-screen') {
+                try {
+                    history.pushState({ axtres: true, loginExitTrap: true }, '', location.href);
+                } catch (e) {}
+                showClosingScreen();
+                return;
+            }
+
+            // For all other screens, the app handles Back logically.
             try {
                 history.pushState({ axtres: true, sentinel: true }, '', location.href);
             } catch (e) {}
@@ -1447,7 +1471,7 @@
             setTimeout(() => input.focus(), 50);
         }
 
-        function closeAdminPin() { switchScreen('login-screen'); }
+        function closeAdminPin() { switchScreen('login-screen', { silent:true }); armLoginExitTrap(); }
         function handleAdminBackdrop(e) { if (e.target.id === 'admin-pin-screen') closeAdminPin(); }
 
         async function handleAdminPinInput(e) {
