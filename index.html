@@ -7,598 +7,110 @@
     <title>axtres</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-        body {
-            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-            overflow: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 420px;
-            height: 92vh;
-            max-height: 820px;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        #welcome-screen {
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #075e54, #128c7e);
-            color: white;
-        }
-
-        #welcome-screen h1 {
-            font-size: 2.3rem;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .header-bar {
-            background: #075e54;
-            color: white;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-bar span {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            font-weight: normal;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .form-content {
-            padding: 18px 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            justify-content: center;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .form-content h2 {
-            color: #075e54;
-            font-size: 1.35rem;
-            margin-bottom: 2px;
-        }
-
-        .form-content p.subtitle {
-            color: #666;
-            font-size: 0.82rem;
-            margin-bottom: 2px;
-        }
-
-        input,
-        select {
-            padding: 10px 14px;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            outline: none;
-            background: #fafafa;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #075e54;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
-        }
-
-        .email-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .email-group input {
-            flex: 2;
-        }
-
-        .email-group select {
-            flex: 1.2;
-            font-size: 0.85rem;
-        }
-
-        .btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            padding: 11px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn:hover {
-            background: #054c44;
-        }
-
-        .btn-secondary {
-            background: #205081;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-secondary:hover {
-            background: #183d63;
-        }
-
-        .btn-accent {
-            background: #d84315;
-            color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-accent:hover {
-            background: #bf360c;
-        }
-
-        .btn-install {
-            background: linear-gradient(135deg, #ff9966, #ff5e62);
-            color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: 700;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-        }
-
-        /* HUB */
-
-        .hub-welcome {
-            font-size: 1.65rem;
-            font-weight: 800;
-            color: #075e54;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .hub-card {
-            background: linear-gradient(145deg, #ffffff, #f5f8fb);
-            border: 1px solid rgba(7, 94, 84, 0.14);
-            border-radius: 16px;
-            padding: 22px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            box-shadow: 0 10px 28px rgba(15, 32, 39, 0.08);
-        }
-
-        .hub-user-name {
-            font-size: 1.35rem;
-            font-weight: 750;
-            color: #111b21;
-            margin-bottom: 2px;
-        }
-
-        .hub-user-phone {
-            font-size: 0.95rem;
-            color: #53636d;
-            font-weight: 500;
-        }
-
-        .hub-user-email {
-            font-size: 0.9rem;
-            color: #667781;
-            font-weight: 500;
-            word-break: break-word;
-        }
-
-        .hub-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            margin-top: 0;
-        }
-
-        .btn-hub {
-            width: 100%;
-            height: 48px;
-            padding: 12px 16px;
-            font-size: 0.98rem;
-            font-weight: 600;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-            transition: background 0.2s;
-        }
-
-        .btn-hub-primary {
-            background: #075e54;
-            color: white;
-        }
-
-        .btn-hub-primary:hover {
-            background: #054c44;
-        }
-
-        .btn-hub-secondary {
-            background: #f0f2f5;
-            color: #111b21;
-            border: 1px solid #ccc;
-        }
-
-        .btn-hub-secondary:hover {
-            background: #e4e6eb;
-        }
-
-        /* DIRECTORY PIN */
-
-        .directory-pin-card {
-            width: 100%;
-            max-width: 300px;
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 24px 22px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.22);
-            text-align: center;
-        }
-
-        .directory-pin-card h2 {
-            color: #075e54;
-            font-size: 1.25rem;
-            margin-bottom: 18px;
-        }
-
-        .directory-pin-card input {
-            width: 100%;
-            text-align: center;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            background: #f8fafb;
-        }
-
-        .directory-pin-card .error-msg {
-            min-height: 18px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-
-        .switch-text {
-            text-align: center;
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .switch-text a {
-            color: #075e54;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .switch-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* CONTACTS */
-
-        #contacts-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #f0f2f5;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .contact-item {
-            background: white;
-            padding: 14px 18px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            transition: background 0.2s;
-        }
-
-        .contact-item:hover {
-            background: #f5f6f6;
-        }
-
-        .contact-name {
-            font-weight: 600;
-            color: #111b21;
-            font-size: 1.05rem;
-        }
-
-        .contact-phone {
-            font-size: 0.85rem;
-            color: #667781;
-        }
-
-        .status-pill {
-            font-size: 0.72rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .status-pill.active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-pill.inactive {
-            background: #f5f5f5;
-            color: #757575;
-        }
-
-        /* CHAT */
-
-        #messages-container {
-            flex: 1;
-            padding: 15px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: #efeae2;
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px);
-            background-size: 15px 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .msg {
-            max-width: 78%;
-            padding: 8px 12px 6px 12px;
-            border-radius: 7.5px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        }
-
-        .msg.me {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #111b21;
-            border-top-right-radius: 0;
-        }
-
-        .msg.them {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #111b21;
-            border-top-left-radius: 0;
-        }
-
-        .msg.email-alert {
-            background: #e3f2fd !important;
-            border: 1.5px solid #1976d2 !important;
-            color: #0d47a1 !important;
-        }
-
-        .email-badge {
-            font-size: 0.65rem;
-            background: #1976d2;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 3px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            color: #667781;
-            float: right;
-            margin-left: 12px;
-            margin-top: 4px;
-        }
-
-        .email-toolbar {
-            background: #e3f2fd;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid #bbdefb;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1565c0;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 42px;
-            height: 22px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .3s;
-            border-radius: 22px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #1976d2;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        #input-toolbar {
-            display: flex;
-            padding: 10px 15px;
-            background: #f0f2f5;
-            gap: 10px;
-            align-items: center;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        #message-input {
-            flex: 1;
-            border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        #send-btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .back-arrow {
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-right: 10px;
-        }
-
-        .error-msg {
-            color: #d32f2f;
-            font-size: 0.78rem;
-            text-align: center;
-        }
-
-        .notice-toast {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #323232;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            z-index: 99;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
+        body { 
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364); 
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; color: #333; overflow: hidden; 
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            width: 100%; max-width: 420px; height: 92vh; max-height: 820px; 
+            border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; flex-direction: column; overflow: hidden; position: relative; 
+        }
+
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .screen.active { display: flex; }
+
+        #welcome-screen { justify-content: center; align-items: center; text-align: center; padding: 30px; background: linear-gradient(135deg, #075e54, #128c7e); color: white; }
+        #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
+
+        .form-content { padding: 18px 25px; display: flex; flex-direction: column; gap: 8px; justify-content: center; flex: 1; overflow-y: auto; }
+        .form-content h2 { color: #075e54; font-size: 1.35rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.82rem; margin-bottom: 2px; }
+
+        input, select { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input:focus, select:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+
+        .email-group { display: flex; gap: 6px; }
+        .email-group input { flex: 2; }
+        .email-group select { flex: 1.2; font-size: 0.85rem; }
+
+        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
+        .btn:hover { background: #054c44; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
+        .btn-secondary:hover { background: #183d63; }
+        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-accent:hover { background: #bf360c; }
+        
+        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+
+        .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
+        .hub-card { background: #f8f9fa; border: 1.5px solid #e0e0e0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 10px; }
+        .hub-user-name { font-size: 1.3rem; font-weight: 700; color: #111b21; margin-bottom: 2px; }
+        .hub-user-phone { font-size: 0.95rem; color: #667781; font-weight: 500; }
+        
+        .hub-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px; }
+        .btn-hub { width: 100%; height: 48px; padding: 12px 16px; font-size: 0.98rem; font-weight: 600; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.06); transition: background 0.2s; }
+        .btn-hub-primary { background: #075e54; color: white; }
+        .btn-hub-primary:hover { background: #054c44; }
+        .btn-hub-secondary { background: #f0f2f5; color: #111b21; border: 1px solid #ccc; }
+        .btn-hub-secondary:hover { background: #e4e6eb; }
+
+        .switch-text { text-align: center; font-size: 0.82rem; color: #666; margin-top: 2px; }
+        .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+
+        #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
+        .contact-phone { font-size: 0.85rem; color: #667781; }
+        
+        .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
+        .status-pill.active { background: #e8f5e9; color: #2e7d32; }
+        .status-pill.inactive { background: #f5f5f5; color: #757575; }
+
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; -webkit-overflow-scrolling: touch; }
+        
+        .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+        .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
+        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        
+        .msg.email-alert { background: #e3f2fd !important; border: 1.5px solid #1976d2 !important; color: #0d47a1 !important; }
+        .email-badge { font-size: 0.65rem; background: #1976d2; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
+
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
+
+        .email-toolbar { background: #e3f2fd; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #bbdefb; font-size: 0.82rem; font-weight: 600; color: #1565c0; }
+        .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #1976d2; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
+        #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
+        .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+        .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
+        .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
-
 <body>
 
     <div class="card">
-
-        <div id="toast-notification" class="notice-toast">
-            Email extension is handled by the dropdown menu.
-        </div>
+        <div id="toast-notification" class="notice-toast">Email extension is handled by the dropdown menu.</div>
 
         <!-- 1. SPLASH SCREEN -->
         <div id="welcome-screen" class="screen active">
@@ -610,512 +122,163 @@
         <!-- 2. REGISTER SCREEN -->
         <div id="register-screen" class="screen">
             <div class="header-bar">Registration</div>
-
             <div class="form-content">
-
                 <h2>Sign Up</h2>
-
-                <p class="subtitle">
-                    Email is optional. Add one to receive email alerts.
-                </p>
-
-                <input
-                    type="text"
-                    id="reg-name"
-                    placeholder="Your Full Name"
-                >
-
-                <input
-                    type="tel"
-                    id="reg-phone"
-                    placeholder="10-digit Phone Number"
-                    maxlength="10"
-                    inputmode="numeric"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                >
-
+                <p class="subtitle">Email is optional. Add one to receive email alerts.</p>
+                <input type="text" id="reg-name" placeholder="Your Full Name">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
                 <div class="email-group">
-
-                    <input
-                        type="text"
-                        id="reg-email-user"
-                        placeholder="Email username (optional)"
-                        oninput="interceptEmailInput(event)"
-                    >
-
+                    <input type="text" id="reg-email-user" placeholder="Email username (optional)" oninput="interceptEmailInput(event)">
                     <select id="reg-email-domain">
                         <option value="@gmail.com" selected>@gmail.com</option>
                         <option value="@outlook.com">@outlook.com</option>
                     </select>
-
                 </div>
-
-                <button
-                    class="btn-secondary"
-                    onclick="requestNotificationPermission()"
-                >
-                    1. Enable Notifications
-                </button>
-
-                <div
-                    id="notif-status"
-                    style="font-size: 0.75rem; text-align: center; color: #666;"
-                >
-                    Status: Not Enabled
-                </div>
+                
+                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications</button>
+                <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
 
                 <div class="error-msg" id="reg-error"></div>
+                
+                <button class="btn" onclick="handleRegister()">Complete Sign Up</button>
+                <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
-                <button
-                    class="btn"
-                    onclick="handleRegister()"
-                >
-                    Complete Sign Up
-                </button>
-
-                <button
-                    id="install-btn-reg"
-                    class="btn-install"
-                    onclick="installPWA()"
-                >
-                    📲 Install App to Home Screen
-                </button>
-
-                <div class="switch-text">
-                    Already registered?
-                    <a onclick="switchScreen('login-screen')">
-                        Log In here
-                    </a>
-                </div>
-
+                <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
             </div>
         </div>
 
         <!-- 2.5 PIN VERIFICATION SCREEN -->
         <div id="verify-screen" class="screen">
-
-            <div class="header-bar">
-                Verify Email
-            </div>
-
-            <div
-                class="form-content"
-                style="text-align: center;"
-            >
-
+            <div class="header-bar">Verify Email</div>
+            <div class="form-content" style="text-align: center;">
                 <h2>Enter 3-Digit PIN</h2>
-
-                <p class="subtitle">
-                    Check your email inbox for the verification code.
-                </p>
-
-                <input
-                    type="tel"
-                    id="verify-pin-input"
-                    placeholder="---"
-                    maxlength="3"
-                    inputmode="numeric"
-                    style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;"
-                    oninput="handleAutoVerifyRegister(event)"
-                >
-
-                <div
-                    class="error-msg"
-                    id="verify-error"
-                ></div>
-
-                <button
-                    class="btn-secondary"
-                    onclick="switchScreen('register-screen')"
-                >
-                    Back
-                </button>
-
+                <p class="subtitle">Check your email inbox for the verification code.</p>
+                <input type="tel" id="verify-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="handleAutoVerifyRegister(event)">
+                
+                <div class="error-msg" id="verify-error"></div>
+                <button class="btn-secondary" onclick="switchScreen('register-screen')">Back</button>
             </div>
         </div>
 
         <!-- 3. LOGIN SCREEN -->
         <div id="login-screen" class="screen">
-
-            <div class="header-bar">
-                Sign In
-            </div>
-
+            <div class="header-bar">Sign In</div>
             <div class="form-content">
-
                 <h2>Welcome Back</h2>
+                <p class="subtitle">Enter your registered 10-digit phone number</p>
+                <input type="tel" id="login-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div class="error-msg" id="login-error"></div>
+                <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                
+                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Link Email</button>
+                <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
-                <p class="subtitle">
-                    Enter your registered 10-digit phone number
-                </p>
-
-                <input
-                    type="tel"
-                    id="login-phone"
-                    placeholder="10-digit Phone Number"
-                    maxlength="10"
-                    inputmode="numeric"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                >
-
-                <div
-                    class="error-msg"
-                    id="login-error"
-                ></div>
-
-                <button
-                    class="btn"
-                    onclick="handleLogin()"
-                >
-                    Log In to Chats
-                </button>
-
-                <button
-                    class="btn-accent"
-                    onclick="openAddEmailModal()"
-                >
-                    ➕ Add / Link Email
-                </button>
-
-                <button
-                    id="install-btn-login"
-                    class="btn-install"
-                    onclick="installPWA()"
-                >
-                    📲 Install App to Home Screen
-                </button>
-
-                <div class="switch-text">
-                    New user?
-                    <a onclick="switchScreen('register-screen')">
-                        Register here
-                    </a>
-                </div>
-
+                <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
             </div>
         </div>
 
         <!-- 3.5 ADD EMAIL SCREEN -->
         <div id="add-email-screen" class="screen">
-
             <div class="header-bar">
-
                 <div style="display: flex; align-items: center;">
-
-                    <span
-                        class="back-arrow"
-                        onclick="switchScreen('login-screen')"
-                    >
-                        &#8592;
-                    </span>
-
-                    <div>
-                        Link Email
-                    </div>
-
+                    <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
+                    <div>Link Email</div>
                 </div>
-
             </div>
-
             <div class="form-content">
-
-                <h2>
-                    Update Email
-                </h2>
-
-                <p class="subtitle">
-                    Enter phone and new email
-                </p>
-
-                <input
-                    type="tel"
-                    id="ae-phone"
-                    placeholder="10-digit Phone Number"
-                    maxlength="10"
-                    inputmode="numeric"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                >
-
+                <h2>Update Email</h2>
+                <p class="subtitle">Enter phone and new email</p>
+                <input type="tel" id="ae-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
                 <div class="email-group">
-
-                    <input
-                        type="text"
-                        id="ae-email-user"
-                        placeholder="Email username"
-                        oninput="interceptEmailInput(event)"
-                    >
-
+                    <input type="text" id="ae-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
                     <select id="ae-email-domain">
-
-                        <option value="@gmail.com" selected>
-                            @gmail.com
-                        </option>
-
-                        <option value="@outlook.com">
-                            @outlook.com
-                        </option>
-
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
                     </select>
-
                 </div>
 
-                <div
-                    class="error-msg"
-                    id="ae-error"
-                ></div>
-
-                <button
-                    class="btn"
-                    onclick="handleAddEmailInit()"
-                >
-                    Send Verification PIN
-                </button>
-
+                <div class="error-msg" id="ae-error"></div>
+                <button class="btn" onclick="handleAddEmailInit()">Send Verification PIN</button>
             </div>
         </div>
 
         <!-- 3.6 AUTO-VERIFY EMAIL UPDATE SCREEN -->
         <div id="verify-email-screen" class="screen">
-
-            <div class="header-bar">
-                Confirm Email PIN
-            </div>
-
-            <div
-                class="form-content"
-                style="text-align: center;"
-            >
-
-                <h2>
-                    Enter 3-Digit PIN
-                </h2>
-
-                <p class="subtitle">
-                    Auto-submits when 3 digits are entered.
-                </p>
-
-                <input
-                    type="tel"
-                    id="ae-pin-input"
-                    placeholder="---"
-                    maxlength="3"
-                    inputmode="numeric"
-                    style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;"
-                    oninput="handleAutoVerifyEmail(event)"
-                >
-
-                <div
-                    class="error-msg"
-                    id="ae-verify-error"
-                ></div>
-
-                <button
-                    class="btn-secondary"
-                    onclick="switchScreen('login-screen')"
-                >
-                    Cancel
-                </button>
-
+            <div class="header-bar">Confirm Email PIN</div>
+            <div class="form-content" style="text-align: center;">
+                <h2>Enter 3-Digit PIN</h2>
+                <p class="subtitle">Auto-submits when 3 digits are entered.</p>
+                <input type="tel" id="ae-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="handleAutoVerifyEmail(event)">
+                
+                <div class="error-msg" id="ae-verify-error"></div>
+                <button class="btn-secondary" onclick="switchScreen('login-screen')">Cancel</button>
             </div>
         </div>
 
-        <!-- 4. HUB SCREEN -->
+        <!-- 4. HUB SCREEN (Default view for non-Yadhu users) -->
         <div id="hub-screen" class="screen">
-
             <div class="header-bar">
-
-                <div>
-                    axtres
-                </div>
-
-                <span onclick="handleLogout()">
-                    Sign Out
-                </span>
-
+                <div>axtres Hub</div>
+                <span onclick="handleLogout()">Sign Out</span>
             </div>
-
-            <div
-                class="form-content"
-                style="justify-content: flex-start; padding-top: 42px;"
-            >
-
-                <div
-                    class="hub-welcome"
-                    id="hub-welcome-text"
-                >
-                    Welcome, User!
-                </div>
-
+            <div class="form-content" style="justify-content: flex-start; padding-top: 25px;">
+                <div class="hub-welcome" id="hub-welcome-text">Welcome, User!</div>
+                
                 <div class="hub-card">
-
-                    <div class="hub-user-name">
-                        Yadhu Krishna
+                    <div class="hub-user-name">Yadhu</div>
+                    <div class="hub-user-phone">7025707720</div>
+                    
+                    <div class="hub-actions">
+                        <button class="btn-hub btn-hub-primary" onclick="chatWithYadhu()">💬 Chat with Yadhu</button>
+                        <button class="btn-hub btn-hub-secondary" onclick="openContactsScreen()">📖 Directory</button>
                     </div>
-
-                    <div class="hub-user-phone">
-                        7025707720
-                    </div>
-
-                    <div class="hub-user-email">
-                        yadhukrishnabp777@gmail.com
-                    </div>
-
                 </div>
-
-                <div class="hub-actions">
-
-                    <button
-                        class="btn-hub btn-hub-primary"
-                        onclick="chatWithYadhu()"
-                    >
-                        💬 Chat with Yadhu Krishna
-                    </button>
-
-                    <button
-                        class="btn-hub btn-hub-secondary"
-                        onclick="openDirectoryWithPin()"
-                    >
-                        📖 Directory
-                    </button>
-
-                </div>
-
             </div>
-        </div>
-
-        <!-- DIRECTORY PIN -->
-        <div
-            id="directory-pin-screen"
-            class="screen"
-            style="position:absolute; inset:0; background:rgba(7, 24, 32, 0.48); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px; z-index:50;"
-        >
-
-            <div class="directory-pin-card">
-
-                <h2>
-                    Directory
-                </h2>
-
-                <input
-                    type="tel"
-                    id="directory-pin-input"
-                    maxlength="3"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    oninput="handleDirectoryPinInput(event)"
-                    autofocus
-                >
-
-                <div
-                    class="error-msg"
-                    id="directory-pin-error"
-                ></div>
-
-            </div>
-
         </div>
 
         <!-- 5. CONTACTS / DIRECTORY SCREEN -->
         <div id="contacts-screen" class="screen">
-
             <div class="header-bar">
-
-                <div>
-                    Directory
-                    (<span id="my-name-display"></span>)
-                </div>
-
-                <span onclick="handleLogout()">
-                    Sign Out
-                </span>
-
+                <div>Directory (<span id="my-name-display"></span>)</div>
+                <span onclick="handleLogout()">Sign Out</span>
             </div>
-
-            <div
-                style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;"
-            >
-                Select a contact to start chatting:
-            </div>
-
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact to start chatting:</div>
             <div id="contacts-container"></div>
-
         </div>
 
         <!-- 6. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
-
             <div class="header-bar">
-
                 <div style="display: flex; align-items: center;">
-
-                    <span
-                        class="back-arrow"
-                        onclick="handleChatBack()"
-                    >
-                        &#8592;
-                    </span>
-
-                    <div id="chat-room-title">
-                        Chat
-                    </div>
-
+                    <span class="back-arrow" onclick="handleChatBack()">&#8592;</span>
+                    <div id="chat-room-title">Chat</div>
                 </div>
-
-                <span onclick="handleLogout()">
-                    Sign Out
-                </span>
-
+                <span onclick="handleLogout()">Sign Out</span>
             </div>
-
             <div id="messages-container"></div>
-
+            
             <div class="email-toolbar">
-
-                <span>
-                    📧 Send via Email
-                </span>
-
+                <span>📧 Send via Email</span>
                 <label class="toggle-switch">
-
-                    <input
-                        type="checkbox"
-                        id="email-toggle"
-                    >
-
+                    <input type="checkbox" id="email-toggle">
                     <span class="slider"></span>
-
                 </label>
-
             </div>
 
             <div id="input-toolbar">
-
-                <input
-                    type="text"
-                    id="message-input"
-                    placeholder="Type message..."
-                    onkeypress="checkEnter(event)"
-                >
-
-                <button
-                    id="send-btn"
-                    onclick="sendMessage()"
-                >
-                    &#9658;
-                </button>
-
+                <input type="text" id="message-input" placeholder="Type message..." onkeypress="checkEnter(event)">
+                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
             </div>
-
         </div>
-
     </div>
 
     <script>
-
         const USERS_API = "/users";
         const MESSAGES_API = "/messages";
         const YADHU_PHONE = "7025707720";
-
+        
         let currentUser = null;
         let activeRecipient = null;
         let currentRoomId = null;
@@ -1126,1317 +289,469 @@
         let deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
-
             e.preventDefault();
-
             deferredPrompt = e;
-
-            document
-                .querySelectorAll('.btn-install')
-                .forEach(btn => btn.style.display = 'flex');
-
+            document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'flex');
         });
 
         async function installPWA() {
-
             if (deferredPrompt) {
-
                 deferredPrompt.prompt();
-
                 const { outcome } = await deferredPrompt.userChoice;
-
                 if (outcome === 'accepted') {
-
-                    document
-                        .querySelectorAll('.btn-install')
-                        .forEach(btn => btn.style.display = 'none');
-
+                    document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'none');
                 }
-
                 deferredPrompt = null;
-
             } else {
-
-                alert(
-                    "Open browser menu and select 'Add to Home Screen' or 'Install App'."
-                );
-
+                alert("Open browser menu and select 'Add to Home Screen' or 'Install App'.");
             }
         }
 
         function getDeviceId() {
-
             let deviceId = localStorage.getItem('axtres_device_id');
-
             if (!deviceId) {
-
-                deviceId =
-                    'dev_' +
-                    Math.random().toString(36).substring(2) +
-                    Date.now().toString(36);
-
-                localStorage.setItem(
-                    'axtres_device_id',
-                    deviceId
-                );
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('axtres_device_id', deviceId);
             }
-
             return deviceId;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-
             getDeviceId();
-
-            const savedUser =
-                localStorage.getItem('axtres_user');
-
+            const savedUser = localStorage.getItem('axtres_user');
             if (savedUser) {
-
                 try {
-
-                    currentUser =
-                        JSON.parse(savedUser);
-
+                    currentUser = JSON.parse(savedUser);
                     navigateAfterAuth();
-
                     return;
-
                 } catch(e) {}
-
             }
-
-            setTimeout(() => {
-                switchScreen('login-screen');
-            }, 800);
-
+            setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
         function navigateAfterAuth() {
-
-            if (
-                String(currentUser.phone).trim() ===
-                YADHU_PHONE
-            ) {
-
+            if (String(currentUser.phone).trim() === YADHU_PHONE) {
                 openContactsScreen();
-
             } else {
-
                 openHubScreen();
-
             }
         }
 
         function openHubScreen() {
-
             switchScreen('hub-screen');
-
-            document.getElementById(
-                'hub-welcome-text'
-            ).innerText =
-                `Welcome, ${currentUser.name}!`;
+            document.getElementById('hub-welcome-text').innerText = `Welcome, ${currentUser.name}!`;
         }
 
         function chatWithYadhu() {
-
             startChatWith({
-
-                name: "Yadhu Krishna",
-
+                name: "Yadhu",
                 phone: YADHU_PHONE,
-
                 has_email: 1
-
             });
-
-        }
-
-        function openDirectoryWithPin() {
-
-            const input =
-                document.getElementById(
-                    'directory-pin-input'
-                );
-
-            const error =
-                document.getElementById(
-                    'directory-pin-error'
-                );
-
-            input.value = "";
-
-            error.innerText = "";
-
-            switchScreen(
-                'directory-pin-screen'
-            );
-
-            setTimeout(() => {
-                input.focus();
-            }, 50);
-        }
-
-        function closeDirectoryPin() {
-
-            switchScreen('hub-screen');
-
-        }
-
-        function handleDirectoryPinInput(e) {
-
-            const input = e.target;
-
-            const error =
-                document.getElementById(
-                    'directory-pin-error'
-                );
-
-            input.value =
-                input.value
-                    .replace(/[^0-9]/g, '')
-                    .slice(0, 3);
-
-            error.innerText = "";
-
-            if (input.value.length === 3) {
-
-                if (input.value === "257") {
-
-                    closeDirectoryPin();
-
-                    openContactsScreen();
-
-                } else {
-
-                    error.innerText = "Wrong PIN";
-
-                    input.value = "";
-
-                    setTimeout(() => {
-                        input.focus();
-                    }, 50);
-
-                }
-
-            }
         }
 
         function handleChatBack() {
-
-            if (syncInterval)
-                clearInterval(syncInterval);
-
-            if (
-                String(currentUser.phone).trim() ===
-                YADHU_PHONE
-            ) {
-
+            if (syncInterval) clearInterval(syncInterval);
+            if (String(currentUser.phone).trim() === YADHU_PHONE) {
                 openContactsScreen();
-
             } else {
-
                 openHubScreen();
-
             }
         }
 
         function forceSyncOnWake() {
-
-            if (currentRoomId)
-                pollChatMessages(false);
-
-            if (
-                currentUser &&
-                document
-                    .getElementById('contacts-screen')
-                    .classList
-                    .contains('active')
-            ) {
-
-                fetchContacts();
-
-            }
+            if (currentRoomId) pollChatMessages(false);
+            if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
         }
 
-        window.addEventListener(
-            'focus',
-            forceSyncOnWake
-        );
-
-        document.addEventListener(
-            "visibilitychange",
-            () => {
-
-                if (
-                    document.visibilityState === "visible"
-                )
-                    forceSyncOnWake();
-
-            }
-        );
+        window.addEventListener('focus', forceSyncOnWake);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") forceSyncOnWake();
+        });
 
         function switchScreen(screenId) {
-
-            document
-                .querySelectorAll('.screen')
-                .forEach(s =>
-                    s.classList.remove('active')
-                );
-
-            document
-                .getElementById(screenId)
-                .classList.add('active');
-
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
 
         function interceptEmailInput(e) {
-
             const input = e.target;
-
-            if (
-                input.value.includes('@') ||
-                input.value.includes('.')
-            ) {
-
-                input.value =
-                    input.value
-                        .replace(/[@\.gmailyout-]/gi, '')
-                        .trim();
-
-                showToast(
-                    "Email extension handled by dropdown."
-                );
-
+            if (input.value.includes('@') || input.value.includes('.')) {
+                input.value = input.value.replace(/[@\.gmailyout-]/gi, '').trim();
+                showToast("Email extension handled by dropdown.");
             }
         }
 
         function showToast(msg) {
-
-            const toast =
-                document.getElementById(
-                    'toast-notification'
-                );
-
+            const toast = document.getElementById('toast-notification');
             toast.innerText = msg;
-
             toast.style.display = 'block';
-
-            setTimeout(() => {
-
-                toast.style.display = 'none';
-
-            }, 2500);
-
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
         }
 
         async function requestNotificationPermission() {
-
-            const statusDiv =
-                document.getElementById(
-                    'notif-status'
-                );
-
-            if (!("Notification" in window))
-                return;
-
-            const permission =
-                await Notification.requestPermission();
-
-            statusDiv.innerText =
-                permission === "granted"
-                    ? "Status: Notifications Enabled!"
-                    : "Status: Denied.";
-
-            statusDiv.style.color =
-                permission === "granted"
-                    ? "#2e7d32"
-                    : "#d32f2f";
+            const statusDiv = document.getElementById('notif-status');
+            if (!("Notification" in window)) return;
+            const permission = await Notification.requestPermission();
+            statusDiv.innerText = permission === "granted" ? "Status: Notifications Enabled!" : "Status: Denied.";
+            statusDiv.style.color = permission === "granted" ? "#2e7d32" : "#d32f2f";
         }
 
         async function handleRegister() {
-
-            const name =
-                document.getElementById(
-                    'reg-name'
-                ).value.trim();
-
-            const phone =
-                document.getElementById(
-                    'reg-phone'
-                ).value.trim();
-
-            const emailUser =
-                document.getElementById(
-                    'reg-email-user'
-                ).value.trim();
-
-            const emailDomain =
-                document.getElementById(
-                    'reg-email-domain'
-                ).value;
-
-            const email =
-                emailUser
-                    ? (emailUser + emailDomain)
-                    : "";
-
-            const errDiv =
-                document.getElementById(
-                    'reg-error'
-                );
-
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const emailUser = document.getElementById('reg-email-user').value.trim();
+            const emailDomain = document.getElementById('reg-email-domain').value;
+            const email = emailUser ? (emailUser + emailDomain) : "";
+            const errDiv = document.getElementById('reg-error');
             errDiv.innerText = "";
 
             if (!name || !phone) {
-
-                errDiv.innerText =
-                    "Name and phone are required.";
-
+                errDiv.innerText = "Name and phone are required.";
                 return;
             }
-
             if (phone.length !== 10) {
-
-                errDiv.innerText =
-                    "Phone number must be 10 digits.";
-
+                errDiv.innerText = "Phone number must be 10 digits.";
                 return;
             }
 
             try {
-
-                const res =
-                    await fetch(
-                        `${USERS_API}?action=register&_t=${Date.now()}`,
-                        {
-                            method: 'POST',
-                            cache: 'no-store',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Cache-Control':
-                                    'no-cache, no-store'
-                            },
-                            body: JSON.stringify({
-                                name,
-                                phone,
-                                email,
-                                device_id: getDeviceId()
-                            })
-                        }
-                    );
-
-                const data =
-                    await res.json();
-
-                if (!res.ok)
-                    throw new Error(
-                        data.error ||
-                        "Registration failed"
-                    );
+                const res = await fetch(`${USERS_API}?action=register&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Registration failed");
 
                 pendingPhone = phone;
-
                 if (data.requires_verification) {
-
-                    document.getElementById(
-                        'verify-pin-input'
-                    ).value = "";
-
-                    document.getElementById(
-                        'verify-error'
-                    ).innerText = "";
-
-                    switchScreen(
-                        'verify-screen'
-                    );
-
+                    document.getElementById('verify-pin-input').value = "";
+                    document.getElementById('verify-error').innerText = "";
+                    switchScreen('verify-screen');
                 } else {
-
-                    document.getElementById(
-                        'login-phone'
-                    ).value = phone;
-
-                    switchScreen(
-                        'login-screen'
-                    );
-
-                    document.getElementById(
-                        'login-error'
-                    ).innerText =
-                        "Registered successfully! Please log in.";
-
-                    document.getElementById(
-                        'login-error'
-                    ).style.color = "#2e7d32";
-
+                    document.getElementById('login-phone').value = phone;
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Registered successfully! Please log in.";
+                    document.getElementById('login-error').style.color = "#2e7d32";
                 }
-
             } catch (err) {
-
-                errDiv.innerText =
-                    err.message;
-
+                errDiv.innerText = err.message;
             }
         }
 
         async function handleAutoVerifyRegister(e) {
-
             const input = e.target;
-
-            input.value =
-                input.value.replace(
-                    /[^0-9]/g,
-                    ''
-                );
-
-            const errDiv =
-                document.getElementById(
-                    'verify-error'
-                );
-
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const errDiv = document.getElementById('verify-error');
             errDiv.innerText = "";
 
             if (input.value.length === 3) {
-
                 try {
+                    const res = await fetch(`${USERS_API}?action=verify-register&_t=${Date.now()}`, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                        body: JSON.stringify({ phone: pendingPhone, pin: input.value })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Incorrect PIN");
 
-                    const res =
-                        await fetch(
-                            `${USERS_API}?action=verify-register&_t=${Date.now()}`,
-                            {
-                                method: 'POST',
-                                cache: 'no-store',
-                                headers: {
-                                    'Content-Type':
-                                        'application/json',
-                                    'Cache-Control':
-                                        'no-cache, no-store'
-                                },
-                                body: JSON.stringify({
-                                    phone: pendingPhone,
-                                    pin: input.value
-                                })
-                            }
-                        );
-
-                    const data =
-                        await res.json();
-
-                    if (!res.ok)
-                        throw new Error(
-                            data.error ||
-                            "Incorrect PIN"
-                        );
-
-                    document.getElementById(
-                        'login-phone'
-                    ).value =
-                        pendingPhone;
-
-                    switchScreen(
-                        'login-screen'
-                    );
-
-                    document.getElementById(
-                        'login-error'
-                    ).innerText =
-                        "Email verified successfully! Log in now.";
-
-                    document.getElementById(
-                        'login-error'
-                    ).style.color =
-                        "#2e7d32";
-
+                    document.getElementById('login-phone').value = pendingPhone;
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Email verified successfully! Log in now.";
+                    document.getElementById('login-error').style.color = "#2e7d32";
                 } catch (err) {
-
-                    errDiv.innerText =
-                        err.message;
-
+                    errDiv.innerText = err.message;
                     input.value = "";
-
                 }
-
             }
         }
 
         function openAddEmailModal() {
-
-            document.getElementById(
-                'ae-phone'
-            ).value = "";
-
-            document.getElementById(
-                'ae-email-user'
-            ).value = "";
-
-            document.getElementById(
-                'ae-error'
-            ).innerText = "";
-
-            switchScreen(
-                'add-email-screen'
-            );
-
+            document.getElementById('ae-phone').value = "";
+            document.getElementById('ae-email-user').value = "";
+            document.getElementById('ae-error').innerText = "";
+            switchScreen('add-email-screen');
         }
 
         async function handleAddEmailInit() {
-
-            const phone =
-                document.getElementById(
-                    'ae-phone'
-                ).value.trim();
-
-            const emailUser =
-                document.getElementById(
-                    'ae-email-user'
-                ).value.trim();
-
-            const emailDomain =
-                document.getElementById(
-                    'ae-email-domain'
-                ).value;
-
-            const errDiv =
-                document.getElementById(
-                    'ae-error'
-                );
-
+            const phone = document.getElementById('ae-phone').value.trim();
+            const emailUser = document.getElementById('ae-email-user').value.trim();
+            const emailDomain = document.getElementById('ae-email-domain').value;
+            const errDiv = document.getElementById('ae-error');
             errDiv.innerText = "";
 
-            if (
-                !phone ||
-                phone.length !== 10 ||
-                !emailUser
-            ) {
-
-                errDiv.innerText =
-                    "Enter valid phone and email.";
-
+            if (!phone || phone.length !== 10 || !emailUser) {
+                errDiv.innerText = "Enter valid phone and email.";
                 return;
             }
 
             pendingPhone = phone;
-
-            const email =
-                emailUser + emailDomain;
+            const email = emailUser + emailDomain;
 
             try {
+                const res = await fetch(`${USERS_API}?action=update-email-init&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ phone, email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to send PIN");
 
-                const res =
-                    await fetch(
-                        `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
-                        {
-                            method: 'POST',
-                            cache: 'no-store',
-                            headers: {
-                                'Content-Type':
-                                    'application/json',
-                                'Cache-Control':
-                                    'no-cache, no-store'
-                            },
-                            body: JSON.stringify({
-                                phone,
-                                email
-                            })
-                        }
-                    );
-
-                const data =
-                    await res.json();
-
-                if (!res.ok)
-                    throw new Error(
-                        data.error ||
-                        "Failed to send PIN"
-                    );
-
-                document.getElementById(
-                    'ae-pin-input'
-                ).value = "";
-
-                switchScreen(
-                    'verify-email-screen'
-                );
-
+                document.getElementById('ae-pin-input').value = "";
+                switchScreen('verify-email-screen');
             } catch (err) {
-
-                errDiv.innerText =
-                    err.message;
-
+                errDiv.innerText = err.message;
             }
         }
 
         async function handleAutoVerifyEmail(e) {
-
             const input = e.target;
-
-            input.value =
-                input.value.replace(
-                    /[^0-9]/g,
-                    ''
-                );
-
-            const errDiv =
-                document.getElementById(
-                    'ae-verify-error'
-                );
-
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const errDiv = document.getElementById('ae-verify-error');
             errDiv.innerText = "";
 
             if (input.value.length === 3) {
-
                 try {
+                    const res = await fetch(`${USERS_API}?action=verify-email-update&_t=${Date.now()}`, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                        body: JSON.stringify({ phone: pendingPhone, pin: input.value })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Incorrect PIN");
 
-                    const res =
-                        await fetch(
-                            `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
-                            {
-                                method: 'POST',
-                                cache: 'no-store',
-                                headers: {
-                                    'Content-Type':
-                                        'application/json',
-                                    'Cache-Control':
-                                        'no-cache, no-store'
-                                },
-                                body: JSON.stringify({
-                                    phone: pendingPhone,
-                                    pin: input.value
-                                })
-                            }
-                        );
-
-                    const data =
-                        await res.json();
-
-                    if (!res.ok)
-                        throw new Error(
-                            data.error ||
-                            "Incorrect PIN"
-                        );
-
-                    switchScreen(
-                        'login-screen'
-                    );
-
-                    document.getElementById(
-                        'login-error'
-                    ).innerText =
-                        "Email linked and verified!";
-
-                    document.getElementById(
-                        'login-error'
-                    ).style.color =
-                        "#2e7d32";
-
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Email linked and verified!";
+                    document.getElementById('login-error').style.color = "#2e7d32";
                 } catch (err) {
-
-                    errDiv.innerText =
-                        err.message;
-
+                    errDiv.innerText = err.message;
                     input.value = "";
-
                 }
-
             }
         }
 
         async function handleLogin() {
-
-            const phone =
-                document.getElementById(
-                    'login-phone'
-                ).value.trim();
-
-            const errDiv =
-                document.getElementById(
-                    'login-error'
-                );
-
+            const phone = document.getElementById('login-phone').value.trim();
+            const errDiv = document.getElementById('login-error');
             errDiv.innerText = "";
-
-            errDiv.style.color =
-                "#d32f2f";
+            errDiv.style.color = "#d32f2f";
 
             if (!phone || phone.length !== 10) {
-
-                errDiv.innerText =
-                    "Enter a valid 10-digit phone number.";
-
+                errDiv.innerText = "Enter a valid 10-digit phone number.";
                 return;
             }
 
             try {
+                const res = await fetch(`${USERS_API}?action=login&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Login failed");
 
-                const res =
-                    await fetch(
-                        `${USERS_API}?action=login&_t=${Date.now()}`,
-                        {
-                            method: 'POST',
-                            cache: 'no-store',
-                            headers: {
-                                'Content-Type':
-                                    'application/json',
-                                'Cache-Control':
-                                    'no-cache, no-store'
-                            },
-                            body: JSON.stringify({
-                                phone
-                            })
-                        }
-                    );
-
-                const data =
-                    await res.json();
-
-                if (!res.ok)
-                    throw new Error(
-                        data.error ||
-                        "Login failed"
-                    );
-
-                currentUser =
-                    data.user;
-
-                localStorage.setItem(
-                    'axtres_user',
-                    JSON.stringify(currentUser)
-                );
-
+                currentUser = data.user;
+                localStorage.setItem('axtres_user', JSON.stringify(currentUser));
                 navigateAfterAuth();
-
             } catch (err) {
-
-                errDiv.innerText =
-                    err.message;
-
+                errDiv.innerText = err.message;
             }
         }
 
         function handleLogout() {
-
-            localStorage.removeItem(
-                'axtres_user'
-            );
-
+            localStorage.removeItem('axtres_user');
             currentUser = null;
-
-            if (syncInterval)
-                clearInterval(syncInterval);
-
-            if (contactsInterval)
-                clearInterval(contactsInterval);
-
-            switchScreen(
-                'login-screen'
-            );
+            if (syncInterval) clearInterval(syncInterval);
+            if (contactsInterval) clearInterval(contactsInterval);
+            switchScreen('login-screen');
         }
 
         async function openContactsScreen() {
-
-            switchScreen(
-                'contacts-screen'
-            );
-
-            document.getElementById(
-                'my-name-display'
-            ).innerText =
-                currentUser.name;
-
+            switchScreen('contacts-screen');
+            document.getElementById('my-name-display').innerText = currentUser.name;
             startContactsPolling();
         }
 
         function startContactsPolling() {
-
-            if (contactsInterval)
-                clearInterval(contactsInterval);
-
+            if (contactsInterval) clearInterval(contactsInterval);
             fetchContacts();
-
-            contactsInterval =
-                setInterval(
-                    fetchContacts,
-                    1000
-                );
+            contactsInterval = setInterval(fetchContacts, 1000);
         }
 
         async function fetchContacts() {
-
             try {
-
-                const res =
-                    await fetch(
-                        `${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`,
-                        {
-                            cache: 'no-store',
-                            headers: {
-                                'Cache-Control':
-                                    'no-cache, no-store',
-                                'Pragma':
-                                    'no-cache'
-                            }
-                        }
-                    );
-
-                const contacts =
-                    await res.json();
-
-                const container =
-                    document.getElementById(
-                        'contacts-container'
-                    );
-
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
+                const contacts = await res.json();
+                const container = document.getElementById('contacts-container');
                 container.innerHTML = "";
 
-                if (
-                    !Array.isArray(contacts) ||
-                    contacts.length === 0
-                ) {
-
-                    container.innerHTML =
-                        `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">
-                            No other contacts found yet.
-                        </div>`;
-
+                if (!Array.isArray(contacts) || contacts.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other contacts found yet.</div>`;
                     return;
                 }
 
                 contacts.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
+                    const emailStatusBadge = c.has_email === 1 
+                        ? `<span class="status-pill active">Email Verified 🟢</span>` 
+                        : `<span class="status-pill inactive">No Email ⚪</span>`;
 
-                    const item =
-                        document.createElement(
-                            'div'
-                        );
-
-                    item.className =
-                        'contact-item';
-
-                    const emailStatusBadge =
-                        c.has_email === 1
-                            ? `<span class="status-pill active">Email Verified 🟢</span>`
-                            : `<span class="status-pill inactive">No Email ⚪</span>`;
-
-                    item.innerHTML =
-                        `<div>
-                            <div class="contact-name">
-                                ${escapeHtml(c.name)}
-                            </div>
-
-                            <div class="contact-phone">
-                                ${escapeHtml(c.phone)}
-                            </div>
-
-                            ${emailStatusBadge}
-                        </div>
-
-                        <span style="color:#075e54; font-weight:600; font-size:0.9rem;">
-                            Chat &rarr;
-                        </span>`;
-
-                    item.onclick =
-                        () => startChatWith(c);
-
-                    container.appendChild(
-                        item
-                    );
-
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    item.onclick = () => startChatWith(c);
+                    container.appendChild(item);
                 });
-
             } catch (e) {}
-
         }
 
         function startChatWith(recipient) {
+            activeRecipient = recipient;
+            if (contactsInterval) clearInterval(contactsInterval);
 
-            activeRecipient =
-                recipient;
+            const sortedPhones = [currentUser.phone, recipient.phone].sort();
+            currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
 
-            if (contactsInterval)
-                clearInterval(
-                    contactsInterval
-                );
+            document.getElementById('chat-room-title').innerText = recipient.name;
+            switchScreen('chat-screen');
+            document.getElementById('email-toggle').checked = false;
 
-            const sortedPhones =
-                [
-                    currentUser.phone,
-                    recipient.phone
-                ].sort();
-
-            currentRoomId =
-                `room_${sortedPhones[0]}_${sortedPhones[1]}`;
-
-            document.getElementById(
-                'chat-room-title'
-            ).innerText =
-                recipient.name;
-
-            switchScreen(
-                'chat-screen'
-            );
-
-            document.getElementById(
-                'email-toggle'
-            ).checked = false;
-
-            const messagesDiv =
-                document.getElementById(
-                    'messages-container'
-                );
-
+            const messagesDiv = document.getElementById('messages-container');
             messagesDiv.innerHTML = "";
-
             knownMessageIds.clear();
 
             startChatPolling();
         }
 
         function startChatPolling() {
-
-            if (syncInterval)
-                clearInterval(syncInterval);
-
+            if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
-
-            syncInterval =
-                setInterval(
-                    () => pollChatMessages(false),
-                    600
-                );
+            syncInterval = setInterval(() => pollChatMessages(false), 600);
         }
 
         async function pollChatMessages(isInitial) {
-
-            if (!currentRoomId)
-                return;
-
+            if (!currentRoomId) return;
             try {
-
-                const res =
-                    await fetch(
-                        `${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`,
-                        {
-                            cache: 'no-store',
-                            headers: {
-                                'Cache-Control':
-                                    'no-cache, no-store',
-                                'Pragma':
-                                    'no-cache'
-                            }
-                        }
-                    );
-
-                const history =
-                    await res.json();
-
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
+                const history = await res.json();
+                
                 if (Array.isArray(history)) {
-
-                    const messagesDiv =
-                        document.getElementById(
-                            'messages-container'
-                        );
-
+                    const messagesDiv = document.getElementById('messages-container');
+                    
                     if (isInitial) {
-
-                        messagesDiv.innerHTML =
-                            "";
-
+                        messagesDiv.innerHTML = "";
                         knownMessageIds.clear();
-
                     }
 
-                    let shouldScroll =
-                        false;
+                    let shouldScroll = false;
 
                     history.forEach(msg => {
+                        const sender = msg.sender_phone || msg.senderPhone || msg.sender_id || "";
+                        const msgText = msg.message || "";
+                        const createdAt = msg.created_at || "";
+                        const isEmergency = msg.is_emergency || 0;
+                        
+                        const uniqueId = msg.id ? String(msg.id) : `${sender}_${createdAt}_${msgText}`;
+                        
+                        if (knownMessageIds.has(uniqueId)) return;
 
-                        const sender =
-                            msg.sender_phone ||
-                            msg.senderPhone ||
-                            msg.sender_id ||
-                            "";
+                        knownMessageIds.add(uniqueId);
+                        shouldScroll = true;
 
-                        const msgText =
-                            msg.message || "";
-
-                        const createdAt =
-                            msg.created_at || "";
-
-                        const isEmergency =
-                            msg.is_emergency || 0;
-
-                        const uniqueId =
-                            msg.id
-                                ? String(msg.id)
-                                : `${sender}_${createdAt}_${msgText}`;
-
-                        if (
-                            knownMessageIds.has(
-                                uniqueId
-                            )
-                        )
-                            return;
-
-                        knownMessageIds.add(
-                            uniqueId
-                        );
-
-                        shouldScroll =
-                            true;
-
-                        if (
-                            !isInitial &&
-                            String(sender).trim() !==
-                            String(currentUser.phone).trim()
-                        ) {
-
-                            if (
-                                Notification.permission ===
-                                "granted"
-                            ) {
-
-                                const alertTitle =
-                                    isEmergency
-                                        ? `📧 Email Sent by ${activeRecipient.name}`
-                                        : `💬 New Message from ${activeRecipient.name}`;
-
-                                new Notification(
-                                    alertTitle,
-                                    {
-                                        body: msgText
-                                    }
-                                );
-
+                        if (!isInitial && String(sender).trim() !== String(currentUser.phone).trim()) {
+                            if (Notification.permission === "granted") {
+                                const alertTitle = isEmergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
+                                new Notification(alertTitle, { body: msgText });
                             }
-
                         }
 
                         let timeStr = "";
-
                         if (createdAt) {
-
-                            const parsedDate =
-                                new Date(
-                                    createdAt
-                                );
-
-                            if (
-                                !isNaN(
-                                    parsedDate.getTime()
-                                )
-                            ) {
-
-                                timeStr =
-                                    parsedDate.toLocaleTimeString(
-                                        [],
-                                        {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        }
-                                    );
-
+                            const parsedDate = new Date(createdAt);
+                            if (!isNaN(parsedDate.getTime())) {
+                                timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             }
                         }
-
                         if (!timeStr) {
-
-                            timeStr =
-                                new Date()
-                                    .toLocaleTimeString(
-                                        [],
-                                        {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        }
-                                    );
-
+                            timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         }
 
-                        const cleanSender =
-                            String(sender).trim();
+                        const cleanSender = String(sender).trim();
+                        const cleanMyPhone = String(currentUser.phone).trim();
+                        const isMe = cleanSender === cleanMyPhone;
 
-                        const cleanMyPhone =
-                            String(
-                                currentUser.phone
-                            ).trim();
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'msg';
+                        if (isEmergency === 1 || isEmergency === true) msgEl.classList.add('email-alert');
 
-                        const isMe =
-                            cleanSender ===
-                            cleanMyPhone;
-
-                        const msgEl =
-                            document.createElement(
-                                'div'
-                            );
-
-                        msgEl.className =
-                            'msg';
-
-                        if (
-                            isEmergency === 1 ||
-                            isEmergency === true
-                        ) {
-
-                            msgEl.classList.add(
-                                'email-alert'
-                            );
-
-                        }
-
-                        let badgeHTML =
-                            (
-                                isEmergency === 1 ||
-                                isEmergency === true
-                            )
-                                ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>`
-                                : '';
+                        let badgeHTML = (isEmergency === 1 || isEmergency === true) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
 
                         if (isMe) {
-
-                            msgEl.classList.add(
-                                'me'
-                            );
-
-                            msgEl.innerHTML =
-                                `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-
+                            msgEl.classList.add('me');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
                         } else {
-
-                            msgEl.classList.add(
-                                'them'
-                            );
-
-                            msgEl.innerHTML =
-                                `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-
+                            msgEl.classList.add('them');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
                         }
 
-                        messagesDiv.appendChild(
-                            msgEl
-                        );
-
+                        messagesDiv.appendChild(msgEl);
                     });
 
-                    if (
-                        shouldScroll ||
-                        isInitial
-                    ) {
-
-                        messagesDiv.scrollTop =
-                            messagesDiv.scrollHeight;
-
+                    if (shouldScroll || isInitial) {
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
                     }
-
                 }
-
             } catch (e) {}
-
         }
 
         async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            const sendViaEmail = document.getElementById('email-toggle').checked ? 1 : 0;
+            if (!text || !currentRoomId) return;
 
-            const input =
-                document.getElementById(
-                    'message-input'
-                );
-
-            const text =
-                input.value.trim();
-
-            const sendViaEmail =
-                document.getElementById(
-                    'email-toggle'
-                ).checked
-                    ? 1
-                    : 0;
-
-            if (
-                !text ||
-                !currentRoomId
-            )
-                return;
-
-            const timeNow =
-                new Date().toISOString();
-
+            const timeNow = new Date().toISOString();
             input.value = "";
-
             input.focus();
 
             try {
-
-                await fetch(
-                    `${MESSAGES_API}?_t=${Date.now()}`,
-                    {
-                        method: 'POST',
-                        cache: 'no-store',
-                        headers: {
-                            'Content-Type':
-                                'application/json',
-                            'Cache-Control':
-                                'no-cache, no-store'
-                        },
-                        body: JSON.stringify({
-
-                            room_id:
-                                currentRoomId,
-
-                            sender_id:
-                                currentUser.phone,
-
-                            sender_name:
-                                currentUser.name,
-
-                            recipient_phone:
-                                activeRecipient.phone,
-
-                            message:
-                                text,
-
-                            send_via_email:
-                                sendViaEmail,
-
-                            created_at:
-                                timeNow
-
-                        })
-                    }
-                );
-
+                await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({
+                        room_id: currentRoomId,
+                        sender_id: currentUser.phone,
+                        sender_name: currentUser.name,
+                        recipient_phone: activeRecipient.phone,
+                        message: text,
+                        send_via_email: sendViaEmail,
+                        created_at: timeNow
+                    })
+                });
                 pollChatMessages(false);
-
             } catch (err) {}
-
         }
 
         function checkEnter(e) {
-
-            if (
-                e.key === 'Enter'
-            )
-                sendMessage();
-
+            if (e.key === 'Enter') sendMessage();
         }
 
         function escapeHtml(text) {
-
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&apos;'
-            };
-
-            return text.replace(
-                /[\n&<>"']/g,
-                function(m) {
-                    return map[m] || m;
-                }
-            );
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+            return text.replace(/[\n&<>"']/g, function(m) { return map[m] || m; });
         }
-
     </script>
-
 </body>
 </html>
