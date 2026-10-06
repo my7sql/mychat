@@ -1,8 +1,7 @@
-// functions/messages.js
-// Axtres messaging + Resend email alerts
+// functions/messages.js - Cloudflare Pages Function for Messaging & Resend Email Alerts
 
 const NO_CACHE_HEADERS = {
-  "Content-Type": "application/json; charset=utf-8",
+  "Content-Type": "application/json",
   "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
   "Pragma": "no-cache",
   "Expires": "0",
@@ -11,126 +10,73 @@ const NO_CACHE_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-function json(data, status = 200) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: NO_CACHE_HEADERS
-    }
-  );
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-async function sendResendNotification(
-  apiKey,
-  recipientEmail,
-  senderName,
-  messageText,
-  fromAddress
-) {
-
-  if (!apiKey) {
-    throw new Error(
-      "RESEND_API_KEY is not configured in Cloudflare."
-    );
-  }
-
-  if (!recipientEmail) {
-    throw new Error(
-      "Recipient has no email address."
-    );
-  }
-
-  const from =
-    fromAddress ||
-    "axtres Alert <onboarding@resend.dev>";
-
-  const response =
-    await fetch(
-      "https://api.resend.com/emails",
-      {
-        method: "POST",
-
-        headers: {
-          "Authorization":
-            `Bearer ${apiKey}`,
-
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-            from,
-
-            to: [
-              recipientEmail
-            ],
-
-            subject:
-              `New Message from ${senderName} on axtres`,
-
-            html: `
-              <div style="font-family:Arial,sans-serif;padding:15px;border:1px solid #e0e0e0;border-radius:8px;">
-
-                <h3 style="color:#075e54;margin-top:0;">
-                  New Message Alert
-                </h3>
-
-                <p>
-                  <strong>
-                    ${escapeHtml(senderName)}
-                  </strong>
-                  sent you a message:
-                </p>
-
-                <blockquote style="background:#f0f2f5;padding:10px 15px;border-left:4px solid #075e54;margin:10px 0;">
-                  ${escapeHtml(messageText)}
-                </blockquote>
-
-              </div>
-            `
-          })
-      }
-    );
-
-  const responseText =
-    await response.text();
-
-  let responseData = {};
+async function sendResendNotification(apiKey, recipientEmail, senderName, messageText) {
+  if (!apiKey || !recipientEmail) return;
 
   try {
-    responseData =
-      responseText
-        ? JSON.parse(responseText)
-        : {};
-  } catch (_) {}
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
 
-  if (!response.ok) {
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        from: "axtres Alert <onboarding@resend.dev>",
+
+        to: [recipientEmail],
+
+        subject:
+          `New Message from ${senderName} on axtres`,
+
+        html: `
+          <div
+            style="
+              font-family: Arial, sans-serif;
+              padding: 15px;
+              border: 1px solid #e0e0e0;
+              border-radius: 8px;
+            "
+          >
+
+            <h3
+              style="
+                color: #075e54;
+                margin-top: 0;
+              "
+            >
+              New Message Alert
+            </h3>
+
+            <p>
+              <strong>${senderName}</strong>
+              sent you a message:
+            </p>
+
+            <blockquote
+              style="
+                background: #f0f2f5;
+                padding: 10px 15px;
+                border-left: 4px solid #075e54;
+                margin: 10px 0;
+              "
+            >
+              ${messageText}
+            </blockquote>
+
+          </div>
+        `
+      })
+    });
+
+  } catch (err) {
 
     console.error(
-      "Resend API error:",
-      response.status,
-      responseText
-    );
-
-    throw new Error(
-      responseData?.message ||
-      responseData?.error ||
-      `Resend rejected the email (${response.status}).`
+      "Failed to send Resend email alert:",
+      err
     );
   }
-
-  return responseData;
 }
 
 export async function onRequest(context) {
@@ -143,62 +89,43 @@ export async function onRequest(context) {
   const url =
     new URL(request.url);
 
-  if (
-    request.method ===
-    "OPTIONS"
-  ) {
+  /* --------------------------------
+     CORS PREFLIGHT
+  -------------------------------- */
 
-    return new Response(
-      null,
-      {
-        status: 204,
-        headers:
-          NO_CACHE_HEADERS
-      }
-    );
+  if (request.method === "OPTIONS") {
+
+    return new Response(null, {
+      headers: NO_CACHE_HEADERS
+    });
   }
 
   try {
 
-    if (!env.DB) {
+    /* --------------------------------
+       GET MESSAGES
+    -------------------------------- */
 
-      return json(
-        {
-          error:
-            "Cloudflare D1 binding DB is missing."
-        },
-        500
-      );
-    }
-
-    /*
-     * GET
-     * Fetch messages
-     */
-    if (
-      request.method ===
-      "GET"
-    ) {
+    if (request.method === "GET") {
 
       const roomId =
-        url.searchParams.get(
-          "room_id"
-        );
+        url.searchParams.get("room_id");
 
       if (!roomId) {
 
-        return json(
-          {
+        return new Response(
+          JSON.stringify({
             error:
               "room_id parameter is required"
-          },
-          400
+          }),
+          {
+            status:400,
+            headers:NO_CACHE_HEADERS
+          }
         );
       }
 
-      const {
-        results
-      } =
+      const { results } =
         await env.DB.prepare(
           `SELECT
              id,
@@ -209,44 +136,33 @@ export async function onRequest(context) {
              message,
              is_emergency,
              created_at
+
            FROM messages
+
            WHERE room_id = ?
+
            ORDER BY id ASC`
         )
         .bind(roomId)
         .all();
 
-      return json(
-        results || []
+      return new Response(
+        JSON.stringify(results || []),
+        {
+          status:200,
+          headers:NO_CACHE_HEADERS
+        }
       );
     }
 
-    /*
-     * POST
-     * Save message
-     */
-    if (
-      request.method ===
-      "POST"
-    ) {
+    /* --------------------------------
+       SEND MESSAGE
+    -------------------------------- */
 
-      let body;
+    if (request.method === "POST") {
 
-      try {
-
-        body =
-          await request.json();
-
-      } catch (_) {
-
-        return json(
-          {
-            error:
-              "Invalid JSON request body."
-          },
-          400
-        );
-      }
+      const body =
+        await request.json();
 
       const {
         room_id,
@@ -264,19 +180,20 @@ export async function onRequest(context) {
         !message
       ) {
 
-        return json(
-          {
+        return new Response(
+          JSON.stringify({
             error:
-              "Missing required message fields."
-          },
-          400
+              "Missing required message fields"
+          }),
+          {
+            status:400,
+            headers:NO_CACHE_HEADERS
+          }
         );
       }
 
       const isEmergency =
-        send_via_email
-          ? 1
-          : 0;
+        send_via_email ? 1 : 0;
 
       const timestamp =
         created_at ||
@@ -285,169 +202,119 @@ export async function onRequest(context) {
       const info =
         await env.DB.prepare(
           `INSERT INTO messages
-            (
-              room_id,
-              sender_phone,
-              sender_name,
-              recipient_phone,
-              message,
-              is_emergency,
-              created_at
-            )
+           (
+             room_id,
+             sender_phone,
+             sender_name,
+             recipient_phone,
+             message,
+             is_emergency,
+             created_at
+           )
+
            VALUES (?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
-          String(room_id),
-          String(sender_id),
-          sender_name ||
-            "Unknown",
-          recipient_phone ||
-            "",
-          String(message),
+          room_id,
+          sender_id,
+          sender_name || "Unknown",
+          recipient_phone || "",
+          message,
           isEmergency,
           timestamp
         )
         .run();
 
-      const messageId =
-        info?.meta?.last_row_id;
+      /* --------------------------------
+         RESEND EMAIL ALERT
+      -------------------------------- */
 
-      let email = {
-        requested:
-          !!isEmergency,
-        sent: false
-      };
+      if (
+        isEmergency &&
+        env.RESEND_API_KEY
+      ) {
 
-      /*
-       * EMAIL
-       */
-      if (isEmergency) {
-
-        let targetEmail =
-          null;
+        let targetEmail=null;
 
         /*
-         * Existing special routing for Yadhu
-         */
+          Force email for Yadhu
+          to always use the known address.
+        */
+
         if (
-          String(
-            recipient_phone || ""
-          ).trim() ===
+          String(recipient_phone).trim() ===
           "7025707720"
         ) {
 
           targetEmail =
             "yadhukrishnabp777@gmail.com";
 
-        } else if (
-          recipient_phone
-        ) {
+        } else if(recipient_phone){
 
           const recipientUser =
-            await env.DB.prepare(
-              `SELECT
-                 email,
-                 email_verified
-               FROM users
-               WHERE phone = ?`
-            )
-            .bind(
-              String(
-                recipient_phone
+            await env.DB
+              .prepare(
+                `SELECT email
+                 FROM users
+                 WHERE phone = ?`
               )
-            )
-            .first();
+              .bind(recipient_phone)
+              .first();
 
-          if (
-            recipientUser?.email
-          ) {
+          if(
+            recipientUser &&
+            recipientUser.email
+          ){
 
             targetEmail =
               recipientUser.email;
           }
         }
 
-        try {
-
-          if (!env.RESEND_API_KEY) {
-
-            throw new Error(
-              "RESEND_API_KEY is missing in Cloudflare."
-            );
-          }
-
-          if (!targetEmail) {
-
-            throw new Error(
-              "No recipient email is available."
-            );
-          }
+        if(targetEmail){
 
           await sendResendNotification(
             env.RESEND_API_KEY,
             targetEmail,
-            sender_name ||
-              sender_id,
-            message,
-            env.RESEND_FROM_EMAIL
+            sender_name || sender_id,
+            message
           );
-
-          email.sent = true;
-          email.recipient =
-            targetEmail;
-
-        } catch (
-          emailError
-        ) {
-
-          console.error(
-            "Email alert failed:",
-            emailError
-          );
-
-          email.error =
-            emailError.message;
         }
       }
 
-      return json(
-        {
-          success: true,
+      return new Response(
+        JSON.stringify({
+          success:true,
           message_id:
-            messageId,
-          email,
-          warning:
-            email.requested &&
-            !email.sent
-              ? email.error
-              : undefined
-        },
-        201
+            info.meta.last_row_id
+        }),
+        {
+          status:201,
+          headers:NO_CACHE_HEADERS
+        }
       );
     }
 
-    return json(
+    return new Response(
+      JSON.stringify({
+        error:"Method not allowed"
+      }),
       {
-        error:
-          "Method not allowed"
-      },
-      405
+        status:405,
+        headers:NO_CACHE_HEADERS
+      }
     );
 
-  } catch (err) {
+  } catch(err){
 
-    console.error(
-      "Axtres messages function error:",
-      err
-    );
-
-    return json(
+    return new Response(
+      JSON.stringify({
+        error:err.message
+      }),
       {
-        error:
-          err?.message ||
-          "Internal server error"
-      },
-      500
+        status:500,
+        headers:NO_CACHE_HEADERS
+      }
     );
   }
 }
