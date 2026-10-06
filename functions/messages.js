@@ -49,7 +49,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // GET Request: Fetch Chat Room Messages
     if (request.method === "GET") {
       const roomId = url.searchParams.get("room_id");
       if (!roomId) {
@@ -63,7 +62,6 @@ export async function onRequest(context) {
       return new Response(JSON.stringify(results || []), { status: 200, headers: NO_CACHE_HEADERS });
     }
 
-    // POST Request: Send New Message
     if (request.method === "POST") {
       const body = await request.json();
       const { room_id, sender_id, sender_name, recipient_phone, message, send_via_email, created_at } = body;
@@ -88,13 +86,23 @@ export async function onRequest(context) {
         timestamp
       ).run();
 
-      // Dispatch Email via Resend if email toggle was enabled
-      if (isEmergency && recipient_phone && env.RESEND_API_KEY) {
-        const recipientUser = await env.DB.prepare("SELECT email FROM users WHERE phone = ?").bind(recipient_phone).first();
-        if (recipientUser && recipientUser.email) {
+      if (isEmergency && env.RESEND_API_KEY) {
+        let targetEmail = null;
+
+        // Force email for Yadhu (7025707720) to always be yadhukrishnabp777@gmail.com
+        if (String(recipient_phone).trim() === "7025707720") {
+          targetEmail = "yadhukrishnabp777@gmail.com";
+        } else if (recipient_phone) {
+          const recipientUser = await env.DB.prepare("SELECT email FROM users WHERE phone = ?").bind(recipient_phone).first();
+          if (recipientUser && recipientUser.email) {
+            targetEmail = recipientUser.email;
+          }
+        }
+
+        if (targetEmail) {
           await sendResendNotification(
             env.RESEND_API_KEY,
-            recipientUser.email,
+            targetEmail,
             sender_name || sender_id,
             message
           );
