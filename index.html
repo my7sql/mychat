@@ -11,20 +11,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         :root {
             --theme-primary: #075e54;
             --theme-secondary: #128c7e;
-            --theme-page: linear-gradient(
-                135deg,
-                #063f38,
-                #075e54,
-                #0b806f,
-                #128c7e
-            );
+            --theme-page: linear-gradient(135deg, #063f38, #075e54, #0b806f, #128c7e);
             --theme-soft: #f0f2f5;
             --theme-card: #ffffff;
             --theme-text: #111b21;
@@ -38,323 +31,322 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #333;
+            color: var(--theme-text);
             overflow: hidden;
         }
 
         @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        #app {
             width: 100%;
-            max-width: 420px;
-            height: 92vh;
-            max-height: 820px;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            max-width: 520px;
+            height: 100vh;
+            max-height: 900px;
+            background: var(--theme-soft);
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 35px rgba(0,0,0,.18);
         }
 
         .screen {
             display: none;
-            flex-direction: column;
-            height: 100%;
             width: 100%;
+            height: 100%;
+            position: absolute;
+            inset: 0;
+            background: var(--theme-soft);
+            overflow: hidden;
         }
 
         .screen.active {
             display: flex;
+            flex-direction: column;
         }
-
-        /* LOADING */
 
         #welcome-screen {
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 30px;
-            background: linear-gradient(
-                135deg,
-                #075e54,
-                #128c7e
-            );
+            background: var(--theme-page);
             color: white;
+            z-index: 100;
         }
 
         #welcome-screen h1 {
-            font-size: 2.3rem;
-            margin-bottom: 10px;
+            font-size: 3rem;
             font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        #welcome-screen p {
+            margin-top: 8px;
+            opacity: .88;
+            font-size: .95rem;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            border: 3px solid rgba(255,255,255,.3);
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-top: 18px;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin-top: 30px;
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
-
-        /* HEADER */
 
         .header-bar {
+            min-height: 58px;
             background: var(--theme-primary);
             color: white;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+            padding: 0 15px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+            flex-shrink: 0;
         }
 
-        .header-bar span {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            font-weight: normal;
+        .header-bar > span:last-child {
             cursor: pointer;
-            text-decoration: underline;
+            font-size: .82rem;
+            opacity: .9;
         }
 
-        /* FORMS */
+        .back-arrow {
+            font-size: 1.7rem;
+            line-height: 1;
+            margin-right: 10px;
+            cursor: pointer;
+            font-weight: 400;
+            user-select: none;
+        }
 
         .form-content {
-            padding: 18px 25px;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 28px 22px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
             justify-content: center;
-            flex: 1;
             overflow-y: auto;
         }
 
         .form-content h2 {
-            color: var(--theme-primary);
-            font-size: 1.35rem;
-            margin-bottom: 2px;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 1.55rem;
         }
 
-        .form-content p.subtitle {
-            color: #666;
-            font-size: 0.82rem;
-            margin-bottom: 2px;
+        .subtitle {
+            text-align: center;
+            color: #667781;
+            font-size: .85rem;
+            margin-bottom: 20px;
         }
 
         input,
         select {
-            padding: 10px 14px;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            width: 100%;
+            border: 1px solid #d6dadd;
+            border-radius: 11px;
+            padding: 13px 14px;
+            font-size: .95rem;
             outline: none;
-            background: #fafafa;
+            background: white;
+            color: #111b21;
+            margin-bottom: 12px;
+            transition: .2s;
         }
 
         input:focus,
         select:focus {
-            border-color: var(--theme-primary);
-            background: #fff;
-            box-shadow:
-                0 0 0 3px rgba(7, 94, 84, 0.1);
+            border-color: var(--theme-secondary);
+            box-shadow: 0 0 0 3px rgba(18,140,126,.10);
         }
 
         .email-group {
             display: flex;
-            gap: 6px;
+            gap: 7px;
         }
 
         .email-group input {
-            flex: 2;
+            flex: 1;
         }
 
         .email-group select {
-            flex: 1.2;
-            font-size: 0.85rem;
+            width: 135px;
         }
 
-        /* BUTTONS */
+        button {
+            font-family: inherit;
+        }
 
         .btn {
+            width: 100%;
+            border: 0;
+            border-radius: 11px;
             background: var(--theme-primary);
             color: white;
-            border: none;
-            padding: 11px;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            padding: 13px;
+            font-size: .95rem;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
+            transition: transform .15s, opacity .15s;
+            margin-top: 6px;
         }
 
         .btn:hover {
-            background: var(--theme-secondary);
+            opacity: .93;
+        }
+
+        .btn:active {
+            transform: scale(.985);
         }
 
         .btn-secondary {
-            background: #205081;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 0.82rem;
+            width: 100%;
+            border: 1px solid #d6dadd;
+            border-radius: 11px;
+            background: white;
+            color: var(--theme-primary);
+            padding: 12px;
+            font-size: .92rem;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-secondary:hover {
-            background: #183d63;
+            margin-top: 7px;
         }
 
         .btn-accent {
-            background: #d84315;
+            width: 100%;
+            border: 0;
+            border-radius: 11px;
+            background: var(--theme-secondary);
             color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 12px;
+            font-size: .92rem;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-accent:hover {
-            background: #bf360c;
+            margin-top: 10px;
         }
 
         .btn-install {
-            background: linear-gradient(
-                135deg,
-                #ff9966,
-                #ff5e62
-            );
-            color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: 700;
             display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow:
-                0 4px 10px rgba(255, 94, 98, 0.3);
+            width: 100%;
+            border: 0;
+            border-radius: 11px;
+            background: #263238;
+            color: white;
+            padding: 12px;
+            font-size: .9rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
-        /* HUB */
+        .switch-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: .85rem;
+            color: #667781;
+        }
+
+        .switch-text a {
+            color: var(--theme-primary);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .error-msg {
+            min-height: 20px;
+            color: #d32f2f;
+            font-size: .82rem;
+            text-align: center;
+            margin: 3px 0;
+            font-weight: 600;
+        }
 
         .hub-welcome {
-            font-size: 1.65rem;
+            font-size: 1.7rem;
             font-weight: 800;
-            color: var(--theme-primary);
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             text-align: center;
+            color: var(--theme-text);
         }
 
         .hub-card {
+            width: 100%;
             background: var(--theme-card);
-            color: var(--theme-text);
-            border: 1px solid rgba(7, 94, 84, 0.14);
-            border-radius: 16px;
-            padding: 22px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            box-shadow:
-                0 10px 28px rgba(15, 32, 39, 0.08);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.08);
+            border: 1px solid rgba(7,94,84,.12);
         }
 
         .yadhu-profile-card {
-            animation: profileCardIn 0.55s ease-out both;
-            border-color: color-mix(
-                in srgb,
-                var(--theme-primary) 18%,
-                transparent
-            );
+            animation: profileCardIn .55s ease-out both;
+            border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent);
         }
 
         @keyframes profileCardIn {
             from {
                 opacity: 0;
-                transform: translateY(12px) scale(0.985);
+                transform: translateY(12px);
             }
-
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
+        }
+
+        .yadhu-profile-card .hub-user-name {
+            font-weight: 800;
+            letter-spacing: .2px;
+        }
+
+        .yadhu-profile-card .hub-user-phone,
+        .yadhu-profile-card .hub-user-email {
+            opacity: .82;
         }
 
         .hub-user-name {
             font-size: 1.35rem;
-            font-weight: 800;
-            color: var(--theme-text);
-            letter-spacing: 0.2px;
+            margin-bottom: 9px;
         }
 
-        .hub-user-phone {
-            font-size: 0.95rem;
-            color: #53636d;
-            font-weight: 500;
-        }
-
+        .hub-user-phone,
         .hub-user-email {
-            font-size: 0.9rem;
+            font-size: .9rem;
             color: #667781;
-            font-weight: 500;
-            word-break: break-word;
+            margin-top: 5px;
+            overflow-wrap: anywhere;
         }
 
         .hub-actions {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            width: 100%;
+            gap: 11px;
+            margin-top: 16px;
         }
 
         .btn-hub {
             width: 100%;
-            height: 48px;
-            padding: 12px 16px;
-            font-size: 0.98rem;
-            font-weight: 600;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            border: 0;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 750;
             cursor: pointer;
-            border: none;
-            box-shadow:
-                0 2px 4px rgba(0, 0, 0, 0.06);
-            transition: background 0.2s;
+            font-size: .94rem;
         }
 
         .btn-hub-primary {
@@ -362,21 +354,11 @@
             color: white;
         }
 
-        .btn-hub-primary:hover {
-            background: var(--theme-secondary);
-        }
-
         .btn-hub-secondary {
-            background: var(--theme-soft);
-            color: var(--theme-text);
-            border: 1px solid #ccc;
+            background: var(--theme-card);
+            color: var(--theme-primary);
+            border: 1px solid color-mix(in srgb, var(--theme-primary) 22%, #d6dadd);
         }
-
-        .btn-hub-secondary:hover {
-            background: #e4e6eb;
-        }
-
-        /* SETTINGS */
 
         .settings-footer {
             display: flex;
@@ -385,120 +367,13 @@
         }
 
         .settings-button {
-            border: 1px solid rgba(7, 94, 84, 0.16);
-            background: rgba(255, 255, 255, 0.85);
-            color: var(--theme-primary);
-            border-radius: 10px;
-            padding: 8px 15px;
-            font-size: 0.84rem;
-            font-weight: 650;
-            cursor: pointer;
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-
-        .settings-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 60;
-            background: rgba(8, 18, 24, 0.52);
-            backdrop-filter: blur(10px);
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .settings-overlay.active {
-            display: flex;
-        }
-
-        .settings-panel {
-            width: 100%;
-            max-height: 88%;
-            overflow-y: auto;
-            background: var(--theme-card);
-            border-radius: 22px 22px 0 0;
-            padding: 22px 18px 24px;
-            box-shadow:
-                0 -15px 50px rgba(0, 0, 0, 0.22);
-        }
-
-        .settings-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .settings-head h2 {
-            color: var(--theme-primary);
-            font-size: 1.25rem;
-        }
-
-        .settings-close {
             border: 0;
-            background: var(--theme-soft);
-            color: var(--theme-text);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+            background: transparent;
+            color: var(--theme-primary);
+            font-weight: 700;
             cursor: pointer;
-            font-size: 1.1rem;
+            padding: 9px 14px;
         }
-
-        .theme-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .theme-option {
-            border: 2px solid transparent;
-            border-radius: 14px;
-            padding: 7px;
-            background: var(--theme-soft);
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .theme-option.selected {
-            border-color: var(--theme-primary);
-        }
-
-        .theme-preview {
-            height: 72px;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .preview-bar {
-            height: 9px;
-            width: 62%;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .preview-bubble {
-            align-self: flex-end;
-            width: 48%;
-            height: 20px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.86);
-        }
-
-        .preview-name {
-            margin-top: 7px;
-            font-size: 0.78rem;
-            font-weight: 650;
-            color: var(--theme-text);
-        }
-
-        /* DIRECTORY PIN */
 
         .directory-pin-card {
             width: 100%;
@@ -506,13 +381,12 @@
             background: #ffffff;
             border-radius: 18px;
             padding: 24px 22px;
-            box-shadow:
-                0 18px 50px rgba(0, 0, 0, 0.22);
+            box-shadow: 0 18px 50px rgba(0,0,0,.22);
             text-align: center;
         }
 
         .directory-pin-card h2 {
-            color: var(--theme-primary);
+            color: #075e54;
             font-size: 1.25rem;
             margin-bottom: 18px;
         }
@@ -525,326 +399,461 @@
             background: #f8fafb;
         }
 
-        .directory-pin-card .error-msg {
-            min-height: 18px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-
-        /* DIRECTORY */
-
-        #contacts-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: var(--theme-soft);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .directory-return {
-            margin: 10px 15px 0;
-            width: calc(100% - 30px);
-            height: 42px;
-            border: 1px solid #d9dfe3;
-            border-radius: 10px;
-            background: var(--theme-card);
-            color: var(--theme-primary);
-            font-weight: 650;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-        }
-
-        .directory-return:hover {
-            background: #f5f7f8;
-        }
-
-        .directory-return:active {
-            transform: scale(0.98);
-        }
-
         .contact-item {
-            background: white;
-            padding: 14px 18px;
-            border-radius: 12px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px;
+            background: var(--theme-card);
+            border-bottom: 1px solid #e7eaed;
             cursor: pointer;
-            box-shadow:
-                0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: background 0.2s;
         }
 
         .contact-item:hover {
-            background: #f5f6f6;
+            background: #f7faf9;
         }
 
         .contact-name {
-            font-weight: 600;
-            color: #111b21;
-            font-size: 1.05rem;
+            font-weight: 750;
+            color: var(--theme-text);
         }
 
         .contact-phone {
-            font-size: 0.85rem;
+            font-size: .84rem;
             color: #667781;
-        }
-
-        .status-pill {
-            font-size: 0.72rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .status-pill.active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-pill.inactive {
-            background: #f5f5f5;
-            color: #757575;
-        }
-
-        /* CHAT */
-
-        #messages-container {
-            flex: 1;
-            padding: 15px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: #efeae2;
-            background-image:
-                radial-gradient(
-                    #d1ccc0 0.75px,
-                    transparent 0.75px
-                );
-            background-size: 15px 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .msg {
-            max-width: 78%;
-            padding: 8px 12px 6px 12px;
-            border-radius: 7.5px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            box-shadow:
-                0 1px 0.5px rgba(0, 0, 0, 0.13);
-        }
-
-        .msg.me {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #111b21;
-            border-top-right-radius: 0;
-        }
-
-        .msg.them {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #111b21;
-            border-top-left-radius: 0;
-        }
-
-        .msg.email-alert {
-            background: #e3f2fd !important;
-            border: 1.5px solid #1976d2 !important;
-            color: #0d47a1 !important;
-        }
-
-        .email-badge {
-            font-size: 0.65rem;
-            background: #1976d2;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 3px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            color: #667781;
-            float: right;
-            margin-left: 12px;
             margin-top: 4px;
         }
 
-        .email-toolbar {
-            background: #e3f2fd;
-            padding: 8px 15px;
+        .status-pill {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 3px 7px;
+            border-radius: 8px;
+            font-size: .68rem;
+            font-weight: 700;
+        }
+
+        .status-pill.active {
+            background: #e4f6ec;
+            color: #18844a;
+        }
+
+        .status-pill.inactive {
+            background: #eef1f3;
+            color: #667781;
+        }
+
+        .settings-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(7,24,32,.48);
+            backdrop-filter: blur(8px);
+            z-index: 40;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .settings-overlay.open {
+            display: flex;
+        }
+
+        .settings-panel {
+            width: 100%;
+            max-width: 520px;
+            background: var(--theme-card);
+            border-radius: 22px 22px 0 0;
+            padding: 20px;
+            box-shadow: 0 -15px 45px rgba(0,0,0,.2);
+            max-height: 82%;
+            overflow-y: auto;
+        }
+
+        .settings-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-top: 1px solid #bbdefb;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1565c0;
+            margin-bottom: 18px;
+        }
+
+        .settings-head h2 {
+            font-size: 1.2rem;
+            color: var(--theme-text);
+        }
+
+        .settings-close {
+            border: 0;
+            background: transparent;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #667781;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .theme-option {
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 8px;
+            cursor: pointer;
+            background: var(--theme-soft);
+        }
+
+        .theme-option.selected {
+            border-color: var(--theme-primary);
+        }
+
+        .theme-preview {
+            height: 72px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 17px;
+            background: rgba(255,255,255,.24);
+        }
+
+        .preview-bubble {
+            position: absolute;
+            width: 42px;
+            height: 20px;
+            right: 10px;
+            bottom: 12px;
+            border-radius: 10px 10px 3px 10px;
+            background: rgba(255,255,255,.78);
+        }
+
+        .preview-name {
+            text-align: center;
+            font-size: .78rem;
+            font-weight: 750;
+            margin-top: 7px;
+            color: var(--theme-text);
+        }
+
+        #messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 12px;
+            background: var(--theme-soft);
+        }
+
+        .msg {
+            max-width: 82%;
+            padding: 9px 10px 7px;
+            border-radius: 10px;
+            margin-bottom: 7px;
+            font-size: .91rem;
+            line-height: 1.35;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,.08);
+        }
+
+        .msg.me {
+            margin-left: auto;
+            background: #d9fdd3;
+            border-top-right-radius: 3px;
+            color: #111b21;
+        }
+
+        .msg.them {
+            margin-right: auto;
+            background: var(--theme-card);
+            border-top-left-radius: 3px;
+        }
+
+        .msg-time {
+            display: block;
+            text-align: right;
+            font-size: .62rem;
+            color: #667781;
+            margin-top: 4px;
+        }
+
+        .email-alert {
+            border-left: 3px solid #e67e22;
+        }
+
+        .email-badge {
+            display: inline-block;
+            color: #b35a00;
+            font-size: .62rem;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .email-toolbar {
+            height: 48px;
+            background: var(--theme-card);
+            border-top: 1px solid #e2e6e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            color: #667781;
+            font-size: .82rem;
+            flex-shrink: 0;
         }
 
         .toggle-switch {
             position: relative;
-            display: inline-block;
             width: 42px;
-            height: 22px;
+            height: 23px;
         }
 
         .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+            display: none;
         }
 
         .slider {
             position: absolute;
+            inset: 0;
+            background: #ccd2d5;
+            border-radius: 20px;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 22px;
+            transition: .2s;
         }
 
         .slider:before {
-            position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            position: absolute;
+            width: 17px;
+            height: 17px;
             left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
+            top: 3px;
+            background: white;
             border-radius: 50%;
+            transition: .2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,.2);
         }
 
-        input:checked + .slider {
-            background-color: #1976d2;
+        .toggle-switch input:checked + .slider {
+            background: var(--theme-secondary);
         }
 
-        input:checked + .slider:before {
-            transform: translateX(20px);
+        .toggle-switch input:checked + .slider:before {
+            transform: translateX(19px);
         }
 
         #input-toolbar {
             display: flex;
-            padding: 10px 15px;
-            background: #f0f2f5;
-            gap: 10px;
-            align-items: center;
-            border-top: 1px solid #e0e0e0;
+            gap: 8px;
+            padding: 8px;
+            background: var(--theme-card);
+            border-top: 1px solid #e2e6e8;
+            flex-shrink: 0;
         }
 
-        #message-input {
+        #input-toolbar input {
+            margin: 0;
             flex: 1;
-            border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 0.95rem;
         }
 
         #send-btn {
+            width: 47px;
+            border: 0;
+            border-radius: 11px;
             background: var(--theme-primary);
             color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
-        .back-arrow {
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-right: 10px;
-        }
-
-        .error-msg {
-            color: #d32f2f;
-            font-size: 0.78rem;
-            text-align: center;
-        }
-
-        .switch-text {
-            text-align: center;
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .switch-text a {
-            color: var(--theme-primary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .switch-text a:hover {
-            text-decoration: underline;
-        }
-
-        .notice-toast {
+        .toast {
             position: absolute;
-            top: 10px;
             left: 50%;
+            bottom: 18px;
             transform: translateX(-50%);
-            background: #323232;
+            background: rgba(17,27,33,.92);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            z-index: 99;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: .8rem;
+            z-index: 200;
             display: none;
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
+
+        /* ADMIN */
+
+        .admin-pin-card {
+            width: 100%;
+            max-width: 320px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 24px 22px;
+            box-shadow: 0 18px 50px rgba(0,0,0,.22);
+            text-align: center;
+        }
+
+        .admin-pin-card h2 {
+            color: #075e54;
+            font-size: 1.25rem;
+            margin-bottom: 18px;
+        }
+
+        .admin-pin-card input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            background: #f8fafb;
+        }
+
+        .admin-tools {
+            display: flex;
+            gap: 10px;
+            padding: 14px 15px;
+            background: var(--theme-card);
+            border-bottom: 1px solid #e5e7eb;
+            flex-wrap: wrap;
+        }
+
+        .admin-tool-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--theme-primary);
+            color: #fff;
+        }
+
+        .admin-tool-btn.secondary {
+            background: var(--theme-soft);
+            color: var(--theme-text);
+        }
+
+        .admin-user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 15px;
+            border-bottom: 1px solid #e7eaed;
+            background: var(--theme-card);
+        }
+
+        .admin-user-main {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .admin-user-name {
+            font-weight: 750;
+            color: var(--theme-text);
+        }
+
+        .admin-user-meta {
+            margin-top: 3px;
+            color: #667781;
+            font-size: .84rem;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-user-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .admin-small-btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 8px 11px;
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--theme-primary);
+            color: #fff;
+        }
+
+        .admin-small-btn.edit {
+            background: #eef6f4;
+            color: #075e54;
+        }
+
+        .admin-form-wrap {
+            padding: 16px;
+            overflow: auto;
+            background: var(--theme-soft);
+        }
+
+        .admin-form-card {
+            max-width: 620px;
+            margin: 0 auto;
+            background: var(--theme-card);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        }
+
+        .admin-form-card h2 {
+            color: var(--theme-text);
+            margin-bottom: 14px;
+        }
+
+        .admin-form-card label {
+            display: block;
+            margin: 12px 0 6px;
+            font-size: .84rem;
+            font-weight: 700;
+            color: #667781;
+        }
+
+        .admin-form-card input {
+            width: 100%;
+        }
+
+        .admin-form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .admin-empty {
+            padding: 28px 18px;
+            text-align: center;
+            color: #667781;
+            background: var(--theme-card);
+        }
+
+        @media (max-width: 520px) {
+            #app {
+                max-height: none;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="card">
+<div id="app">
 
-    <div id="toast-notification" class="notice-toast">
-        Email extension is handled by the dropdown menu.
-    </div>
-
-    <!-- LOADING SCREEN -->
-
+    <!-- SPLASH -->
     <div id="welcome-screen" class="screen active">
         <h1>axtres</h1>
-        <p>Secure Email &amp; Chat Messenger</p>
+        <p>Secure Email & Chat Messenger</p>
         <div class="spinner"></div>
     </div>
 
     <!-- REGISTER -->
-
     <div id="register-screen" class="screen">
         <div class="header-bar">Registration</div>
 
         <div class="form-content">
-
             <h2>Sign Up</h2>
-
-            <p class="subtitle">
-                Email is optional. Add one to receive email alerts.
-            </p>
+            <p class="subtitle">Email is optional. Add one to receive email alerts.</p>
 
             <input
                 type="text"
@@ -862,7 +871,6 @@
             >
 
             <div class="email-group">
-
                 <input
                     type="text"
                     id="reg-email-user"
@@ -871,26 +879,18 @@
                 >
 
                 <select id="reg-email-domain">
-                    <option value="@gmail.com" selected>
-                        @gmail.com
-                    </option>
-                    <option value="@outlook.com">
-                        @outlook.com
-                    </option>
+                    <option value="@gmail.com" selected>@gmail.com</option>
+                    <option value="@outlook.com">@outlook.com</option>
                 </select>
-
             </div>
 
-            <button
-                class="btn-secondary"
-                onclick="requestNotificationPermission()"
-            >
+            <button class="btn-secondary" onclick="requestNotificationPermission()">
                 1. Enable Notifications
             </button>
 
             <div
                 id="notif-status"
-                style="font-size:0.75rem;text-align:center;color:#666;"
+                style="font-size:.75rem;text-align:center;color:#666;"
             >
                 Status: Not Enabled
             </div>
@@ -911,27 +911,16 @@
 
             <div class="switch-text">
                 Already registered?
-                <a onclick="switchScreen('login-screen')">
-                    Log In here
-                </a>
+                <a onclick="switchScreen('login-screen')">Log In here</a>
             </div>
-
         </div>
     </div>
 
-    <!-- REGISTER PIN -->
-
+    <!-- VERIFY REGISTRATION -->
     <div id="verify-screen" class="screen">
+        <div class="header-bar">Verify Email</div>
 
-        <div class="header-bar">
-            Verify Email
-        </div>
-
-        <div
-            class="form-content"
-            style="text-align:center;"
-        >
-
+        <div class="form-content" style="text-align:center;">
             <h2>Enter 3-Digit PIN</h2>
 
             <p class="subtitle">
@@ -948,10 +937,7 @@
                 oninput="handleAutoVerifyRegister(event)"
             >
 
-            <div
-                class="error-msg"
-                id="verify-error"
-            ></div>
+            <div class="error-msg" id="verify-error"></div>
 
             <button
                 class="btn-secondary"
@@ -959,20 +945,14 @@
             >
                 Back
             </button>
-
         </div>
     </div>
 
     <!-- LOGIN -->
-
     <div id="login-screen" class="screen">
-
-        <div class="header-bar">
-            Sign In
-        </div>
+        <div class="header-bar">Sign In</div>
 
         <div class="form-content">
-
             <h2>Welcome Back</h2>
 
             <input
@@ -984,16 +964,19 @@
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             >
 
-            <div
-                class="error-msg"
-                id="login-error"
-            ></div>
+            <div class="error-msg" id="login-error"></div>
 
-            <button
-                class="btn"
-                onclick="handleLogin()"
-            >
+            <button class="btn" onclick="handleLogin()">
                 Log In to Chats
+            </button>
+
+            <!-- ADMIN BUTTON -->
+            <button
+                class="btn-secondary"
+                onclick="openAdminWithPin()"
+                style="margin-top:10px;"
+            >
+                Admin
             </button>
 
             <button
@@ -1017,18 +1000,13 @@
                     Register here
                 </a>
             </div>
-
         </div>
     </div>
 
     <!-- ADD EMAIL -->
-
     <div id="add-email-screen" class="screen">
-
         <div class="header-bar">
-
             <div style="display:flex;align-items:center;">
-
                 <span
                     class="back-arrow"
                     onclick="switchScreen('login-screen')"
@@ -1037,13 +1015,10 @@
                 </span>
 
                 <div>Link Email</div>
-
             </div>
-
         </div>
 
         <div class="form-content">
-
             <h2>Update Email</h2>
 
             <p class="subtitle">
@@ -1060,7 +1035,6 @@
             >
 
             <div class="email-group">
-
                 <input
                     type="text"
                     id="ae-email-user"
@@ -1069,47 +1043,26 @@
                 >
 
                 <select id="ae-email-domain">
-
-                    <option value="@gmail.com" selected>
-                        @gmail.com
-                    </option>
-
-                    <option value="@outlook.com">
-                        @outlook.com
-                    </option>
-
+                    <option value="@gmail.com" selected>@gmail.com</option>
+                    <option value="@outlook.com">@outlook.com</option>
                 </select>
-
             </div>
 
-            <div
-                class="error-msg"
-                id="ae-error"
-            ></div>
+            <div class="error-msg" id="ae-error"></div>
 
-            <button
-                class="btn"
-                onclick="handleAddEmailInit()"
-            >
+            <button class="btn" onclick="handleAddEmailInit()">
                 Send Verification PIN
             </button>
-
         </div>
     </div>
 
-    <!-- VERIFY UPDATED EMAIL -->
-
+    <!-- VERIFY EMAIL UPDATE -->
     <div id="verify-email-screen" class="screen">
-
         <div class="header-bar">
             Confirm Email PIN
         </div>
 
-        <div
-            class="form-content"
-            style="text-align:center;"
-        >
-
+        <div class="form-content" style="text-align:center;">
             <h2>Enter 3-Digit PIN</h2>
 
             <p class="subtitle">
@@ -1126,10 +1079,7 @@
                 oninput="handleAutoVerifyEmail(event)"
             >
 
-            <div
-                class="error-msg"
-                id="ae-verify-error"
-            ></div>
+            <div class="error-msg" id="ae-verify-error"></div>
 
             <button
                 class="btn-secondary"
@@ -1137,56 +1087,55 @@
             >
                 Cancel
             </button>
-
         </div>
     </div>
 
     <!-- HUB -->
-
     <div id="hub-screen" class="screen">
-
         <div class="header-bar">
-
             <div>axtres</div>
 
             <span onclick="handleLogout()">
                 Sign Out
             </span>
-
         </div>
 
         <div
             class="form-content"
             style="justify-content:flex-start;padding-top:32px;"
         >
-
             <div
                 class="hub-welcome"
                 id="hub-welcome-text"
             >
-                Welcome!
+                Welcome, User!
             </div>
 
-            <!-- YADHU CARD -->
-
+            <!-- YADHU PROFILE CARD -->
             <div class="hub-card yadhu-profile-card">
-
-                <div class="hub-user-name">
+                <div
+                    class="hub-user-name"
+                    id="hub-user-name"
+                >
                     Yadhu Krishna
                 </div>
 
-                <div class="hub-user-phone">
+                <div
+                    class="hub-user-phone"
+                    id="hub-user-phone"
+                >
                     7025707720
                 </div>
 
-                <div class="hub-user-email">
+                <div
+                    class="hub-user-email"
+                    id="hub-user-email"
+                >
                     yadhukrishnabp777@gmail.com
                 </div>
-
             </div>
 
             <div class="hub-actions">
-
                 <button
                     class="btn-hub btn-hub-primary"
                     onclick="chatWithYadhu()"
@@ -1200,25 +1149,20 @@
                 >
                     📖 Directory
                 </button>
-
             </div>
 
             <div class="settings-footer">
-
                 <button
                     class="settings-button"
                     onclick="openSettings()"
                 >
                     ⚙ Settings
                 </button>
-
             </div>
-
         </div>
     </div>
 
     <!-- DIRECTORY PIN -->
-
     <div
         id="directory-pin-screen"
         class="screen"
@@ -1226,7 +1170,7 @@
         style="
             position:absolute;
             inset:0;
-            background:rgba(7,24,32,0.48);
+            background:rgba(7,24,32,.48);
             backdrop-filter:blur(8px);
             align-items:center;
             justify-content:center;
@@ -1234,12 +1178,10 @@
             z-index:50;
         "
     >
-
         <div
             class="directory-pin-card"
             onclick="event.stopPropagation()"
         >
-
             <h2>Directory</h2>
 
             <input
@@ -1256,20 +1198,28 @@
                 class="error-msg"
                 id="directory-pin-error"
             ></div>
-
         </div>
-
     </div>
 
     <!-- DIRECTORY -->
-
     <div id="contacts-screen" class="screen">
 
         <div class="header-bar">
 
-            <div>
-                Directory
-                (<span id="my-name-display"></span>)
+            <div style="display:flex;align-items:center;">
+
+                <span
+                    class="back-arrow"
+                    onclick="returnFromDirectory()"
+                >
+                    &#8592;
+                </span>
+
+                <div>
+                    Directory
+                    (<span id="my-name-display"></span>)
+                </div>
+
             </div>
 
             <span onclick="handleLogout()">
@@ -1282,7 +1232,7 @@
             style="
                 padding:10px 15px;
                 background:#fff;
-                font-size:0.85rem;
+                font-size:.85rem;
                 color:#667781;
                 border-bottom:1px solid #eee;
             "
@@ -1290,21 +1240,261 @@
             Select a contact to start chatting:
         </div>
 
-        <!-- RETURN BUTTON -->
-
-        <button
-            class="directory-return"
-            onclick="returnFromDirectory()"
-        >
-            &#8592; Return
-        </button>
-
         <div id="contacts-container"></div>
 
     </div>
 
-    <!-- SETTINGS -->
+    <!-- ADMIN PIN -->
+    <div
+        id="admin-pin-screen"
+        class="screen"
+        onclick="handleAdminBackdrop(event)"
+        style="
+            position:absolute;
+            inset:0;
+            background:rgba(7,24,32,.48);
+            backdrop-filter:blur(8px);
+            align-items:center;
+            justify-content:center;
+            padding:24px;
+            z-index:60;
+        "
+    >
 
+        <div
+            class="admin-pin-card"
+            onclick="event.stopPropagation()"
+        >
+
+            <h2>Admin Access</h2>
+
+            <input
+                type="tel"
+                id="admin-pin-input"
+                maxlength="3"
+                inputmode="numeric"
+                autocomplete="off"
+                oninput="handleAdminPinInput(event)"
+                autofocus
+            >
+
+            <div
+                class="error-msg"
+                id="admin-pin-error"
+            ></div>
+
+        </div>
+
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="admin-screen" class="screen">
+
+        <div class="header-bar">
+
+            <div style="display:flex;align-items:center;">
+
+                <span
+                    class="back-arrow"
+                    onclick="closeAdmin()"
+                >
+                    &#8592;
+                </span>
+
+                <div>Admin</div>
+
+            </div>
+
+            <span onclick="closeAdmin()">
+                Sign Out
+            </span>
+
+        </div>
+
+        <div class="admin-tools">
+
+            <button
+                class="admin-tool-btn"
+                onclick="openAdminDirectoryEditor()"
+            >
+                Edit Directory
+            </button>
+
+            <button
+                class="admin-tool-btn secondary"
+                onclick="refreshAdminUsers()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div
+            style="
+                padding:10px 15px;
+                background:var(--theme-card);
+                font-size:.85rem;
+                color:#667781;
+                border-bottom:1px solid #eee;
+            "
+        >
+            All registered users. Select a user to chat.
+        </div>
+
+        <div id="admin-users-container"></div>
+
+    </div>
+
+    <!-- ADMIN EDIT DIRECTORY -->
+    <div id="admin-edit-screen" class="screen">
+
+        <div class="header-bar">
+
+            <div style="display:flex;align-items:center;">
+
+                <span
+                    class="back-arrow"
+                    onclick="openAdmin()"
+                >
+                    &#8592;
+                </span>
+
+                <div>Edit Directory</div>
+
+            </div>
+
+            <span onclick="closeAdmin()">
+                Sign Out
+            </span>
+
+        </div>
+
+        <div class="admin-tools">
+
+            <button
+                class="admin-tool-btn"
+                onclick="openAdminUserForm()"
+            >
+                + Add User
+            </button>
+
+            <button
+                class="admin-tool-btn secondary"
+                onclick="refreshAdminDirectoryEditor()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="admin-edit-container"></div>
+
+    </div>
+
+    <!-- ADMIN USER FORM -->
+    <div id="admin-user-form-screen" class="screen">
+
+        <div class="header-bar">
+
+            <div style="display:flex;align-items:center;">
+
+                <span
+                    class="back-arrow"
+                    onclick="openAdminDirectoryEditor()"
+                >
+                    &#8592;
+                </span>
+
+                <div id="admin-form-title">
+                    Add User
+                </div>
+
+            </div>
+
+            <span onclick="closeAdmin()">
+                Sign Out
+            </span>
+
+        </div>
+
+        <div class="admin-form-wrap">
+
+            <div class="admin-form-card">
+
+                <h2 id="admin-form-heading">
+                    Add User
+                </h2>
+
+                <input
+                    type="hidden"
+                    id="admin-original-phone"
+                >
+
+                <label for="admin-name">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="admin-name"
+                    placeholder="Full name"
+                    autocomplete="off"
+                >
+
+                <label for="admin-phone">
+                    Phone
+                </label>
+
+                <input
+                    type="tel"
+                    id="admin-phone"
+                    placeholder="10-digit Phone Number"
+                    maxlength="10"
+                    inputmode="numeric"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                >
+
+                <label for="admin-email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="admin-email"
+                    placeholder="Email address"
+                    autocomplete="off"
+                >
+
+                <div
+                    class="error-msg"
+                    id="admin-form-error"
+                ></div>
+
+                <div class="admin-form-actions">
+
+                    <button
+                        class="btn"
+                        onclick="saveAdminUser()"
+                    >
+                        Save User
+                    </button>
+
+                    <button
+                        class="btn-secondary"
+                        onclick="openAdminDirectoryEditor()"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SETTINGS -->
     <div
         id="settings-overlay"
         class="settings-overlay"
@@ -1343,7 +1533,10 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Emerald</div>
+
+                    <div class="preview-name">
+                        Emerald
+                    </div>
                 </div>
 
                 <div
@@ -1358,7 +1551,10 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Midnight</div>
+
+                    <div class="preview-name">
+                        Midnight
+                    </div>
                 </div>
 
                 <div
@@ -1373,7 +1569,10 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Ocean</div>
+
+                    <div class="preview-name">
+                        Ocean
+                    </div>
                 </div>
 
                 <div
@@ -1388,7 +1587,10 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Graphite</div>
+
+                    <div class="preview-name">
+                        Graphite
+                    </div>
                 </div>
 
                 <div
@@ -1403,7 +1605,10 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Royal</div>
+
+                    <div class="preview-name">
+                        Royal
+                    </div>
                 </div>
 
                 <div
@@ -1418,15 +1623,19 @@
                         <div class="preview-bar"></div>
                         <div class="preview-bubble"></div>
                     </div>
-                    <div class="preview-name">Ivory</div>
+
+                    <div class="preview-name">
+                        Ivory
+                    </div>
                 </div>
 
             </div>
+
         </div>
+
     </div>
 
     <!-- CHAT -->
-
     <div id="chat-screen" class="screen">
 
         <div class="header-bar">
@@ -1493,13 +1702,17 @@
 
     </div>
 
+    <div
+        id="toast-notification"
+        class="toast"
+    ></div>
+
 </div>
 
 <script>
 
 const USERS_API = "/users";
 const MESSAGES_API = "/messages";
-
 const YADHU_PHONE = "7025707720";
 
 let currentUser = null;
@@ -1511,27 +1724,25 @@ let syncInterval = null;
 let contactsInterval = null;
 
 let knownMessageIds = new Set();
+
 let deferredPrompt = null;
+
+let adminPin = null;
+let adminEditingPhone = null;
+let adminMode = false;
 
 
 /* PWA */
 
-window.addEventListener(
-    "beforeinstallprompt",
-    (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
+    deferredPrompt = e;
 
-        deferredPrompt = e;
-
-        document
-            .querySelectorAll(".btn-install")
-            .forEach(
-                btn => btn.style.display = "flex"
-            );
-    }
-);
-
+    document
+        .querySelectorAll(".btn-install")
+        .forEach(btn => btn.style.display = "flex");
+});
 
 async function installPWA() {
 
@@ -1546,9 +1757,8 @@ async function installPWA() {
 
             document
                 .querySelectorAll(".btn-install")
-                .forEach(
-                    btn => btn.style.display = "none"
-                );
+                .forEach(btn => btn.style.display = "none");
+
         }
 
         deferredPrompt = null;
@@ -1558,6 +1768,7 @@ async function installPWA() {
         alert(
             "Open browser menu and select 'Add to Home Screen' or 'Install App'."
         );
+
     }
 }
 
@@ -1569,8 +1780,7 @@ const THEMES = {
     emerald: {
         primary: "#075e54",
         secondary: "#128c7e",
-        page:
-            "linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e)",
+        page: "linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e)",
         soft: "#f0f2f5",
         card: "#ffffff",
         text: "#111b21"
@@ -1579,8 +1789,7 @@ const THEMES = {
     midnight: {
         primary: "#263b72",
         secondary: "#3f5fa8",
-        page:
-            "linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
+        page: "linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
         soft: "#151d2b",
         card: "#101827",
         text: "#eef3ff"
@@ -1589,8 +1798,7 @@ const THEMES = {
     ocean: {
         primary: "#087ea4",
         secondary: "#168aad",
-        page:
-            "linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
+        page: "linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
         soft: "#edf7fa",
         card: "#ffffff",
         text: "#102a43"
@@ -1599,8 +1807,7 @@ const THEMES = {
     graphite: {
         primary: "#374151",
         secondary: "#4b5563",
-        page:
-            "linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
+        page: "linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
         soft: "#20242b",
         card: "#181b20",
         text: "#f1f5f9"
@@ -1609,8 +1816,7 @@ const THEMES = {
     royal: {
         primary: "#633bb8",
         secondary: "#7c3aed",
-        page:
-            "linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
+        page: "linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
         soft: "#f3effb",
         card: "#ffffff",
         text: "#211534"
@@ -1619,12 +1825,12 @@ const THEMES = {
     ivory: {
         primary: "#80613a",
         secondary: "#a37b4b",
-        page:
-            "linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
+        page: "linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
         soft: "#f6f1e9",
         card: "#fffdf8",
         text: "#2f271f"
     }
+
 };
 
 
@@ -1666,48 +1872,39 @@ function applyTheme(name) {
         theme.text
     );
 
-    document.body.style.background =
-        theme.page;
-
-    document.body.dataset.theme =
-        name;
-
     document
         .querySelectorAll(".theme-option")
-        .forEach(
-            el =>
-                el.classList.toggle(
-                    "selected",
-                    el.dataset.theme === name
-                )
-        );
+        .forEach(option => {
+
+            option.classList.toggle(
+                "selected",
+                option.dataset.theme === name
+            );
+
+        });
+
+}
+
+
+function selectTheme(name) {
+
+    applyTheme(name);
 
     localStorage.setItem(
         "axtres_theme",
         name
     );
+
 }
 
 
 function openSettings() {
 
-    document
-        .getElementById("settings-overlay")
-        .classList.add("active");
+    const overlay =
+        document.getElementById("settings-overlay");
 
-    const current =
-        localStorage.getItem("axtres_theme") ||
-        "emerald";
+    overlay.classList.add("open");
 
-    document
-        .querySelectorAll(".theme-option")
-        .forEach(
-            el =>
-                el.classList.toggle(
-                    "selected",
-                    el.dataset.theme === current
-                )
-        );
 }
 
 
@@ -1715,160 +1912,115 @@ function closeSettings() {
 
     document
         .getElementById("settings-overlay")
-        .classList.remove("active");
+        .classList.remove("open");
+
 }
 
 
 function handleSettingsBackdrop(e) {
 
     if (
-        e.target.id ===
-        "settings-overlay"
+        e.target.id === "settings-overlay"
     ) {
         closeSettings();
     }
-}
 
-
-function selectTheme(name) {
-
-    applyTheme(name);
-}
-
-
-/* DEVICE */
-
-function getDeviceId() {
-
-    let deviceId =
-        localStorage.getItem(
-            "axtres_device_id"
-        );
-
-    if (!deviceId) {
-
-        deviceId =
-            "dev_" +
-            Math.random()
-                .toString(36)
-                .substring(2) +
-            Date.now()
-                .toString(36);
-
-        localStorage.setItem(
-            "axtres_device_id",
-            deviceId
-        );
-    }
-
-    return deviceId;
 }
 
 
 /* STARTUP */
 
-window.addEventListener(
-    "DOMContentLoaded",
-    () => {
+window.addEventListener("load", () => {
 
-        getDeviceId();
+    const savedTheme =
+        localStorage.getItem("axtres_theme")
+        || "emerald";
 
-        /*
-         * Emerald is always the default.
-         * A previously selected theme is restored
-         * only if the user already selected one.
-         */
-        const savedTheme =
-            localStorage.getItem(
-                "axtres_theme"
-            ) || "emerald";
+    applyTheme(savedTheme);
 
-        applyTheme(savedTheme);
+    setTimeout(() => {
 
-        const savedUser =
-            localStorage.getItem(
-                "axtres_user"
-            );
+        const saved =
+            localStorage.getItem("axtres_user");
 
-        if (savedUser) {
+        if (saved) {
 
             try {
 
                 currentUser =
-                    JSON.parse(savedUser);
+                    JSON.parse(saved);
 
-            } catch (e) {
+            } catch {
 
                 currentUser = null;
 
-                localStorage.removeItem(
-                    "axtres_user"
-                );
             }
+
         }
 
-        /*
-         * ALWAYS show the loading page first.
-         */
+        if (
+            currentUser &&
+            currentUser.phone &&
+            currentUser.name
+        ) {
 
-        switchScreen(
-            "welcome-screen"
-        );
+            navigateAfterAuth();
 
-        setTimeout(
-            () => {
+        } else {
 
-                if (
-                    currentUser &&
-                    currentUser.phone &&
-                    currentUser.name
-                ) {
+            switchScreen("login-screen");
 
-                    navigateAfterAuth();
+        }
 
-                } else {
+    }, 800);
 
-                    switchScreen(
-                        "login-screen"
-                    );
-                }
+});
 
-            },
-            800
-        );
-    }
-);
-
-
-/* AUTH ROUTING */
 
 function navigateAfterAuth() {
 
-    /*
-     * Normal users get the Hub.
-     * The Hub contains the Yadhu Krishna card.
-     */
+    if (
+        String(currentUser.phone).trim()
+        === YADHU_PHONE
+    ) {
 
-    openHubScreen();
+        openContactsScreen();
+
+    } else {
+
+        openHubScreen();
+
+    }
+
 }
 
 
 function openHubScreen() {
 
-    switchScreen(
-        "hub-screen"
-    );
+    switchScreen("hub-screen");
 
     document
-        .getElementById(
-            "hub-welcome-text"
-        )
+        .getElementById("hub-welcome-text")
         .innerText =
-            `Welcome, ${currentUser.name}!`;
+        `Welcome, ${currentUser.name}!`;
+
+    document
+        .getElementById("hub-user-name")
+        .innerText =
+        "Yadhu Krishna";
+
+    document
+        .getElementById("hub-user-phone")
+        .innerText =
+        "7025707720";
+
+    document
+        .getElementById("hub-user-email")
+        .innerText =
+        "yadhukrishnabp777@gmail.com";
+
 }
 
-
-/* CHAT WITH YADHU */
 
 function chatWithYadhu() {
 
@@ -1879,7 +2031,9 @@ function chatWithYadhu() {
         phone: YADHU_PHONE,
 
         has_email: 1
+
     });
+
 }
 
 
@@ -1898,7 +2052,6 @@ function openDirectoryWithPin() {
         );
 
     input.value = "";
-
     error.innerText = "";
 
     switchScreen(
@@ -1909,14 +2062,14 @@ function openDirectoryWithPin() {
         () => input.focus(),
         50
     );
+
 }
 
 
 function closeDirectoryPin() {
 
-    switchScreen(
-        "hub-screen"
-    );
+    switchScreen("hub-screen");
+
 }
 
 
@@ -1928,7 +2081,9 @@ function handleDirectoryBackdrop(e) {
     ) {
 
         closeDirectoryPin();
+
     }
+
 }
 
 
@@ -1947,10 +2102,6 @@ function handleDirectoryPinInput(e) {
             .slice(0, 3);
 
     error.innerText = "";
-
-    /*
-     * Correct PIN is 257.
-     */
 
     if (
         input.value.length === 3
@@ -1975,26 +2126,21 @@ function handleDirectoryPinInput(e) {
                 () => input.focus(),
                 50
             );
+
         }
+
     }
+
 }
 
-
-/*
- * Returning to Hub means the next time
- * Directory is opened, the PIN is required again.
- */
 
 function returnFromDirectory() {
 
     if (contactsInterval) {
-
-        clearInterval(
-            contactsInterval
-        );
-
-        contactsInterval = null;
+        clearInterval(contactsInterval);
     }
+
+    contactsInterval = null;
 
     const input =
         document.getElementById(
@@ -2015,6 +2161,7 @@ function returnFromDirectory() {
     }
 
     openHubScreen();
+
 }
 
 
@@ -2023,65 +2170,52 @@ function returnFromDirectory() {
 function handleChatBack() {
 
     if (syncInterval) {
-
-        clearInterval(
-            syncInterval
-        );
-
-        syncInterval = null;
+        clearInterval(syncInterval);
     }
 
-    openHubScreen();
+    if (adminMode) {
+
+        openAdmin();
+
+        return;
+
+    }
+
+    if (
+        String(currentUser.phone).trim()
+        === YADHU_PHONE
+    ) {
+
+        openContactsScreen();
+
+    } else {
+
+        openHubScreen();
+
+    }
+
 }
 
 
-/* SCREEN */
-
-function switchScreen(screenId) {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(
-            s =>
-                s.classList.remove(
-                    "active"
-                )
-        );
-
-    const target =
-        document.getElementById(
-            screenId
-        );
-
-    if (target) {
-
-        target.classList.add(
-            "active"
-        );
-    }
-}
-
-
-/* SYNC */
+/* WAKE / FOCUS */
 
 function forceSyncOnWake() {
 
     if (currentRoomId) {
-
         pollChatMessages(false);
     }
 
     if (
         currentUser &&
         document
-            .getElementById(
-                "contacts-screen"
-            )
+            .getElementById("contacts-screen")
             .classList.contains("active")
     ) {
 
         fetchContacts();
+
     }
+
 }
 
 
@@ -2101,9 +2235,31 @@ document.addEventListener(
         ) {
 
             forceSyncOnWake();
+
         }
+
     }
 );
+
+
+/* SCREEN SWITCH */
+
+function switchScreen(screenId) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(
+            s => s.classList.remove("active")
+        );
+
+    const screen =
+        document.getElementById(screenId);
+
+    if (screen) {
+        screen.classList.add("active");
+    }
+
+}
 
 
 /* EMAIL INPUT */
@@ -2113,24 +2269,26 @@ function interceptEmailInput(e) {
     const input = e.target;
 
     if (
-        input.value.includes("@") ||
+        input.value.includes("@")
+        ||
         input.value.includes(".")
     ) {
 
         input.value =
             input.value
-                .replace(
-                    /[@\.gmailyout-]/gi,
-                    ""
-                )
+                .replace(/[@\.gmailyout-]/gi, "")
                 .trim();
 
         showToast(
             "Email extension handled by dropdown."
         );
+
     }
+
 }
 
+
+/* TOAST */
 
 function showToast(msg) {
 
@@ -2141,16 +2299,15 @@ function showToast(msg) {
 
     toast.innerText = msg;
 
-    toast.style.display =
-        "block";
+    toast.style.display = "block";
 
     setTimeout(
         () => {
-            toast.style.display =
-                "none";
+            toast.style.display = "none";
         },
         2500
     );
+
 }
 
 
@@ -2163,10 +2320,7 @@ async function requestNotificationPermission() {
             "notif-status"
         );
 
-    if (
-        !("Notification" in window)
-    ) {
-
+    if (!("Notification" in window)) {
         return;
     }
 
@@ -2182,10 +2336,11 @@ async function requestNotificationPermission() {
         permission === "granted"
             ? "#2e7d32"
             : "#d32f2f";
+
 }
 
 
-/* REGISTER */
+/* REGISTRATION */
 
 async function handleRegister() {
 
@@ -2230,6 +2385,7 @@ async function handleRegister() {
             "Name and phone are required.";
 
         return;
+
     }
 
     if (phone.length !== 10) {
@@ -2238,6 +2394,7 @@ async function handleRegister() {
             "Phone number must be 10 digits.";
 
         return;
+
     }
 
     try {
@@ -2249,17 +2406,14 @@ async function handleRegister() {
                     method: "POST",
                     cache: "no-store",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-                        "Cache-Control":
-                            "no-cache, no-store"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         name,
                         phone,
                         email,
                         device_id:
-                            getDeviceId()
+                            navigator.userAgent
                     })
                 }
             );
@@ -2268,7 +2422,6 @@ async function handleRegister() {
             await res.json();
 
         if (!res.ok) {
-
             throw new Error(
                 data.error ||
                 "Registration failed"
@@ -2281,141 +2434,148 @@ async function handleRegister() {
             data.requires_verification
         ) {
 
+            switchScreen(
+                "verify-screen"
+            );
+
             document
                 .getElementById(
                     "verify-pin-input"
                 )
                 .value = "";
 
-            document
-                .getElementById(
-                    "verify-error"
-                )
-                .innerText = "";
-
-            switchScreen(
-                "verify-screen"
-            );
-
         } else {
 
-            document
-                .getElementById(
-                    "login-phone"
-                )
-                .value = phone;
+            currentUser = {
+                name,
+                phone,
+                email
+            };
 
-            switchScreen(
-                "login-screen"
+            localStorage.setItem(
+                "axtres_user",
+                JSON.stringify(currentUser)
             );
 
-            const loginError =
-                document.getElementById(
-                    "login-error"
-                );
+            navigateAfterAuth();
 
-            loginError.innerText =
-                "Registered successfully! Please log in.";
-
-            loginError.style.color =
-                "#2e7d32";
         }
 
     } catch (err) {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 
-/* REGISTER VERIFICATION */
+/* VERIFY REGISTER */
 
 async function handleAutoVerifyRegister(e) {
 
     const input = e.target;
 
     input.value =
-        input.value.replace(
-            /[^0-9]/g,
-            ""
-        );
+        input.value
+            .replace(/[^0-9]/g, "")
+            .slice(0, 3);
+
+    if (
+        input.value.length !== 3
+    ) {
+        return;
+    }
 
     const errDiv =
         document.getElementById(
             "verify-error"
         );
 
-    errDiv.innerText = "";
+    try {
 
-    if (
-        input.value.length === 3
-    ) {
-
-        try {
-
-            const res =
-                await fetch(
-                    `${USERS_API}?action=verify-register&_t=${Date.now()}`,
-                    {
-                        method: "POST",
-                        cache: "no-store",
-                        headers: {
-                            "Content-Type":
-                                "application/json",
-                            "Cache-Control":
-                                "no-cache, no-store"
-                        },
-                        body: JSON.stringify({
-                            phone:
-                                pendingPhone,
-                            pin:
-                                input.value
-                        })
-                    }
-                );
-
-            const data =
-                await res.json();
-
-            if (!res.ok) {
-
-                throw new Error(
-                    data.error ||
-                    "Incorrect PIN"
-                );
-            }
-
-            document
-                .getElementById(
-                    "login-phone"
-                )
-                .value =
-                pendingPhone;
-
-            switchScreen(
-                "login-screen"
+        const res =
+            await fetch(
+                `${USERS_API}?action=verify-register&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        phone: pendingPhone,
+                        pin: input.value
+                    })
+                }
             );
 
-            const loginError =
-                document.getElementById(
-                    "login-error"
-                );
+        const data =
+            await res.json();
 
-            loginError.innerText =
-                "Email verified successfully! Log in now.";
-
-            loginError.style.color =
-                "#2e7d32";
-
-        } catch (err) {
-
-            errDiv.innerText =
-                err.message;
-
-            input.value = "";
+        if (!res.ok) {
+            throw new Error(
+                data.error ||
+                "Verification failed"
+            );
         }
+
+        errDiv.style.color =
+            "#2e7d32";
+
+        errDiv.innerText =
+            "Email verified!";
+
+        const name =
+            document
+                .getElementById("reg-name")
+                .value
+                .trim();
+
+        const emailUser =
+            document
+                .getElementById("reg-email-user")
+                .value
+                .trim();
+
+        const emailDomain =
+            document
+                .getElementById("reg-email-domain")
+                .value;
+
+        const email =
+            emailUser
+                ? emailUser + emailDomain
+                : "";
+
+        currentUser = {
+            name,
+            phone: pendingPhone,
+            email
+        };
+
+        localStorage.setItem(
+            "axtres_user",
+            JSON.stringify(currentUser)
+        );
+
+        setTimeout(
+            navigateAfterAuth,
+            400
+        );
+
+    } catch (err) {
+
+        errDiv.style.color =
+            "#d32f2f";
+
+        errDiv.innerText =
+            err.message;
+
+        input.value = "";
+
     }
+
 }
 
 
@@ -2423,21 +2583,10 @@ async function handleAutoVerifyRegister(e) {
 
 function openAddEmailModal() {
 
-    document
-        .getElementById("ae-phone")
-        .value = "";
-
-    document
-        .getElementById("ae-email-user")
-        .value = "";
-
-    document
-        .getElementById("ae-error")
-        .innerText = "";
-
     switchScreen(
         "add-email-screen"
     );
+
 }
 
 
@@ -2460,6 +2609,11 @@ async function handleAddEmailInit() {
             .getElementById("ae-email-domain")
             .value;
 
+    const email =
+        emailUser
+            ? emailUser + emailDomain
+            : "";
+
     const errDiv =
         document.getElementById(
             "ae-error"
@@ -2469,20 +2623,24 @@ async function handleAddEmailInit() {
 
     if (
         !phone ||
-        phone.length !== 10 ||
-        !emailUser
+        phone.length !== 10
     ) {
 
         errDiv.innerText =
-            "Enter valid phone and email.";
+            "Enter a valid 10-digit phone number.";
 
         return;
+
     }
 
-    pendingPhone = phone;
+    if (!emailUser) {
 
-    const email =
-        emailUser + emailDomain;
+        errDiv.innerText =
+            "Enter an email address.";
+
+        return;
+
+    }
 
     try {
 
@@ -2491,12 +2649,8 @@ async function handleAddEmailInit() {
                 `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
                 {
                     method: "POST",
-                    cache: "no-store",
                     headers: {
-                        "Content-Type":
-                            "application/json",
-                        "Cache-Control":
-                            "no-cache, no-store"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         phone,
@@ -2509,12 +2663,17 @@ async function handleAddEmailInit() {
             await res.json();
 
         if (!res.ok) {
-
             throw new Error(
                 data.error ||
-                "Failed to send PIN"
+                "Unable to update email"
             );
         }
+
+        pendingPhone = phone;
+
+        switchScreen(
+            "verify-email-screen"
+        );
 
         document
             .getElementById(
@@ -2522,98 +2681,88 @@ async function handleAddEmailInit() {
             )
             .value = "";
 
-        switchScreen(
-            "verify-email-screen"
-        );
-
     } catch (err) {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 
-/* VERIFY UPDATED EMAIL */
+/* VERIFY EMAIL UPDATE */
 
 async function handleAutoVerifyEmail(e) {
 
     const input = e.target;
 
     input.value =
-        input.value.replace(
-            /[^0-9]/g,
-            ""
-        );
+        input.value
+            .replace(/[^0-9]/g, "")
+            .slice(0, 3);
+
+    if (
+        input.value.length !== 3
+    ) {
+        return;
+    }
 
     const errDiv =
         document.getElementById(
             "ae-verify-error"
         );
 
-    errDiv.innerText = "";
+    try {
 
-    if (
-        input.value.length === 3
-    ) {
-
-        try {
-
-            const res =
-                await fetch(
-                    `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
-                    {
-                        method: "POST",
-                        cache: "no-store",
-                        headers: {
-                            "Content-Type":
-                                "application/json",
-                            "Cache-Control":
-                                "no-cache, no-store"
-                        },
-                        body: JSON.stringify({
-                            phone:
-                                pendingPhone,
-                            pin:
-                                input.value
-                        })
-                    }
-                );
-
-            const data =
-                await res.json();
-
-            if (!res.ok) {
-
-                throw new Error(
-                    data.error ||
-                    "Incorrect PIN"
-                );
-            }
-
-            switchScreen(
-                "login-screen"
+        const res =
+            await fetch(
+                `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        phone: pendingPhone,
+                        pin: input.value
+                    })
+                }
             );
 
-            const loginError =
-                document.getElementById(
-                    "login-error"
-                );
+        const data =
+            await res.json();
 
-            loginError.innerText =
-                "Email linked and verified!";
-
-            loginError.style.color =
-                "#2e7d32";
-
-        } catch (err) {
-
-            errDiv.innerText =
-                err.message;
-
-            input.value = "";
+        if (!res.ok) {
+            throw new Error(
+                data.error ||
+                "Verification failed"
+            );
         }
+
+        errDiv.style.color =
+            "#2e7d32";
+
+        errDiv.innerText =
+            "Email linked and verified!";
+
+        setTimeout(
+            () => switchScreen("login-screen"),
+            700
+        );
+
+    } catch (err) {
+
+        errDiv.style.color =
+            "#d32f2f";
+
+        errDiv.innerText =
+            err.message;
+
+        input.value = "";
+
     }
+
 }
 
 
@@ -2646,6 +2795,7 @@ async function handleLogin() {
             "Enter a valid 10-digit phone number.";
 
         return;
+
     }
 
     try {
@@ -2657,8 +2807,7 @@ async function handleLogin() {
                     method: "POST",
                     cache: "no-store",
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
                         "Cache-Control":
                             "no-cache, no-store"
                     },
@@ -2672,7 +2821,6 @@ async function handleLogin() {
             await res.json();
 
         if (!res.ok) {
-
             throw new Error(
                 data.error ||
                 "Login failed"
@@ -2684,9 +2832,7 @@ async function handleLogin() {
 
         localStorage.setItem(
             "axtres_user",
-            JSON.stringify(
-                currentUser
-            )
+            JSON.stringify(currentUser)
         );
 
         navigateAfterAuth();
@@ -2695,7 +2841,9 @@ async function handleLogin() {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 
@@ -2709,27 +2857,19 @@ function handleLogout() {
 
     currentUser = null;
 
+    adminPin = null;
+    adminMode = false;
+
     if (syncInterval) {
-
-        clearInterval(
-            syncInterval
-        );
-
-        syncInterval = null;
+        clearInterval(syncInterval);
     }
 
     if (contactsInterval) {
-
-        clearInterval(
-            contactsInterval
-        );
-
-        contactsInterval = null;
+        clearInterval(contactsInterval);
     }
 
-    switchScreen(
-        "login-screen"
-    );
+    switchScreen("login-screen");
+
 }
 
 
@@ -2746,19 +2886,17 @@ async function openContactsScreen() {
             "my-name-display"
         )
         .innerText =
-            currentUser.name;
+        currentUser.name;
 
     startContactsPolling();
+
 }
 
 
 function startContactsPolling() {
 
     if (contactsInterval) {
-
-        clearInterval(
-            contactsInterval
-        );
+        clearInterval(contactsInterval);
     }
 
     fetchContacts();
@@ -2768,6 +2906,7 @@ function startContactsPolling() {
             fetchContacts,
             1000
         );
+
 }
 
 
@@ -2800,96 +2939,84 @@ async function fetchContacts() {
         container.innerHTML = "";
 
         if (
-            !Array.isArray(contacts) ||
+            !Array.isArray(contacts)
+            ||
             contacts.length === 0
         ) {
 
-            container.innerHTML = `
+            container.innerHTML =
+                `
                 <div
                     style="
                         text-align:center;
                         padding:20px;
                         color:#667781;
-                        font-size:0.9rem;
+                        font-size:.9rem;
                     "
                 >
                     No other contacts found yet.
                 </div>
-            `;
-
-            return;
-        }
-
-        contacts.forEach(
-            c => {
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-                item.className =
-                    "contact-item";
-
-                const emailStatusBadge =
-                    c.has_email === 1
-
-                        ? `
-                            <span
-                                class="status-pill active"
-                            >
-                                Email Verified 🟢
-                            </span>
-                          `
-
-                        : `
-                            <span
-                                class="status-pill inactive"
-                            >
-                                No Email ⚪
-                            </span>
-                          `;
-
-                item.innerHTML = `
-                    <div>
-                        <div class="contact-name">
-                            ${escapeHtml(c.name)}
-                        </div>
-
-                        <div class="contact-phone">
-                            ${escapeHtml(c.phone)}
-                        </div>
-
-                        ${emailStatusBadge}
-                    </div>
-
-                    <span
-                        style="
-                            color:#075e54;
-                            font-weight:600;
-                            font-size:0.9rem;
-                        "
-                    >
-                        Chat &rarr;
-                    </span>
                 `;
 
-                item.onclick =
-                    () => startChatWith(c);
+            return;
 
-                container.appendChild(
-                    item
-                );
-            }
-        );
+        }
+
+        contacts.forEach(c => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "contact-item";
+
+            const emailStatusBadge =
+                c.has_email === 1
+                    ? `<span class="status-pill active">Email Verified 🟢</span>`
+                    : `<span class="status-pill inactive">No Email ⚪</span>`;
+
+            item.innerHTML =
+                `
+                <div>
+                    <div class="contact-name">
+                        ${escapeHtml(c.name)}
+                    </div>
+
+                    <div class="contact-phone">
+                        ${escapeHtml(c.phone)}
+                    </div>
+
+                    ${emailStatusBadge}
+                </div>
+
+                <span
+                    style="
+                        color:#075e54;
+                        font-weight:600;
+                        font-size:.9rem;
+                    "
+                >
+                    Chat &rarr;
+                </span>
+                `;
+
+            item.onclick =
+                () => startChatWith(c);
+
+            container.appendChild(item);
+
+        });
 
     } catch (e) {
-        /* Keep UI alive if polling fails. */
+
+        /* Keep UI quiet on polling errors */
+
     }
+
 }
 
 
-/* START CHAT */
+/* CHAT */
 
 function startChatWith(recipient) {
 
@@ -2897,12 +3024,7 @@ function startChatWith(recipient) {
         recipient;
 
     if (contactsInterval) {
-
-        clearInterval(
-            contactsInterval
-        );
-
-        contactsInterval = null;
+        clearInterval(contactsInterval);
     }
 
     const sortedPhones =
@@ -2919,7 +3041,7 @@ function startChatWith(recipient) {
             "chat-room-title"
         )
         .innerText =
-            recipient.name;
+        recipient.name;
 
     switchScreen(
         "chat-screen"
@@ -2941,34 +3063,28 @@ function startChatWith(recipient) {
     knownMessageIds.clear();
 
     startChatPolling();
+
 }
 
-
-/* CHAT POLLING */
 
 function startChatPolling() {
 
     if (syncInterval) {
-
-        clearInterval(
-            syncInterval
-        );
+        clearInterval(syncInterval);
     }
 
     pollChatMessages(true);
 
     syncInterval =
         setInterval(
-            () =>
-                pollChatMessages(false),
+            () => pollChatMessages(false),
             600
         );
+
 }
 
 
-async function pollChatMessages(
-    isInitial
-) {
+async function pollChatMessages(isInitial) {
 
     if (!currentRoomId) {
         return;
@@ -2993,7 +3109,9 @@ async function pollChatMessages(
         const history =
             await res.json();
 
-        if (!Array.isArray(history)) {
+        if (
+            !Array.isArray(history)
+        ) {
             return;
         }
 
@@ -3007,202 +3125,198 @@ async function pollChatMessages(
             messagesDiv.innerHTML = "";
 
             knownMessageIds.clear();
+
         }
 
-        let shouldScroll = false;
+        let shouldScroll =
+            false;
 
-        history.forEach(
-            msg => {
+        history.forEach(msg => {
 
-                const sender =
-                    msg.sender_phone ||
-                    msg.senderPhone ||
-                    msg.sender_id ||
-                    "";
+            const sender =
+                msg.sender_phone
+                ||
+                msg.senderPhone
+                ||
+                msg.sender_id
+                ||
+                "";
 
-                const msgText =
-                    msg.message ||
-                    "";
+            const msgText =
+                msg.message || "";
 
-                const createdAt =
-                    msg.created_at ||
-                    "";
+            const createdAt =
+                msg.created_at || "";
 
-                const isEmergency =
-                    msg.is_emergency ||
-                    0;
+            const isEmergency =
+                msg.is_emergency || 0;
 
-                const uniqueId =
-                    msg.id
-                        ? String(msg.id)
-                        : `${sender}_${createdAt}_${msgText}`;
+            const uniqueId =
+                msg.id
+                    ? String(msg.id)
+                    : `${sender}_${createdAt}_${msgText}`;
+
+            if (
+                knownMessageIds.has(uniqueId)
+            ) {
+                return;
+            }
+
+            knownMessageIds.add(
+                uniqueId
+            );
+
+            shouldScroll =
+                true;
+
+            if (
+                !isInitial
+                &&
+                String(sender).trim()
+                    !==
+                String(currentUser.phone).trim()
+            ) {
 
                 if (
-                    knownMessageIds.has(
-                        uniqueId
+                    "Notification" in window
+                    &&
+                    Notification.permission ===
+                    "granted"
+                ) {
+
+                    const alertTitle =
+                        isEmergency
+                            ? `📧 Email Sent by ${activeRecipient.name}`
+                            : `💬 New Message from ${activeRecipient.name}`;
+
+                    new Notification(
+                        alertTitle,
+                        {
+                            body: msgText
+                        }
+                    );
+
+                }
+
+            }
+
+            let timeStr = "";
+
+            if (createdAt) {
+
+                const parsedDate =
+                    new Date(createdAt);
+
+                if (
+                    !isNaN(
+                        parsedDate.getTime()
                     )
                 ) {
-
-                    return;
-                }
-
-                knownMessageIds.add(
-                    uniqueId
-                );
-
-                shouldScroll = true;
-
-                if (
-                    !isInitial &&
-                    String(sender).trim() !==
-                    String(currentUser.phone).trim()
-                ) {
-
-                    if (
-                        "Notification" in window &&
-                        Notification.permission ===
-                        "granted"
-                    ) {
-
-                        const alertTitle =
-                            isEmergency
-                                ? `📧 Email Sent by ${activeRecipient.name}`
-                                : `💬 New Message from ${activeRecipient.name}`;
-
-                        new Notification(
-                            alertTitle,
-                            {
-                                body: msgText
-                            }
-                        );
-                    }
-                }
-
-                let timeStr = "";
-
-                if (createdAt) {
-
-                    const parsedDate =
-                        new Date(
-                            createdAt
-                        );
-
-                    if (
-                        !isNaN(
-                            parsedDate.getTime()
-                        )
-                    ) {
-
-                        timeStr =
-                            parsedDate.toLocaleTimeString(
-                                [],
-                                {
-                                    hour:
-                                        "2-digit",
-                                    minute:
-                                        "2-digit"
-                                }
-                            );
-                    }
-                }
-
-                if (!timeStr) {
 
                     timeStr =
-                        new Date()
-                            .toLocaleTimeString(
-                                [],
-                                {
-                                    hour:
-                                        "2-digit",
-                                    minute:
-                                        "2-digit"
-                                }
-                            );
+                        parsedDate.toLocaleTimeString(
+                            [],
+                            {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        );
+
                 }
 
-                const cleanSender =
-                    String(sender).trim();
-
-                const cleanMyPhone =
-                    String(
-                        currentUser.phone
-                    ).trim();
-
-                const isMe =
-                    cleanSender ===
-                    cleanMyPhone;
-
-                const msgEl =
-                    document.createElement(
-                        "div"
-                    );
-
-                msgEl.className =
-                    "msg";
-
-                if (
-                    isEmergency === 1 ||
-                    isEmergency === true
-                ) {
-
-                    msgEl.classList.add(
-                        "email-alert"
-                    );
-                }
-
-                const badgeHTML =
-                    (
-                        isEmergency === 1 ||
-                        isEmergency === true
-                    )
-
-                        ? `
-                            <span class="email-badge">
-                                📧 SENT VIA EMAIL
-                            </span>
-                            <br>
-                          `
-
-                        : "";
-
-                if (isMe) {
-
-                    msgEl.classList.add(
-                        "me"
-                    );
-
-                    msgEl.innerHTML =
-                        `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-
-                } else {
-
-                    msgEl.classList.add(
-                        "them"
-                    );
-
-                    msgEl.innerHTML =
-                        `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-                }
-
-                messagesDiv.appendChild(
-                    msgEl
-                );
             }
-        );
+
+            if (!timeStr) {
+
+                timeStr =
+                    new Date()
+                        .toLocaleTimeString(
+                            [],
+                            {
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        );
+
+            }
+
+            const cleanSender =
+                String(sender).trim();
+
+            const cleanMyPhone =
+                String(currentUser.phone).trim();
+
+            const isMe =
+                cleanSender ===
+                cleanMyPhone;
+
+            const msgEl =
+                document.createElement("div");
+
+            msgEl.className =
+                "msg";
+
+            if (
+                isEmergency === 1
+                ||
+                isEmergency === true
+            ) {
+
+                msgEl.classList.add(
+                    "email-alert"
+                );
+
+            }
+
+            const badgeHTML =
+                (
+                    isEmergency === 1
+                    ||
+                    isEmergency === true
+                )
+                    ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>`
+                    : "";
+
+            msgEl.innerHTML =
+                `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+
+            if (isMe) {
+
+                msgEl.classList.add(
+                    "me"
+                );
+
+            } else {
+
+                msgEl.classList.add(
+                    "them"
+                );
+
+            }
+
+            messagesDiv.appendChild(
+                msgEl
+            );
+
+        });
 
         if (
-            shouldScroll ||
+            shouldScroll
+            ||
             isInitial
         ) {
 
             messagesDiv.scrollTop =
                 messagesDiv.scrollHeight;
+
         }
 
     } catch (e) {
-        /* Keep polling alive. */
+
+        /* Polling errors are intentionally quiet */
+
     }
+
 }
 
 
@@ -3228,11 +3342,13 @@ async function sendMessage() {
             : 0;
 
     if (
-        !text ||
+        !text
+        ||
         !currentRoomId
     ) {
 
         return;
+
     }
 
     const timeNow =
@@ -3277,6 +3393,7 @@ async function sendMessage() {
 
                     created_at:
                         timeNow
+
                 })
             }
         );
@@ -3284,12 +3401,13 @@ async function sendMessage() {
         pollChatMessages(false);
 
     } catch (err) {
-        /* Keep UI responsive. */
+
+        /* Keep message composer usable */
+
     }
+
 }
 
-
-/* ENTER TO SEND */
 
 function checkEnter(e) {
 
@@ -3298,7 +3416,766 @@ function checkEnter(e) {
     ) {
 
         sendMessage();
+
     }
+
+}
+
+
+/* ===========================
+   ADMIN SYSTEM
+   =========================== */
+
+
+/* ADMIN PIN */
+
+function openAdminWithPin() {
+
+    const input =
+        document.getElementById(
+            "admin-pin-input"
+        );
+
+    const error =
+        document.getElementById(
+            "admin-pin-error"
+        );
+
+    input.value = "";
+
+    error.innerText = "";
+
+    switchScreen(
+        "admin-pin-screen"
+    );
+
+    setTimeout(
+        () => input.focus(),
+        50
+    );
+
+}
+
+
+function closeAdminPin() {
+
+    switchScreen(
+        "login-screen"
+    );
+
+}
+
+
+function handleAdminBackdrop(e) {
+
+    if (
+        e.target.id ===
+        "admin-pin-screen"
+    ) {
+
+        closeAdminPin();
+
+    }
+
+}
+
+
+/*
+    The PIN is also checked by the
+    Cloudflare Pages Function.
+*/
+
+async function handleAdminPinInput(e) {
+
+    const input =
+        e.target;
+
+    const error =
+        document.getElementById(
+            "admin-pin-error"
+        );
+
+    input.value =
+        input.value
+            .replace(/[^0-9]/g, "")
+            .slice(0, 3);
+
+    error.innerText = "";
+
+    if (
+        input.value.length !== 3
+    ) {
+
+        return;
+
+    }
+
+    try {
+
+        const res =
+            await fetch(
+                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "Cache-Control":
+                            "no-cache, no-store"
+                    },
+                    body: JSON.stringify({
+                        pin:
+                            input.value
+                    })
+                }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.error ||
+                "Wrong PIN"
+            );
+
+        }
+
+        adminPin =
+            input.value;
+
+        adminMode =
+            true;
+
+        /*
+            Admin chats as Yadhu.
+        */
+
+        currentUser = {
+
+            name:
+                "Yadhu Krishna",
+
+            phone:
+                YADHU_PHONE,
+
+            email:
+                "yadhukrishnabp777@gmail.com"
+
+        };
+
+        localStorage.removeItem(
+            "axtres_user"
+        );
+
+        renderAdminUsers(
+            data.users || []
+        );
+
+        switchScreen(
+            "admin-screen"
+        );
+
+    } catch (err) {
+
+        error.innerText =
+            err.message ||
+            "Wrong PIN";
+
+        input.value = "";
+
+        setTimeout(
+            () => input.focus(),
+            50
+        );
+
+    }
+
+}
+
+
+/* CLOSE ADMIN */
+
+function closeAdmin() {
+
+    adminPin = null;
+
+    adminEditingPhone = null;
+
+    adminMode = false;
+
+    if (syncInterval) {
+        clearInterval(syncInterval);
+    }
+
+    switchScreen(
+        "login-screen"
+    );
+
+}
+
+
+/* ADMIN HOME */
+
+function openAdmin() {
+
+    switchScreen(
+        "admin-screen"
+    );
+
+    refreshAdminUsers();
+
+}
+
+
+/* LOAD ADMIN USERS */
+
+async function refreshAdminUsers() {
+
+    if (!adminPin) {
+        return;
+    }
+
+    try {
+
+        const res =
+            await fetch(
+                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "Cache-Control":
+                            "no-cache, no-store"
+                    },
+                    body: JSON.stringify({
+                        pin:
+                            adminPin
+                    })
+                }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load users"
+            );
+
+        }
+
+        renderAdminUsers(
+            data.users || []
+        );
+
+    } catch (err) {
+
+        document
+            .getElementById(
+                "admin-users-container"
+            )
+            .innerHTML =
+            `
+            <div class="admin-empty">
+                ${escapeHtml(err.message)}
+            </div>
+            `;
+
+    }
+
+}
+
+
+/* RENDER ADMIN USERS */
+
+function renderAdminUsers(users) {
+
+    const container =
+        document.getElementById(
+            "admin-users-container"
+        );
+
+    container.innerHTML = "";
+
+    if (
+        !users.length
+    ) {
+
+        container.innerHTML =
+            `
+            <div class="admin-empty">
+                No registered users found.
+            </div>
+            `;
+
+        return;
+
+    }
+
+    users.forEach(u => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "admin-user-item";
+
+        item.innerHTML =
+            `
+            <div class="admin-user-main">
+
+                <div class="admin-user-name">
+                    ${escapeHtml(
+                        u.name ||
+                        "Unnamed"
+                    )}
+                </div>
+
+                <div class="admin-user-meta">
+                    ${escapeHtml(
+                        u.phone || ""
+                    )}
+                    ·
+                    ${escapeHtml(
+                        u.email ||
+                        "No email"
+                    )}
+                </div>
+
+            </div>
+
+            <div class="admin-user-actions">
+
+                <button
+                    class="admin-small-btn"
+                    type="button"
+                >
+                    Chat
+                </button>
+
+                <button
+                    class="admin-small-btn edit"
+                    type="button"
+                >
+                    Edit
+                </button>
+
+            </div>
+            `;
+
+        item
+            .querySelector(
+                ".admin-small-btn"
+            )
+            .onclick =
+            () => adminChatWithUser(u);
+
+        item
+            .querySelector(
+                ".admin-small-btn.edit"
+            )
+            .onclick =
+            () => openAdminUserForm(u);
+
+        container.appendChild(
+            item
+        );
+
+    });
+
+}
+
+
+/* ADMIN CHAT */
+
+function adminChatWithUser(user) {
+
+    if (
+        String(user.phone).trim()
+        ===
+        YADHU_PHONE
+    ) {
+
+        showToast(
+            "That is the admin account."
+        );
+
+        return;
+
+    }
+
+    currentUser = {
+
+        name:
+            "Yadhu Krishna",
+
+        phone:
+            YADHU_PHONE,
+
+        email:
+            "yadhukrishnabp777@gmail.com"
+
+    };
+
+    adminMode = true;
+
+    startChatWith(
+        user
+    );
+
+}
+
+
+/* ADMIN EDIT DIRECTORY */
+
+async function openAdminDirectoryEditor() {
+
+    switchScreen(
+        "admin-edit-screen"
+    );
+
+    await refreshAdminDirectoryEditor();
+
+}
+
+
+async function refreshAdminDirectoryEditor() {
+
+    if (!adminPin) {
+        return;
+    }
+
+    try {
+
+        const res =
+            await fetch(
+                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "Cache-Control":
+                            "no-cache, no-store"
+                    },
+                    body: JSON.stringify({
+                        pin:
+                            adminPin
+                    })
+                }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load users"
+            );
+
+        }
+
+        const container =
+            document.getElementById(
+                "admin-edit-container"
+            );
+
+        container.innerHTML = "";
+
+        (data.users || [])
+            .forEach(u => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "admin-user-item";
+
+                item.innerHTML =
+                    `
+                    <div class="admin-user-main">
+
+                        <div class="admin-user-name">
+                            ${escapeHtml(
+                                u.name ||
+                                "Unnamed"
+                            )}
+                        </div>
+
+                        <div class="admin-user-meta">
+                            ${escapeHtml(
+                                u.phone || ""
+                            )}
+                            ·
+                            ${escapeHtml(
+                                u.email ||
+                                "No email"
+                            )}
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="admin-small-btn edit"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+                    `;
+
+                item
+                    .querySelector("button")
+                    .onclick =
+                    () => openAdminUserForm(u);
+
+                container.appendChild(
+                    item
+                );
+
+            });
+
+        if (
+            !data.users ||
+            !data.users.length
+        ) {
+
+            container.innerHTML =
+                `
+                <div class="admin-empty">
+                    No registered users found.
+                </div>
+                `;
+
+        }
+
+    } catch (err) {
+
+        document
+            .getElementById(
+                "admin-edit-container"
+            )
+            .innerHTML =
+            `
+            <div class="admin-empty">
+                ${escapeHtml(err.message)}
+            </div>
+            `;
+
+    }
+
+}
+
+
+/* ADMIN USER FORM */
+
+function openAdminUserForm(user = null) {
+
+    adminEditingPhone =
+        user
+            ? String(user.phone)
+            : null;
+
+    document
+        .getElementById(
+            "admin-form-title"
+        )
+        .innerText =
+        user
+            ? "Edit User"
+            : "Add User";
+
+    document
+        .getElementById(
+            "admin-form-heading"
+        )
+        .innerText =
+        user
+            ? "Edit User"
+            : "Add User";
+
+    document
+        .getElementById(
+            "admin-original-phone"
+        )
+        .value =
+        user
+            ? String(user.phone)
+            : "";
+
+    document
+        .getElementById(
+            "admin-name"
+        )
+        .value =
+        user
+            ? user.name || ""
+            : "";
+
+    document
+        .getElementById(
+            "admin-phone"
+        )
+        .value =
+        user
+            ? user.phone || ""
+            : "";
+
+    document
+        .getElementById(
+            "admin-email"
+        )
+        .value =
+        user
+            ? user.email || ""
+            : "";
+
+    document
+        .getElementById(
+            "admin-form-error"
+        )
+        .innerText = "";
+
+    switchScreen(
+        "admin-user-form-screen"
+    );
+
+}
+
+
+/* SAVE ADMIN USER */
+
+async function saveAdminUser() {
+
+    if (!adminPin) {
+        return;
+    }
+
+    const originalPhone =
+        document
+            .getElementById(
+                "admin-original-phone"
+            )
+            .value
+            .trim();
+
+    const name =
+        document
+            .getElementById(
+                "admin-name"
+            )
+            .value
+            .trim();
+
+    const phone =
+        document
+            .getElementById(
+                "admin-phone"
+            )
+            .value
+            .trim();
+
+    const email =
+        document
+            .getElementById(
+                "admin-email"
+            )
+            .value
+            .trim();
+
+    const err =
+        document.getElementById(
+            "admin-form-error"
+        );
+
+    err.innerText = "";
+
+    if (
+        !name
+        ||
+        phone.length !== 10
+    ) {
+
+        err.innerText =
+            "Name and valid 10-digit phone are required.";
+
+        return;
+
+    }
+
+    try {
+
+        const res =
+            await fetch(
+                `${USERS_API}?action=admin-save&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "Cache-Control":
+                            "no-cache, no-store"
+                    },
+                    body: JSON.stringify({
+
+                        pin:
+                            adminPin,
+
+                        original_phone:
+                            originalPhone,
+
+                        name:
+                            name,
+
+                        phone:
+                            phone,
+
+                        email:
+                            email
+
+                    })
+                }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to save user"
+            );
+
+        }
+
+        showToast(
+            originalPhone
+                ? "User updated."
+                : "User added."
+        );
+
+        await openAdminDirectoryEditor();
+
+    } catch (e) {
+
+        err.innerText =
+            e.message;
+
+    }
+
 }
 
 
@@ -3306,21 +4183,24 @@ function checkEnter(e) {
 
 function escapeHtml(text) {
 
+    const value =
+        String(text ?? "");
+
     const map = {
 
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&apos;"
+        "'": "&#039;"
+
     };
 
-    return String(text).replace(
-        /[\n&<>"']/g,
-        function (m) {
-            return map[m] || m;
-        }
+    return value.replace(
+        /[&<>"']/g,
+        m => map[m]
     );
+
 }
 
 </script>
