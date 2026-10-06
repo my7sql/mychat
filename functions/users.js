@@ -1,4 +1,4 @@
-// functions/users.js - Complete Backend File for User Authentication & Contacts
+// functions/users.js - Cloudflare Pages Function for User Auth, Verification & Resend Integration
 
 const NO_CACHE_HEADERS = {
   "Content-Type": "application/json",
@@ -9,6 +9,27 @@ const NO_CACHE_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
+
+async function sendResendEmail(apiKey, recipientEmail, subject, bodyHtml) {
+  if (!apiKey || !recipientEmail) return;
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "axtres Messenger <onboarding@resend.dev>",
+        to: [recipientEmail],
+        subject: subject,
+        html: bodyHtml
+      })
+    });
+  } catch (err) {
+    console.error("Resend send error:", err);
+  }
+}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -29,7 +50,7 @@ export async function onRequest(context) {
 
       // Retrieve all other users except the logged-in user
       const { results } = await env.DB.prepare(
-        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' AND email_verified = 1 THEN 1 ELSE 0 END as has_email FROM users WHERE phone != ?"
+        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END as has_email FROM users WHERE phone != ?"
       ).bind(myPhone).all();
 
       return new Response(JSON.stringify(results || []), { status: 200, headers: NO_CACHE_HEADERS });
@@ -59,6 +80,15 @@ export async function onRequest(context) {
           name, email || "", requires_verification ? 0 : 1, device_id || "", pin
         ).run();
 
+        if (requires_verification && email && env.RESEND_API_KEY) {
+          await sendResendEmail(
+            env.RESEND_API_KEY,
+            email,
+            "Your axtres Verification Code",
+            `<p>Hello <strong>${name}</strong>,</p><p>Your verification code for axtres messenger is: <strong style="font-size:1.4rem;">${pin}</strong></p>`
+          );
+        }
+
         return new Response(JSON.stringify({ success: true, requires_verification: !!requires_verification, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
       }
 
@@ -67,7 +97,7 @@ export async function onRequest(context) {
         const { phone, pin } = body;
         const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
 
-        if (!user || user.pin !== pin) {
+        if (!user || String(user.pin) !== String(pin)) {
           return new Response(JSON.stringify({ error: "Invalid verification PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
         }
 
@@ -98,6 +128,16 @@ export async function onRequest(context) {
         }
 
         await env.DB.prepare("UPDATE users SET email = ?, email_verified = 0, pin = ? WHERE phone = ?").bind(email, pin, phone).run();
+
+        if (email && env.RESEND_API_KEY) {
+          await sendResendEmail(
+            env.RESEND_API_KEY,
+            email,
+            "Verify New Email - axtres",
+            `<p>Your email update verification code for axtres is: <strong style="font-size:1.4rem;">${pin}</strong></p>`
+          );
+        }
+
         return new Response(JSON.stringify({ success: true, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
       }
 
@@ -106,7 +146,7 @@ export async function onRequest(context) {
         const { phone, pin } = body;
         const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
 
-        if (!user || user.pin !== pin) {
+        if (!user || String(user.pin) !== String(pin)) {
           return new Response(JSON.stringify({ error: "Invalid PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
         }
 
