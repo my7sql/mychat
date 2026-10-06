@@ -2,3841 +2,2744 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#075e54">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>axtres</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+:root{
+  --theme-primary:#075e54;
+  --theme-primary-2:#128c7e;
+  --theme-accent:#25d366;
+  --theme-bg:#eef4f3;
+  --theme-card:#ffffff;
+  --theme-text:#17231f;
+  --theme-muted:#71807b;
+  --theme-border:#dce7e4;
+  --theme-soft:#e8f4f1;
+  --theme-danger:#d9534f;
+  --theme-shadow:0 20px 55px rgba(0,0,0,.14);
 }
 
-:root{
-    --theme-primary:#075e54;
-    --theme-secondary:#128c7e;
-    --theme-page:linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e);
-    --theme-soft:#f0f2f5;
-    --theme-card:#fff;
-    --theme-text:#111b21;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
 }
 
 body{
-    background:var(--theme-page);
-    background-size:400% 400%;
-    animation:gradientShift 15s ease infinite;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    color:var(--theme-text);
-    overflow:hidden;
+  min-height:100dvh;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(18,140,126,.15), transparent 35%),
+    linear-gradient(145deg,#dceae7,#f7faf9);
+  color:var(--theme-text);
 }
 
-@keyframes gradientShift{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-#app{
-    width:100%;
-    max-width:520px;
-    height:100vh;
-    max-height:900px;
-    background:var(--theme-soft);
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 0 35px rgba(0,0,0,.18);
-}
-
-.screen{
-    display:none;
-    width:100%;
-    height:100%;
-    position:absolute;
-    inset:0;
-    background:var(--theme-soft);
-    overflow:hidden;
-}
-
-.screen.active{
-    display:flex;
-    flex-direction:column;
-}
-
-#welcome-screen{
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    background:var(--theme-page);
-    color:#fff;
-    z-index:100;
-}
-
-#welcome-screen h1{
-    font-size:3rem;
-    font-weight:800;
-    letter-spacing:-1px;
-}
-
-#welcome-screen p{
-    margin-top:8px;
-    opacity:.88;
-    font-size:.95rem;
-}
-
-.spinner{
-    width:34px;
-    height:34px;
-    border:3px solid rgba(255,255,255,.3);
-    border-top-color:#fff;
-    border-radius:50%;
-    animation:spin .8s linear infinite;
-    margin-top:30px;
-}
-
-@keyframes spin{
-    to{transform:rotate(360deg)}
-}
-
-.header-bar{
-    min-height:58px;
-    background:var(--theme-primary);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 15px;
-    font-weight:700;
-    box-shadow:0 2px 8px rgba(0,0,0,.12);
-    flex-shrink:0;
-}
-
-.header-bar>span:last-child{
-    cursor:pointer;
-    font-size:.82rem;
-    opacity:.9;
-}
-
-.back-arrow{
-    font-size:1.7rem;
-    line-height:1;
-    margin-right:10px;
-    cursor:pointer;
-    font-weight:400;
-    user-select:none;
-}
-
-.form-content{
-    width:100%;
-    max-width:440px;
-    margin:0 auto;
-    padding:28px 22px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    overflow-y:auto;
-}
-
-.form-content h2{
-    text-align:center;
-    margin-bottom:8px;
-    font-size:1.55rem;
-}
-
-.subtitle{
-    text-align:center;
-    color:#667781;
-    font-size:.85rem;
-    margin-bottom:20px;
-}
-
-input,select{
-    width:100%;
-    border:1px solid #d6dadd;
-    border-radius:11px;
-    padding:13px 14px;
-    font-size:.95rem;
-    outline:none;
-    background:#fff;
-    color:#111b21;
-    margin-bottom:12px;
-    transition:.2s;
-}
-
-input:focus,select:focus{
-    border-color:var(--theme-secondary);
-    box-shadow:0 0 0 3px rgba(18,140,126,.1);
-}
-
-.email-group{
-    display:flex;
-    gap:7px;
-}
-
-.email-group input{
-    flex:1;
-}
-
-.email-group select{
-    width:135px;
+button,
+input{
+  font:inherit;
 }
 
 button{
-    font-family:inherit;
+  cursor:pointer;
+}
+
+.app-shell{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.card{
+  width:min(100vw,520px);
+  height:min(100dvh,900px);
+  min-height:0;
+  background:var(--theme-card);
+  border-radius:clamp(0px,2vw,20px);
+  overflow:hidden;
+  box-shadow:var(--theme-shadow);
+  position:relative;
+}
+
+@media (max-width:520px),(max-height:900px){
+  .card{
+    border-radius:0;
+    box-shadow:none;
+  }
+}
+
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  background:var(--theme-card);
+}
+
+.screen.active{
+  display:flex;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* LOADING */
+
+#welcome-screen{
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(37,211,102,.16),transparent 30%),
+    linear-gradient(145deg,var(--theme-primary),var(--theme-primary-2));
+  color:#fff;
+}
+
+.logo-mark{
+  width:76px;
+  height:76px;
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 18px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 15px 40px rgba(0,0,0,.18);
+  backdrop-filter:blur(10px);
+}
+
+.logo-mark span{
+  font-size:34px;
+  font-weight:850;
+  letter-spacing:-2px;
+}
+
+.splash-title{
+  font-size:2rem;
+  font-weight:850;
+  letter-spacing:-1px;
+  margin:0;
+}
+
+.splash-subtitle{
+  margin:8px 0 0;
+  opacity:.78;
+  font-size:.88rem;
+}
+
+/* COMMON HEADER */
+
+.app-header{
+  height:68px;
+  min-height:68px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 16px;
+  color:#fff;
+  background:
+    linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
+  box-shadow:0 3px 14px rgba(0,0,0,.12);
+  position:relative;
+  z-index:5;
+}
+
+.back-btn{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:12px;
+  background:rgba(255,255,255,.11);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  line-height:1;
+  flex-shrink:0;
+}
+
+.back-btn:active{
+  transform:scale(.95);
+}
+
+.header-title{
+  min-width:0;
+  flex:1;
+}
+
+.header-title h2{
+  margin:0;
+  font-size:1.04rem;
+  font-weight:800;
+}
+
+.header-title p{
+  margin:3px 0 0;
+  font-size:.72rem;
+  opacity:.72;
+}
+
+/* LOGIN */
+
+#login-screen{
+  overflow-y:auto;
+  padding:28px 22px 24px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(18,140,126,.12),transparent 30%),
+    var(--theme-bg);
+}
+
+.login-content{
+  width:100%;
+  max-width:440px;
+  margin:auto;
+}
+
+.login-brand{
+  text-align:center;
+  margin-bottom:26px;
+}
+
+.login-brand .mini-logo{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  margin:0 auto 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
+  color:#fff;
+  font-weight:900;
+  font-size:24px;
+  box-shadow:0 12px 30px rgba(7,94,84,.22);
+}
+
+.login-brand h1{
+  margin:0;
+  font-size:1.55rem;
+  letter-spacing:-.5px;
+}
+
+.login-brand p{
+  margin:6px 0 0;
+  color:var(--theme-muted);
+  font-size:.84rem;
+}
+
+.login-panel{
+  background:rgba(255,255,255,.82);
+  border:1px solid var(--theme-border);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 12px 30px rgba(20,50,45,.07);
+  backdrop-filter:blur(10px);
+}
+
+.login-panel-label{
+  font-size:.72rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  color:var(--theme-muted);
+  margin:0 0 10px 2px;
+}
+
+.login-entry{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  margin-top:2px;
+}
+
+.login-entry input{
+  margin:0;
+  border-radius:13px;
+}
+
+.login-entry .btn{
+  margin:0;
+  border-radius:13px;
+}
+
+.login-entry input:focus{
+  border-color:var(--theme-primary-2);
+  box-shadow:0 0 0 3px rgba(18,140,126,.10);
+}
+
+input{
+  width:100%;
+  border:1px solid var(--theme-border);
+  background:#fff;
+  color:var(--theme-text);
+  padding:14px 15px;
+  outline:none;
+  border-radius:12px;
+  transition:.18s ease;
+}
+
+input::placeholder{
+  color:#9aa7a4;
 }
 
 .btn{
-    width:100%;
-    border:0;
-    border-radius:11px;
-    background:var(--theme-primary);
-    color:#fff;
-    padding:13px;
-    font-size:.95rem;
-    font-weight:700;
-    cursor:pointer;
-    transition:transform .15s,opacity .15s;
-    margin-top:6px;
-}
-
-.btn:hover{
-    opacity:.93;
+  width:100%;
+  border:0;
+  padding:14px 16px;
+  border-radius:12px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
+  font-weight:800;
+  box-shadow:0 9px 20px rgba(7,94,84,.16);
+  transition:.18s ease;
 }
 
 .btn:active{
-    transform:scale(.985);
+  transform:translateY(1px) scale(.99);
 }
 
 .btn-secondary{
-    width:100%;
-    border:1px solid #d6dadd;
-    border-radius:11px;
-    background:#fff;
-    color:var(--theme-primary);
-    padding:12px;
-    font-size:.92rem;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:7px;
-}
-
-.btn-accent{
-    width:100%;
-    border:0;
-    border-radius:11px;
-    background:var(--theme-secondary);
-    color:#fff;
-    padding:12px;
-    font-size:.92rem;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-.btn-install{
-    display:none;
-    width:100%;
-    border:0;
-    border-radius:11px;
-    background:#263238;
-    color:#fff;
-    padding:12px;
-    font-size:.9rem;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-.switch-text{
-    text-align:center;
-    margin-top:18px;
-    font-size:.85rem;
-    color:#667781;
-}
-
-.switch-text a{
-    color:var(--theme-primary);
-    font-weight:700;
-    cursor:pointer;
+  border:1px solid var(--theme-border);
+  background:var(--theme-card);
+  color:var(--theme-primary);
+  border-radius:11px;
+  padding:10px 13px;
+  font-weight:750;
 }
 
 .error-msg{
-    min-height:20px;
-    color:#d32f2f;
-    font-size:.82rem;
-    text-align:center;
-    margin:3px 0;
-    font-weight:600;
-}
-
-.hub-welcome{
-    font-size:1.7rem;
-    font-weight:800;
-    margin-bottom:20px;
-    text-align:center;
-    color:var(--theme-text);
+  min-height:17px;
+  color:var(--theme-danger);
+  font-size:.76rem;
+  padding-left:2px;
 }
 
 .hub-card{
-    width:100%;
-    background:var(--theme-card);
-    border-radius:18px;
-    padding:22px;
-    box-shadow:0 8px 30px rgba(0,0,0,.08);
-    border:1px solid rgba(7,94,84,.12);
+  background:var(--theme-card);
+  border:1px solid var(--theme-border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,.05);
 }
 
 .yadhu-profile-card{
-    animation:profileCardIn .55s ease-out both;
-    border-color:color-mix(in srgb,var(--theme-primary) 18%,transparent);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-.yadhu-profile-card .hub-user-name{
-    font-weight:800;
-    letter-spacing:.2px;
+.login-profile-card{
+  margin-top:12px;
+  margin-bottom:0;
+  padding:15px 16px;
+  gap:4px;
+  border-radius:14px;
+  transform-origin:center;
 }
 
-.yadhu-profile-card .hub-user-phone,
-.yadhu-profile-card .hub-user-email{
-    opacity:.82;
+.login-profile-card .hub-user-name{
+  font-size:1.08rem;
 }
 
-@keyframes profileCardIn{
-    from{
-        opacity:0;
-        transform:translateY(12px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+.login-profile-card .hub-user-phone{
+  font-size:.88rem;
+  font-weight:650;
+  color:var(--theme-primary);
+  letter-spacing:.15px;
+}
+
+.login-profile-card .hub-user-email{
+  font-size:.78rem;
+}
+
+.login-profile-label{
+  font-size:.68rem;
+  font-weight:800;
+  color:#7a8a93;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:1px;
 }
 
 .hub-user-name{
-    font-size:1.35rem;
-    margin-bottom:9px;
+  font-weight:850;
+  font-size:1.02rem;
 }
 
-.hub-user-phone,
+.hub-user-phone{
+  font-size:.82rem;
+  color:var(--theme-muted);
+}
+
 .hub-user-email{
-    font-size:.9rem;
-    color:#667781;
-    margin-top:5px;
-    overflow-wrap:anywhere;
+  font-size:.76rem;
+  color:var(--theme-muted);
+  word-break:break-word;
 }
 
-.hub-actions{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:11px;
-    margin-top:16px;
+/* HUB */
+
+#hub-screen{
+  background:var(--theme-bg);
 }
 
-.btn-hub{
-    width:100%;
-    border:0;
-    border-radius:12px;
-    padding:14px;
-    font-weight:750;
-    cursor:pointer;
-    font-size:.94rem;
+.hub-scroll{
+  flex:1;
+  overflow-y:auto;
+  padding:18px;
 }
 
-.btn-hub-primary{
-    background:var(--theme-primary);
-    color:#fff;
+.greeting{
+  margin-bottom:15px;
 }
 
-.btn-hub-secondary{
-    background:var(--theme-card);
-    color:var(--theme-primary);
-    border:1px solid color-mix(in srgb,var(--theme-primary) 22%,#d6dadd);
+.greeting .small{
+  color:var(--theme-muted);
+  font-size:.78rem;
 }
 
-.settings-footer{
-    display:flex;
-    justify-content:center;
-    margin-top:18px;
+.greeting h1{
+  margin:4px 0 0;
+  font-size:1.48rem;
+  letter-spacing:-.6px;
 }
 
-.settings-button{
-    border:0;
-    background:transparent;
-    color:var(--theme-primary);
-    font-weight:700;
-    cursor:pointer;
-    padding:9px 14px;
+.hub-section{
+  margin-top:16px;
 }
 
-.directory-pin-card,
-.admin-pin-card{
-    width:100%;
-    max-width:320px;
-    background:#fff;
-    border-radius:18px;
-    padding:24px 22px;
-    box-shadow:0 18px 50px rgba(0,0,0,.22);
-    text-align:center;
+.hub-section-title{
+  font-size:.7rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.85px;
+  color:var(--theme-muted);
+  margin:0 0 8px 2px;
 }
 
-.directory-pin-card h2,
-.admin-pin-card h2{
-    color:#075e54;
-    font-size:1.25rem;
-    margin-bottom:18px;
+.hub-action{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border:1px solid var(--theme-border);
+  background:var(--theme-card);
+  color:var(--theme-text);
+  border-radius:15px;
+  margin-bottom:9px;
+  text-align:left;
+  box-shadow:0 5px 18px rgba(0,0,0,.04);
 }
 
-.directory-pin-card input,
-.admin-pin-card input{
-    width:100%;
-    text-align:center;
-    font-size:1.25rem;
-    background:#f8fafb;
+.hub-action .icon{
+  width:39px;
+  height:39px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--theme-soft);
+  color:var(--theme-primary);
+  font-size:18px;
 }
 
-.contact-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-    padding:15px;
-    background:var(--theme-card);
-    border-bottom:1px solid #e7eaed;
-    cursor:pointer;
+.hub-action strong{
+  display:block;
+  font-size:.9rem;
 }
 
-.contact-item:hover{
-    background:#f7faf9;
+.hub-action span{
+  display:block;
+  font-size:.72rem;
+  color:var(--theme-muted);
+  margin-top:3px;
 }
 
-.contact-name{
-    font-weight:750;
-    color:var(--theme-text);
+/* DIRECTORY */
+
+#directory-screen,
+#admin-screen{
+  background:var(--theme-bg);
 }
 
-.contact-phone{
-    font-size:.84rem;
-    color:#667781;
-    margin-top:4px;
+.scroll-area{
+  flex:1;
+  overflow-y:auto;
+  padding:16px;
 }
 
-.status-pill{
-    display:inline-block;
-    margin-top:5px;
-    padding:3px 7px;
-    border-radius:8px;
-    font-size:.68rem;
-    font-weight:700;
+.directory-card{
+  background:var(--theme-card);
+  border:1px solid var(--theme-border);
+  border-radius:15px;
+  margin-bottom:9px;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
 }
 
-.status-pill.active{
-    background:#e4f6ec;
-    color:#18844a;
+.directory-avatar{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:var(--theme-soft);
+  color:var(--theme-primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:850;
+  flex-shrink:0;
 }
 
-.status-pill.inactive{
-    background:#eef1f3;
-    color:#667781;
+.directory-info{
+  min-width:0;
+  flex:1;
 }
 
-.settings-overlay{
-    display:none;
-    position:absolute;
-    inset:0;
-    background:rgba(7,24,32,.48);
-    backdrop-filter:blur(8px);
-    z-index:40;
-    align-items:flex-end;
-    justify-content:center;
+.directory-name{
+  font-weight:800;
+  font-size:.9rem;
 }
 
-.settings-overlay.open{
-    display:flex;
+.directory-phone{
+  margin-top:3px;
+  font-size:.73rem;
+  color:var(--theme-muted);
 }
 
-.settings-panel{
-    width:100%;
-    max-width:520px;
-    background:var(--theme-card);
-    border-radius:22px 22px 0 0;
-    padding:20px;
-    box-shadow:0 -15px 45px rgba(0,0,0,.2);
-    max-height:82%;
-    overflow-y:auto;
+.directory-email{
+  margin-top:2px;
+  font-size:.69rem;
+  color:var(--theme-muted);
+  word-break:break-word;
 }
 
-.settings-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:18px;
+/* CHAT */
+
+#chat-screen{
+  background:var(--theme-bg);
 }
 
-.settings-head h2{
-    font-size:1.2rem;
-    color:var(--theme-text);
+.chat-header-user{
+  min-width:0;
+  flex:1;
 }
 
-.settings-close{
-    border:0;
-    background:transparent;
-    font-size:1.3rem;
-    cursor:pointer;
-    color:#667781;
+.chat-header-name{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:.98rem;
+  font-weight:800;
 }
 
-.theme-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
+.chat-header-phone{
+  font-size:.68rem;
+  opacity:.72;
+  margin-top:2px;
 }
 
-.theme-option{
-    border:2px solid transparent;
-    border-radius:14px;
-    padding:8px;
-    cursor:pointer;
-    background:var(--theme-soft);
+.chat-messages{
+  flex:1;
+  overflow-y:auto;
+  padding:16px 13px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
-.theme-option.selected{
-    border-color:var(--theme-primary);
+.message-row{
+  display:flex;
+  width:100%;
 }
 
-.theme-preview{
-    height:72px;
-    border-radius:10px;
-    position:relative;
-    overflow:hidden;
+.message-row.mine{
+  justify-content:flex-end;
 }
 
-.preview-bar{
-    position:absolute;
-    left:0;
-    right:0;
-    top:0;
-    height:17px;
-    background:rgba(255,255,255,.24);
+.message-row.theirs{
+  justify-content:flex-start;
 }
 
-.preview-bubble{
-    position:absolute;
-    width:42px;
-    height:20px;
-    right:10px;
-    bottom:12px;
-    border-radius:10px 10px 3px 10px;
-    background:rgba(255,255,255,.78);
+.message-bubble{
+  max-width:82%;
+  padding:9px 11px 7px;
+  border-radius:15px;
+  background:#fff;
+  border:1px solid var(--theme-border);
+  box-shadow:0 3px 10px rgba(0,0,0,.035);
 }
 
-.preview-name{
-    text-align:center;
-    font-size:.78rem;
-    font-weight:750;
-    margin-top:7px;
-    color:var(--theme-text);
+.message-row.mine .message-bubble{
+  background:var(--theme-soft);
+  border-color:rgba(18,140,126,.16);
+  border-bottom-right-radius:5px;
 }
 
-#messages-container{
-    flex:1;
-    overflow-y:auto;
-    padding:14px 12px;
-    background:var(--theme-soft);
+.message-row.theirs .message-bubble{
+  border-bottom-left-radius:5px;
 }
 
-.msg{
-    max-width:82%;
-    padding:9px 10px 7px;
-    border-radius:10px;
-    margin-bottom:7px;
-    font-size:.91rem;
-    line-height:1.35;
-    word-break:break-word;
-    box-shadow:0 1px 2px rgba(0,0,0,.08);
+.message-text{
+  font-size:.86rem;
+  line-height:1.42;
+  white-space:pre-wrap;
+  word-break:break-word;
 }
 
-.msg.me{
-    margin-left:auto;
-    background:#d9fdd3;
-    border-top-right-radius:3px;
-    color:#111b21;
+.message-meta{
+  margin-top:4px;
+  font-size:.62rem;
+  color:var(--theme-muted);
+  text-align:right;
 }
 
-.msg.them{
-    margin-right:auto;
-    background:var(--theme-card);
-    border-top-left-radius:3px;
+.chat-input-area{
+  padding:9px 10px calc(9px + env(safe-area-inset-bottom));
+  background:var(--theme-card);
+  border-top:1px solid var(--theme-border);
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
 }
 
-.msg-time{
-    display:block;
-    text-align:right;
-    font-size:.62rem;
-    color:#667781;
-    margin-top:4px;
+.chat-input{
+  flex:1;
+  min-height:43px;
+  max-height:120px;
+  resize:none;
+  padding:11px 13px;
+  border-radius:14px;
+  line-height:1.35;
 }
 
-.email-alert{
-    border-left:3px solid #e67e22;
+.send-btn{
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  background:var(--theme-primary);
+  font-size:18px;
+  flex-shrink:0;
 }
 
-.email-badge{
-    display:inline-block;
-    color:#b35a00;
-    font-size:.62rem;
-    font-weight:800;
-    margin-bottom:3px;
+.emergency-btn{
+  width:44px;
+  height:44px;
+  border:1px solid #f0c8c6;
+  background:#fff5f4;
+  color:#c83c37;
+  border-radius:13px;
+  font-size:17px;
+  flex-shrink:0;
 }
 
-.email-toolbar{
-    height:48px;
-    background:var(--theme-card);
-    border-top:1px solid #e2e6e8;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 14px;
-    color:#667781;
-    font-size:.82rem;
-    flex-shrink:0;
+/* PIN */
+
+.pin-overlay{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  background:rgba(9,25,22,.42);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(5px);
 }
 
-.toggle-switch{
-    position:relative;
-    width:42px;
-    height:23px;
+.pin-overlay.active{
+  display:flex;
 }
 
-.toggle-switch input{
-    display:none;
+.pin-modal{
+  width:min(100%,360px);
+  background:var(--theme-card);
+  border-radius:20px;
+  padding:21px;
+  box-shadow:0 25px 70px rgba(0,0,0,.25);
 }
 
-.slider{
-    position:absolute;
-    inset:0;
-    background:#ccd2d5;
-    border-radius:20px;
-    cursor:pointer;
-    transition:.2s;
+.pin-modal h3{
+  margin:0;
+  font-size:1.05rem;
 }
 
-.slider:before{
-    content:"";
-    position:absolute;
-    width:17px;
-    height:17px;
-    left:3px;
-    top:3px;
-    background:#fff;
-    border-radius:50%;
-    transition:.2s;
-    box-shadow:0 1px 3px rgba(0,0,0,.2);
+.pin-modal p{
+  margin:6px 0 15px;
+  color:var(--theme-muted);
+  font-size:.77rem;
 }
 
-.toggle-switch input:checked+.slider{
-    background:var(--theme-secondary);
+.pin-modal input{
+  text-align:center;
+  letter-spacing:6px;
+  font-weight:800;
 }
 
-.toggle-switch input:checked+.slider:before{
-    transform:translateX(19px);
-}
-
-#input-toolbar{
-    display:flex;
-    gap:8px;
-    padding:8px;
-    background:var(--theme-card);
-    border-top:1px solid #e2e6e8;
-    flex-shrink:0;
-}
-
-#input-toolbar input{
-    margin:0;
-    flex:1;
-}
-
-#send-btn{
-    width:47px;
-    border:0;
-    border-radius:11px;
-    background:var(--theme-primary);
-    color:#fff;
-    cursor:pointer;
-    font-size:1rem;
-}
-
-.toast{
-    position:absolute;
-    left:50%;
-    bottom:18px;
-    transform:translateX(-50%);
-    background:rgba(17,27,33,.92);
-    color:#fff;
-    padding:10px 15px;
-    border-radius:10px;
-    font-size:.8rem;
-    z-index:200;
-    display:none;
-    white-space:nowrap;
+.pin-error{
+  min-height:18px;
+  color:var(--theme-danger);
+  font-size:.73rem;
+  margin-top:7px;
+  text-align:center;
 }
 
 /* ADMIN */
 
 .admin-tools{
-    display:flex;
-    gap:10px;
-    padding:14px 15px;
-    background:var(--theme-card);
-    border-bottom:1px solid #e5e7eb;
-    flex-wrap:wrap;
+  display:flex;
+  gap:8px;
+  margin-bottom:13px;
 }
 
 .admin-tool-btn{
-    border:0;
-    border-radius:10px;
-    padding:10px 14px;
-    font-weight:700;
-    cursor:pointer;
-    background:var(--theme-primary);
-    color:#fff;
+  flex:1;
+  border:1px solid var(--theme-border);
+  background:var(--theme-card);
+  color:var(--theme-primary);
+  border-radius:11px;
+  padding:10px 8px;
+  font-size:.72rem;
+  font-weight:800;
 }
 
 .admin-tool-btn.secondary{
-    background:var(--theme-soft);
-    color:var(--theme-text);
+  background:var(--theme-soft);
 }
 
-.admin-user-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:15px;
-    border-bottom:1px solid #e7eaed;
-    background:var(--theme-card);
-    cursor:pointer;
+.admin-user-row{
+  background:var(--theme-card);
+  border:1px solid var(--theme-border);
+  border-radius:14px;
+  padding:13px;
+  margin-bottom:8px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-.admin-user-item:hover{
-    background:#f7faf9;
+.admin-user-row:active{
+  transform:scale(.995);
 }
 
-.admin-user-main{
-    min-width:0;
-    flex:1;
+.admin-user-info{
+  min-width:0;
+  flex:1;
 }
 
 .admin-user-name{
-    font-weight:750;
-    color:var(--theme-text);
+  font-weight:800;
+  font-size:.88rem;
 }
 
-.admin-user-meta{
-    margin-top:4px;
-    color:#667781;
-    font-size:.84rem;
-    overflow-wrap:anywhere;
+.admin-user-phone,
+.admin-user-email{
+  color:var(--theme-muted);
+  font-size:.7rem;
+  margin-top:3px;
+  word-break:break-word;
 }
 
-.admin-small-btn{
-    border:0;
-    border-radius:9px;
-    padding:8px 11px;
-    font-weight:700;
-    cursor:pointer;
-    background:var(--theme-primary);
-    color:#fff;
+.admin-status{
+  font-size:.62rem;
+  padding:4px 7px;
+  border-radius:20px;
+  background:var(--theme-soft);
+  color:var(--theme-primary);
+  font-weight:800;
 }
 
-.admin-small-btn.edit{
-    background:#eef6f4;
-    color:#075e54;
+/* ADMIN EDIT */
+
+.editor-form{
+  background:var(--theme-card);
+  border:1px solid var(--theme-border);
+  border-radius:16px;
+  padding:16px;
 }
 
-.admin-form-wrap{
-    padding:16px;
-    overflow:auto;
-    background:var(--theme-soft);
+.form-label{
+  display:block;
+  font-size:.7rem;
+  font-weight:800;
+  color:var(--theme-muted);
+  margin:0 0 6px 2px;
 }
 
-.admin-form-card{
-    max-width:620px;
-    margin:0 auto;
-    background:var(--theme-card);
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
+.form-group{
+  margin-bottom:12px;
 }
 
-.admin-form-card h2{
-    color:var(--theme-text);
-    margin-bottom:14px;
+/* SETTINGS */
+
+.settings-section{
+  padding:17px;
+  overflow-y:auto;
+  flex:1;
 }
 
-.admin-form-card label{
-    display:block;
-    margin:12px 0 6px;
-    font-size:.84rem;
-    font-weight:700;
-    color:#667781;
+.settings-title{
+  margin:0 0 5px;
+  font-size:1.05rem;
+  font-weight:850;
 }
 
-.admin-form-card input{
-    width:100%;
+.settings-subtitle{
+  color:var(--theme-muted);
+  font-size:.74rem;
+  margin:0 0 16px;
 }
 
-.admin-form-actions{
-    display:flex;
-    gap:10px;
-    margin-top:16px;
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
 }
 
-.admin-empty{
-    padding:28px 18px;
-    text-align:center;
-    color:#667781;
-    background:var(--theme-card);
+.theme-option{
+  border:1px solid var(--theme-border);
+  background:var(--theme-card);
+  border-radius:15px;
+  padding:10px;
+  cursor:pointer;
 }
 
-@media(max-width:520px){
-    #app{
-        max-height:none;
-    }
+.theme-option.active{
+  border-color:var(--theme-primary);
+  box-shadow:0 0 0 2px rgba(18,140,126,.1);
+}
+
+.theme-preview{
+  height:55px;
+  border-radius:10px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+
+.theme-preview::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  right:20px;
+  bottom:9px;
+  height:11px;
+  border-radius:8px;
+  background:rgba(255,255,255,.85);
+}
+
+.theme-preview::after{
+  content:"";
+  position:absolute;
+  right:7px;
+  top:8px;
+  width:45%;
+  height:14px;
+  border-radius:8px;
+  background:rgba(255,255,255,.35);
+}
+
+.theme-name{
+  font-size:.74rem;
+  font-weight:800;
+}
+
+.theme-emerald{
+  background:linear-gradient(135deg,#075e54,#25d366);
+}
+
+.theme-midnight{
+  background:linear-gradient(135deg,#111827,#374151);
+}
+
+.theme-ocean{
+  background:linear-gradient(135deg,#075985,#0ea5e9);
+}
+
+.theme-graphite{
+  background:linear-gradient(135deg,#262626,#737373);
+}
+
+.theme-royal{
+  background:linear-gradient(135deg,#312e81,#7c3aed);
+}
+
+.theme-ivory{
+  background:linear-gradient(135deg,#f4ead5,#d7b98e);
+}
+
+.admin-settings-actions{
+  display:flex;
+  gap:8px;
+  margin-top:17px;
+}
+
+.admin-settings-actions button{
+  flex:1;
+}
+
+/* TOAST */
+
+.toast{
+  position:absolute;
+  left:50%;
+  bottom:78px;
+  transform:translateX(-50%) translateY(15px);
+  z-index:300;
+  max-width:calc(100% - 30px);
+  background:#17231f;
+  color:#fff;
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:.74rem;
+  opacity:0;
+  pointer-events:none;
+  transition:.22s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  text-align:center;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* EMPTY */
+
+.empty-state{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--theme-muted);
+}
+
+.empty-state .empty-icon{
+  font-size:34px;
+  margin-bottom:9px;
+}
+
+.empty-state strong{
+  display:block;
+  color:var(--theme-text);
+  font-size:.9rem;
+}
+
+.empty-state p{
+  font-size:.74rem;
+  margin:5px 0 0;
+}
+
+/* MOBILE */
+
+@media(max-width:380px){
+  .hub-scroll,
+  .scroll-area{
+    padding:13px;
+  }
+
+  #login-screen{
+    padding-left:15px;
+    padding-right:15px;
+  }
+
+  .login-panel{
+    padding:14px;
+  }
+
+  .admin-tools{
+    gap:5px;
+  }
+
+  .admin-tool-btn{
+    padding-left:5px;
+    padding-right:5px;
+    font-size:.68rem;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div class="app-shell">
+<div class="card">
 
-<!-- SPLASH -->
-<div id="welcome-screen" class="screen active">
-    <h1>axtres</h1>
-    <p>Secure Email & Chat Messenger</p>
-    <div class="spinner"></div>
-</div>
-
-<!-- REGISTER -->
-<div id="register-screen" class="screen">
-
-    <div class="header-bar">
-        Registration
+  <!-- WELCOME / LOADING -->
+  <section id="welcome-screen" class="screen active">
+    <div class="logo-mark">
+      <span>ax</span>
     </div>
+    <h1 class="splash-title">axtres</h1>
+    <p class="splash-subtitle">Private. Simple. Connected.</p>
+  </section>
 
-    <div class="form-content">
+  <!-- LOGIN -->
+  <section id="login-screen" class="screen">
+    <div class="login-content">
 
-        <h2>Sign Up</h2>
+      <div class="login-brand">
+        <div class="mini-logo">ax</div>
+        <h1>Good to See You</h1>
+        <p>Sign in to continue to your conversations</p>
+      </div>
 
-        <p class="subtitle">
-            Email is optional. Add one to receive email alerts.
-        </p>
+      <div class="login-panel">
+        <div class="login-panel-label">Your registered phone</div>
 
-        <input
-            type="text"
-            id="reg-name"
-            placeholder="Your Full Name"
-        >
-
-        <input
-            type="tel"
-            id="reg-phone"
-            placeholder="10-digit Phone Number"
-            maxlength="10"
-            inputmode="numeric"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-        >
-
-        <div class="email-group">
-
-            <input
-                type="text"
-                id="reg-email-user"
-                placeholder="Email username (optional)"
-                oninput="interceptEmailInput(event)"
-            >
-
-            <select id="reg-email-domain">
-                <option value="@gmail.com">@gmail.com</option>
-                <option value="@outlook.com">@outlook.com</option>
-            </select>
-
-        </div>
-
-        <button
-            class="btn-secondary"
-            onclick="requestNotificationPermission()"
-        >
-            1. Enable Notifications
-        </button>
-
-        <div
-            id="notif-status"
-            style="font-size:.75rem;text-align:center;color:#666;"
-        >
-            Status: Not Enabled
-        </div>
-
-        <div
-            class="error-msg"
-            id="reg-error"
-        ></div>
-
-        <button
-            class="btn"
-            onclick="handleRegister()"
-        >
-            Complete Sign Up
-        </button>
-
-        <button
-            id="install-btn-reg"
-            class="btn-install"
-            onclick="installPWA()"
-        >
-            📲 Install App to Home Screen
-        </button>
-
-        <div class="switch-text">
-            Already registered?
-            <a onclick="switchScreen('login-screen')">
-                Log In here
-            </a>
-        </div>
-
-    </div>
-</div>
-
-<!-- VERIFY -->
-<div id="verify-screen" class="screen">
-
-    <div class="header-bar">
-        Verify Email
-    </div>
-
-    <div
-        class="form-content"
-        style="text-align:center;"
-    >
-
-        <h2>Enter 3-Digit PIN</h2>
-
-        <p class="subtitle">
-            Check your email inbox for the verification code.
-        </p>
-
-        <input
-            type="tel"
-            id="verify-pin-input"
-            placeholder="---"
-            maxlength="3"
-            inputmode="numeric"
-            style="text-align:center;font-size:1.8rem;letter-spacing:10px;"
-            oninput="handleAutoVerifyRegister(event)"
-        >
-
-        <div
-            class="error-msg"
-            id="verify-error"
-        ></div>
-
-        <button
-            class="btn-secondary"
-            onclick="switchScreen('register-screen')"
-        >
-            Back
-        </button>
-
-    </div>
-</div>
-
-<!-- LOGIN -->
-<div id="login-screen" class="screen">
-
-    <div class="header-bar">
-        Sign In
-    </div>
-
-    <div class="form-content">
-
-        <h2>Good to See You</h2>
-
-        <input
+        <div class="login-entry">
+          <input
             type="tel"
             id="login-phone"
             placeholder="Enter your registered phone number"
             maxlength="10"
             inputmode="numeric"
             oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-        >
+          >
 
-        <div
-            class="error-msg"
-            id="login-error"
-        ></div>
+          <div class="error-msg" id="login-error"></div>
 
-        <button
-            class="btn"
-            onclick="handleLogin()"
-        >
+          <button class="btn" onclick="handleLogin()">
             Log In to Chats
-        </button>
-
-        <button
-            class="btn-secondary"
-            onclick="openAdminWithPin()"
-        >
-            Admin
-        </button>
-
-        <button
-            class="btn-accent"
-            onclick="openAddEmailModal()"
-        >
-            ➕ Add / Link Email
-        </button>
-
-        <button
-            id="install-btn-login"
-            class="btn-install"
-            onclick="installPWA()"
-        >
-            📲 Install App to Home Screen
-        </button>
-
-        <div class="switch-text">
-            New user?
-            <a onclick="switchScreen('register-screen')">
-                Register here
-            </a>
+          </button>
         </div>
 
+        <div class="hub-card yadhu-profile-card login-profile-card">
+          <div class="login-profile-label">axtres contact</div>
+          <div class="hub-user-name">Yadhu Krishna</div>
+          <div class="hub-user-phone">+91 70257 07720</div>
+          <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
+        </div>
+      </div>
+
     </div>
-</div>
+  </section>
 
-<!-- ADD EMAIL -->
-<div id="add-email-screen" class="screen">
+  <!-- HUB -->
+  <section id="hub-screen" class="screen">
 
-    <div class="header-bar">
+    <header class="app-header">
+      <div class="header-title">
+        <h2>axtres</h2>
+        <p>Secure messenger</p>
+      </div>
+    </header>
 
-        <div style="display:flex;align-items:center;">
+    <div class="hub-scroll">
 
-            <span
-                class="back-arrow"
-                onclick="switchScreen('login-screen')"
-            >
-                &#8592;
-            </span>
+      <div class="greeting">
+        <div class="small">Good to see you</div>
+        <h1 id="hub-greeting">Hello</h1>
+      </div>
 
-            <div>Link Email</div>
+      <div class="hub-card yadhu-profile-card">
+        <div class="login-profile-label">Yadhu Krishna</div>
+        <div class="hub-user-name">Yadhu Krishna</div>
+        <div class="hub-user-phone">+91 70257 07720</div>
+        <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
+      </div>
 
+      <div class="hub-section">
+
+        <div class="hub-section-title">Messages</div>
+
+        <button class="hub-action" onclick="openYadhuChat()">
+          <div class="icon">💬</div>
+          <div>
+            <strong>Chat with Yadhu Krishna</strong>
+            <span>Open your private conversation</span>
+          </div>
+        </button>
+
+        <button class="hub-action" onclick="openDirectory()">
+          <div class="icon">👥</div>
+          <div>
+            <strong>Directory</strong>
+            <span>Browse registered axtres users</span>
+          </div>
+        </button>
+
+        <button class="hub-action" onclick="openSettings()">
+          <div class="icon">⚙</div>
+          <div>
+            <strong>Settings</strong>
+            <span>Personal appearance and preferences</span>
+          </div>
+        </button>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DIRECTORY -->
+  <section id="directory-screen" class="screen">
+
+    <header class="app-header">
+      <button class="back-btn" onclick="goToHub()">‹</button>
+
+      <div class="header-title">
+        <h2>Directory</h2>
+        <p>Registered axtres users</p>
+      </div>
+    </header>
+
+    <div class="scroll-area" id="directory-list">
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <strong>Loading directory...</strong>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CHAT -->
+  <section id="chat-screen" class="screen">
+
+    <header class="app-header">
+
+      <button class="back-btn" onclick="closeChat()">‹</button>
+
+      <div class="chat-header-user">
+        <div class="chat-header-name" id="chat-header-name">
+          Chat
+        </div>
+        <div class="chat-header-phone" id="chat-header-phone"></div>
+      </div>
+
+    </header>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <div class="chat-input-area">
+
+      <button
+        class="emergency-btn"
+        onclick="sendEmergencyMessage()"
+        title="Send message with email alert"
+      >⚠</button>
+
+      <textarea
+        id="chat-input"
+        class="chat-input"
+        rows="1"
+        placeholder="Type a message..."
+        oninput="autoResizeChatInput(this)"
+        onkeydown="handleChatKeydown(event)"
+      ></textarea>
+
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+
+    </div>
+
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings-screen" class="screen">
+
+    <header class="app-header">
+
+      <button class="back-btn" onclick="closeSettings()">‹</button>
+
+      <div class="header-title">
+        <h2 id="settings-title">Appearance</h2>
+        <p>Customize your axtres experience</p>
+      </div>
+
+    </header>
+
+    <div class="settings-section">
+
+      <h3 class="settings-title">Themes</h3>
+      <p class="settings-subtitle">
+        Choose a personal theme. Your selection overrides the admin default on this device.
+      </p>
+
+      <div class="theme-grid">
+
+        <div class="theme-option" data-theme="emerald" onclick="selectTheme('emerald')">
+          <div class="theme-preview theme-emerald"></div>
+          <div class="theme-name">Emerald</div>
         </div>
 
+        <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
+          <div class="theme-preview theme-midnight"></div>
+          <div class="theme-name">Midnight</div>
+        </div>
+
+        <div class="theme-option" data-theme="ocean" onclick="selectTheme('ocean')">
+          <div class="theme-preview theme-ocean"></div>
+          <div class="theme-name">Ocean</div>
+        </div>
+
+        <div class="theme-option" data-theme="graphite" onclick="selectTheme('graphite')">
+          <div class="theme-preview theme-graphite"></div>
+          <div class="theme-name">Graphite</div>
+        </div>
+
+        <div class="theme-option" data-theme="royal" onclick="selectTheme('royal')">
+          <div class="theme-preview theme-royal"></div>
+          <div class="theme-name">Royal</div>
+        </div>
+
+        <div class="theme-option" data-theme="ivory" onclick="selectTheme('ivory')">
+          <div class="theme-preview theme-ivory"></div>
+          <div class="theme-name">Ivory</div>
+        </div>
+
+      </div>
+
+      <div
+        id="admin-settings-actions"
+        class="admin-settings-actions"
+        style="display:none;"
+      >
+        <button class="btn-secondary" onclick="setCurrentThemeAsDefault()">
+          Set as Default
+        </button>
+
+        <button class="btn-secondary" onclick="closeSettings()">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ADMIN PIN -->
+  <div id="admin-pin-overlay" class="pin-overlay">
+
+    <div class="pin-modal" onclick="event.stopPropagation()">
+
+      <h3>Admin Access</h3>
+
+      <p>Enter the administrator PIN to continue.</p>
+
+      <input
+        type="tel"
+        id="admin-pin-input"
+        placeholder="Enter PIN"
+        maxlength="3"
+        inputmode="numeric"
+        oninput="handleAdminPinInput()"
+      >
+
+      <div id="admin-pin-error" class="pin-error"></div>
+
     </div>
 
-    <div class="form-content">
+  </div>
 
-        <h2>Update Email</h2>
+  <!-- DIRECTORY PIN -->
+  <div id="directory-pin-overlay" class="pin-overlay">
 
-        <p class="subtitle">
-            Enter phone and new email
-        </p>
+    <div class="pin-modal" onclick="event.stopPropagation()">
 
-        <input
+      <h3>Directory Access</h3>
+
+      <p>Enter the directory PIN to continue.</p>
+
+      <input
+        type="tel"
+        id="directory-pin-input"
+        placeholder="Enter PIN"
+        maxlength="3"
+        inputmode="numeric"
+        oninput="handleDirectoryPinInput()"
+      >
+
+      <div id="directory-pin-error" class="pin-error"></div>
+
+    </div>
+
+  </div>
+
+  <!-- ADMIN -->
+  <section id="admin-screen" class="screen">
+
+    <header class="app-header">
+
+      <button class="back-btn" onclick="closeAdmin()">‹</button>
+
+      <div class="header-title">
+        <h2>Admin</h2>
+        <p>Directory management</p>
+      </div>
+
+    </header>
+
+    <div class="scroll-area">
+
+      <div class="admin-tools">
+
+        <button
+          class="admin-tool-btn"
+          onclick="openAdminDirectoryEditor()"
+        >
+          Edit Directory
+        </button>
+
+        <button
+          class="admin-tool-btn secondary"
+          onclick="refreshAdminUsers()"
+        >
+          Refresh
+        </button>
+
+        <button
+          class="admin-tool-btn secondary"
+          onclick="openAdminSettings()"
+        >
+          ⚙ Settings
+        </button>
+
+      </div>
+
+      <div id="admin-users-list">
+
+        <div class="empty-state">
+          <div class="empty-icon">🔐</div>
+          <strong>Loading admin directory...</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ADMIN EDITOR -->
+  <section id="admin-editor-screen" class="screen">
+
+    <header class="app-header">
+
+      <button class="back-btn" onclick="closeAdminEditor()">‹</button>
+
+      <div class="header-title">
+        <h2>Edit Directory</h2>
+        <p>Add or update registered users</p>
+      </div>
+
+    </header>
+
+    <div class="scroll-area">
+
+      <div class="editor-form">
+
+        <input type="hidden" id="admin-original-phone">
+
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input
+            type="text"
+            id="admin-name"
+            placeholder="Full name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input
             type="tel"
-            id="ae-phone"
-            placeholder="10-digit Phone Number"
+            id="admin-phone"
+            placeholder="10-digit phone number"
             maxlength="10"
             inputmode="numeric"
             oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-        >
-
-        <div class="email-group">
-
-            <input
-                type="text"
-                id="ae-email-user"
-                placeholder="Email username"
-                oninput="interceptEmailInput(event)"
-            >
-
-            <select id="ae-email-domain">
-                <option value="@gmail.com">@gmail.com</option>
-                <option value="@outlook.com">@outlook.com</option>
-            </select>
-
+          >
         </div>
 
-        <div
-            class="error-msg"
-            id="ae-error"
-        ></div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            id="admin-email"
+            placeholder="Email address"
+          >
+        </div>
 
-        <button
-            class="btn"
-            onclick="handleAddEmailInit()"
-        >
-            Send Verification PIN
+        <button class="btn" onclick="saveAdminUser()">
+          Save User
         </button>
 
-    </div>
-</div>
+      </div>
 
-<!-- VERIFY EMAIL UPDATE -->
-<div id="verify-email-screen" class="screen">
+      <div style="height:14px;"></div>
 
-    <div class="header-bar">
-        Confirm Email PIN
-    </div>
-
-    <div
-        class="form-content"
-        style="text-align:center;"
-    >
-
-        <h2>Enter 3-Digit PIN</h2>
-
-        <p class="subtitle">
-            Auto-submits when 3 digits are entered.
-        </p>
-
-        <input
-            type="tel"
-            id="ae-pin-input"
-            placeholder="---"
-            maxlength="3"
-            inputmode="numeric"
-            style="text-align:center;font-size:1.8rem;letter-spacing:10px;"
-            oninput="handleAutoVerifyEmail(event)"
-        >
-
-        <div
-            class="error-msg"
-            id="ae-verify-error"
-        ></div>
-
-        <button
-            class="btn-secondary"
-            onclick="switchScreen('login-screen')"
-        >
-            Cancel
-        </button>
-
-    </div>
-</div>
-
-<!-- HUB -->
-<div id="hub-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div>axtres</div>
-
-        <span onclick="handleLogout()">
-            Sign Out
-        </span>
+      <button class="btn-secondary" style="width:100%;" onclick="startNewAdminUser()">
+        + Add New User
+      </button>
 
     </div>
 
-    <div
-        class="form-content"
-        style="justify-content:flex-start;padding-top:32px;"
-    >
+  </section>
 
-        <div
-            class="hub-welcome"
-            id="hub-welcome-text"
-        >
-            Welcome!
-        </div>
-
-        <div class="hub-card yadhu-profile-card">
-
-            <div
-                class="hub-user-name"
-                id="hub-user-name"
-            >
-                Yadhu Krishna
-            </div>
-
-            <div
-                class="hub-user-phone"
-                id="hub-user-phone"
-            >
-                7025707720
-            </div>
-
-            <div
-                class="hub-user-email"
-                id="hub-user-email"
-            >
-                yadhukrishnabp777@gmail.com
-            </div>
-
-        </div>
-
-        <div class="hub-actions">
-
-            <button
-                class="btn-hub btn-hub-primary"
-                onclick="chatWithYadhu()"
-            >
-                💬 Chat with Yadhu Krishna
-            </button>
-
-            <button
-                class="btn-hub btn-hub-secondary"
-                onclick="openDirectoryWithPin()"
-            >
-                📖 Directory
-            </button>
-
-        </div>
-
-        <div class="settings-footer">
-
-            <button
-                class="settings-button"
-                onclick="openSettings()"
-            >
-                ⚙ Settings
-            </button>
-
-        </div>
-
-    </div>
-</div>
-
-<!-- DIRECTORY PIN -->
-<div
-    id="directory-pin-screen"
-    class="screen"
-    onclick="handleDirectoryBackdrop(event)"
-    style="
-        position:absolute;
-        inset:0;
-        background:rgba(7,24,32,.48);
-        backdrop-filter:blur(8px);
-        align-items:center;
-        justify-content:center;
-        padding:24px;
-        z-index:50;
-    "
->
-
-    <div
-        class="directory-pin-card"
-        onclick="event.stopPropagation()"
-    >
-
-        <h2>Directory</h2>
-
-        <input
-            type="tel"
-            id="directory-pin-input"
-            placeholder="Enter PIN"
-            maxlength="3"
-            inputmode="numeric"
-            autocomplete="off"
-            oninput="handleDirectoryPinInput(event)"
-            autofocus
-        >
-
-        <div
-            class="error-msg"
-            id="directory-pin-error"
-        ></div>
-
-    </div>
-</div>
-
-<!-- DIRECTORY -->
-<div id="contacts-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div style="display:flex;align-items:center;">
-
-            <span
-                class="back-arrow"
-                onclick="returnFromDirectory()"
-            >
-                &#8592;
-            </span>
-
-            <div>
-                Directory
-                (<span id="my-name-display"></span>)
-            </div>
-
-        </div>
-
-        <span onclick="handleLogout()">
-            Sign Out
-        </span>
-
-    </div>
-
-    <div
-        style="
-            padding:10px 15px;
-            background:#fff;
-            font-size:.85rem;
-            color:#667781;
-            border-bottom:1px solid #eee;
-        "
-    >
-        Select a contact to start chatting:
-    </div>
-
-    <div id="contacts-container"></div>
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
 
 </div>
-
-<!-- ADMIN PIN -->
-<div
-    id="admin-pin-screen"
-    class="screen"
-    onclick="handleAdminBackdrop(event)"
-    style="
-        position:absolute;
-        inset:0;
-        background:rgba(7,24,32,.48);
-        backdrop-filter:blur(8px);
-        align-items:center;
-        justify-content:center;
-        padding:24px;
-        z-index:60;
-    "
->
-
-    <div
-        class="admin-pin-card"
-        onclick="event.stopPropagation()"
-    >
-
-        <h2>Admin Access</h2>
-
-        <input
-            type="tel"
-            id="admin-pin-input"
-            placeholder="Enter PIN"
-            maxlength="3"
-            inputmode="numeric"
-            autocomplete="off"
-            oninput="handleAdminPinInput(event)"
-            autofocus
-        >
-
-        <div
-            class="error-msg"
-            id="admin-pin-error"
-        ></div>
-
-    </div>
-</div>
-
-<!-- ADMIN -->
-<div id="admin-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div style="display:flex;align-items:center;">
-
-            <span
-                class="back-arrow"
-                onclick="closeAdmin()"
-            >
-                &#8592;
-            </span>
-
-            <div>Admin</div>
-
-        </div>
-
-        <span onclick="closeAdmin()">
-            Sign Out
-        </span>
-
-    </div>
-
-    <div class="admin-tools">
-
-        <button
-            class="admin-tool-btn"
-            onclick="openAdminDirectoryEditor()"
-        >
-            Edit Directory
-        </button>
-
-        <button
-            class="admin-tool-btn secondary"
-            onclick="refreshAdminUsers()"
-        >
-            Refresh
-        </button>
-
-    </div>
-
-    <div
-        style="
-            padding:10px 15px;
-            background:var(--theme-card);
-            font-size:.85rem;
-            color:#667781;
-            border-bottom:1px solid #eee;
-        "
-    >
-        Select a user to start chatting.
-    </div>
-
-    <div id="admin-users-container"></div>
-
-</div>
-
-<!-- ADMIN EDIT DIRECTORY -->
-<div id="admin-edit-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div style="display:flex;align-items:center;">
-
-            <span
-                class="back-arrow"
-                onclick="openAdmin()"
-            >
-                &#8592;
-            </span>
-
-            <div>Edit Directory</div>
-
-        </div>
-
-        <span onclick="closeAdmin()">
-            Sign Out
-        </span>
-
-    </div>
-
-    <div class="admin-tools">
-
-        <button
-            class="admin-tool-btn"
-            onclick="openAdminUserForm()"
-        >
-            + Add User
-        </button>
-
-        <button
-            class="admin-tool-btn secondary"
-            onclick="refreshAdminDirectoryEditor()"
-        >
-            Refresh
-        </button>
-
-    </div>
-
-    <div id="admin-edit-container"></div>
-
-</div>
-
-<!-- ADMIN USER FORM -->
-<div id="admin-user-form-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div style="display:flex;align-items:center;">
-
-            <span
-                class="back-arrow"
-                onclick="openAdminDirectoryEditor()"
-            >
-                &#8592;
-            </span>
-
-            <div id="admin-form-title">
-                Add User
-            </div>
-
-        </div>
-
-        <span onclick="closeAdmin()">
-            Sign Out
-        </span>
-
-    </div>
-
-    <div class="admin-form-wrap">
-
-        <div class="admin-form-card">
-
-            <h2 id="admin-form-heading">
-                Add User
-            </h2>
-
-            <input
-                type="hidden"
-                id="admin-original-phone"
-            >
-
-            <label for="admin-name">
-                Name
-            </label>
-
-            <input
-                type="text"
-                id="admin-name"
-                placeholder="Full name"
-                autocomplete="off"
-            >
-
-            <label for="admin-phone">
-                Phone
-            </label>
-
-            <input
-                type="tel"
-                id="admin-phone"
-                placeholder="10-digit Phone Number"
-                maxlength="10"
-                inputmode="numeric"
-                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-            >
-
-            <label for="admin-email">
-                Email
-            </label>
-
-            <input
-                type="email"
-                id="admin-email"
-                placeholder="Email address"
-                autocomplete="off"
-            >
-
-            <div
-                class="error-msg"
-                id="admin-form-error"
-            ></div>
-
-            <div class="admin-form-actions">
-
-                <button
-                    class="btn"
-                    onclick="saveAdminUser()"
-                >
-                    Save User
-                </button>
-
-                <button
-                    class="btn-secondary"
-                    onclick="openAdminDirectoryEditor()"
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-<!-- SETTINGS -->
-<div
-    id="settings-overlay"
-    class="settings-overlay"
-    onclick="handleSettingsBackdrop(event)"
->
-
-    <div
-        class="settings-panel"
-        onclick="event.stopPropagation()"
-    >
-
-        <div class="settings-head">
-
-            <h2>Appearance</h2>
-
-            <button
-                class="settings-close"
-                onclick="closeSettings()"
-            >
-                &#10005;
-            </button>
-
-        </div>
-
-        <div class="theme-grid">
-
-            <div
-                class="theme-option"
-                data-theme="emerald"
-                onclick="selectTheme('emerald')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#075e54,#128c7e)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Emerald</div>
-            </div>
-
-            <div
-                class="theme-option"
-                data-theme="midnight"
-                onclick="selectTheme('midnight')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#0b1020,#1d2745)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Midnight</div>
-            </div>
-
-            <div
-                class="theme-option"
-                data-theme="ocean"
-                onclick="selectTheme('ocean')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#0b3d62,#168aad)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Ocean</div>
-            </div>
-
-            <div
-                class="theme-option"
-                data-theme="graphite"
-                onclick="selectTheme('graphite')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#202124,#4b5563)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Graphite</div>
-            </div>
-
-            <div
-                class="theme-option"
-                data-theme="royal"
-                onclick="selectTheme('royal')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#35205f,#7c3aed)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Royal</div>
-            </div>
-
-            <div
-                class="theme-option"
-                data-theme="ivory"
-                onclick="selectTheme('ivory')"
-            >
-                <div
-                    class="theme-preview"
-                    style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
-                >
-                    <div class="preview-bar"></div>
-                    <div class="preview-bubble"></div>
-                </div>
-                <div class="preview-name">Ivory</div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- CHAT -->
-<div id="chat-screen" class="screen">
-
-    <div class="header-bar">
-
-        <div style="display:flex;align-items:center;">
-
-            <span
-                class="back-arrow"
-                onclick="handleChatBack()"
-            >
-                &#8592;
-            </span>
-
-            <div id="chat-room-title">
-                Chat
-            </div>
-
-        </div>
-
-        <span onclick="handleLogout()">
-            Sign Out
-        </span>
-
-    </div>
-
-    <div id="messages-container"></div>
-
-    <div class="email-toolbar">
-
-        <span>
-            📧 Send via Email
-        </span>
-
-        <label class="toggle-switch">
-
-            <input
-                type="checkbox"
-                id="email-toggle"
-            >
-
-            <span class="slider"></span>
-
-        </label>
-
-    </div>
-
-    <div id="input-toolbar">
-
-        <input
-            type="text"
-            id="message-input"
-            placeholder="Type message..."
-            onkeypress="checkEnter(event)"
-        >
-
-        <button
-            id="send-btn"
-            onclick="sendMessage()"
-        >
-            &#9658;
-        </button>
-
-    </div>
-
-</div>
-
-<div
-    id="toast-notification"
-    class="toast"
-></div>
-
 </div>
 
 <script>
+const USERS_API = "/users";
+const MESSAGES_API = "/messages";
 
-const USERS_API="/users";
-const MESSAGES_API="/messages";
-const YADHU_PHONE="7025707720";
+const DIRECTORY_PIN = "257";
+const ADMIN_PIN = "527";
 
-let currentUser=null;
-let activeRecipient=null;
-let currentRoomId=null;
-let pendingPhone=null;
+let currentUser = null;
+let currentChatUser = null;
+let currentRoomId = null;
+let messagesPollTimer = null;
 
-let syncInterval=null;
-let contactsInterval=null;
+let adminPin = "";
+let adminSettingsMode = false;
 
-let knownMessageIds=new Set();
+const VALID_THEMES = [
+  "emerald",
+  "midnight",
+  "ocean",
+  "graphite",
+  "royal",
+  "ivory"
+];
 
-let deferredPrompt=null;
+/* --------------------------------
+   SCREEN NAVIGATION
+-------------------------------- */
 
-let adminPin=null;
-let adminMode=false;
-let adminEditingPhone=null;
+function switchScreen(id){
+  document.querySelectorAll(".screen").forEach(screen=>{
+    screen.classList.remove("active");
+  });
 
+  const target=document.getElementById(id);
 
-/* PWA */
-
-window.addEventListener("beforeinstallprompt",e=>{
-    e.preventDefault();
-    deferredPrompt=e;
-
-    document
-        .querySelectorAll(".btn-install")
-        .forEach(btn=>btn.style.display="flex");
-});
-
-async function installPWA(){
-
-    if(deferredPrompt){
-
-        deferredPrompt.prompt();
-
-        const result=await deferredPrompt.userChoice;
-
-        if(result.outcome==="accepted"){
-
-            document
-                .querySelectorAll(".btn-install")
-                .forEach(btn=>btn.style.display="none");
-
-        }
-
-        deferredPrompt=null;
-
-    }else{
-
-        alert(
-            "Open browser menu and select 'Add to Home Screen' or 'Install App'."
-        );
-
-    }
-
+  if(target){
+    target.classList.add("active");
+  }
 }
 
-
-/* THEMES */
-
-const THEMES={
-
-    emerald:{
-        primary:"#075e54",
-        secondary:"#128c7e",
-        page:"linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e)",
-        soft:"#f0f2f5",
-        card:"#ffffff",
-        text:"#111b21"
-    },
-
-    midnight:{
-        primary:"#263b72",
-        secondary:"#3f5fa8",
-        page:"linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
-        soft:"#151d2b",
-        card:"#101827",
-        text:"#eef3ff"
-    },
-
-    ocean:{
-        primary:"#087ea4",
-        secondary:"#168aad",
-        page:"linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
-        soft:"#edf7fa",
-        card:"#ffffff",
-        text:"#102a43"
-    },
-
-    graphite:{
-        primary:"#374151",
-        secondary:"#4b5563",
-        page:"linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
-        soft:"#20242b",
-        card:"#181b20",
-        text:"#f1f5f9"
-    },
-
-    royal:{
-        primary:"#633bb8",
-        secondary:"#7c3aed",
-        page:"linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
-        soft:"#f3effb",
-        card:"#ffffff",
-        text:"#211534"
-    },
-
-    ivory:{
-        primary:"#80613a",
-        secondary:"#a37b4b",
-        page:"linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
-        soft:"#f6f1e9",
-        card:"#fffdf8",
-        text:"#2f271f"
-    }
-
-};
-
-function applyTheme(name){
-
-    const theme=THEMES[name]||THEMES.emerald;
-
-    const root=document.documentElement;
-
-    root.style.setProperty("--theme-primary",theme.primary);
-    root.style.setProperty("--theme-secondary",theme.secondary);
-    root.style.setProperty("--theme-page",theme.page);
-    root.style.setProperty("--theme-soft",theme.soft);
-    root.style.setProperty("--theme-card",theme.card);
-    root.style.setProperty("--theme-text",theme.text);
-
-    document
-        .querySelectorAll(".theme-option")
-        .forEach(option=>{
-            option.classList.toggle(
-                "selected",
-                option.dataset.theme===name
-            );
-        });
-
+function goToHub(){
+  stopMessagesPolling();
+  switchScreen("hub-screen");
 }
 
-function selectTheme(name){
+function navigateAfterAuth(){
+  updateHubGreeting();
+  switchScreen("hub-screen");
+}
 
-    applyTheme(name);
+function updateHubGreeting(){
+  const el=document.getElementById("hub-greeting");
 
-    localStorage.setItem(
-        "axtres_theme",
-        name
+  if(!el) return;
+
+  if(currentUser && currentUser.name){
+    el.textContent=`Hello, ${currentUser.name}`;
+  }else{
+    el.textContent="Hello";
+  }
+}
+
+/* --------------------------------
+   DEVICE ID
+-------------------------------- */
+
+function getDeviceId(){
+  let id=localStorage.getItem("axtres_device_id");
+
+  if(!id){
+    id=
+      "ax-" +
+      Date.now().toString(36) +
+      "-" +
+      Math.random().toString(36).slice(2,10);
+
+    localStorage.setItem("axtres_device_id",id);
+  }
+
+  return id;
+}
+
+/* --------------------------------
+   TOAST
+-------------------------------- */
+
+let toastTimer=null;
+
+function showToast(message){
+  const toast=document.getElementById("toast");
+
+  if(!toast) return;
+
+  toast.textContent=message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    toast.classList.remove("show");
+  },2500);
+}
+
+/* --------------------------------
+   LOGIN
+-------------------------------- */
+
+async function handleLogin(){
+
+  const input=document.getElementById("login-phone");
+  const error=document.getElementById("login-error");
+
+  const phone=(input.value || "").replace(/\D/g,"");
+
+  error.textContent="";
+
+  if(phone.length!==10){
+    error.textContent="Enter your 10-digit registered phone number.";
+    return;
+  }
+
+  const button=document.querySelector("#login-screen .btn");
+
+  if(button){
+    button.disabled=true;
+    button.textContent="Signing In...";
+  }
+
+  try{
+
+    const res=await fetch(
+      `${USERS_API}?action=login&_t=${Date.now()}`,
+      {
+        method:"POST",
+        cache:"no-store",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          phone
+        })
+      }
     );
 
+    const data=await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Unable to log in.");
+    }
+
+    currentUser=data.user;
+
+    localStorage.setItem(
+      "axtres_user",
+      JSON.stringify(currentUser)
+    );
+
+    updateHubGreeting();
+    switchScreen("hub-screen");
+
+  }catch(errorObject){
+
+    error.textContent=errorObject.message || "Unable to log in.";
+
+  }finally{
+
+    if(button){
+      button.disabled=false;
+      button.textContent="Log In to Chats";
+    }
+  }
 }
+
+/* --------------------------------
+   DIRECTORY
+-------------------------------- */
+
+function openDirectory(){
+
+  const overlay=document.getElementById("directory-pin-overlay");
+  const input=document.getElementById("directory-pin-input");
+  const error=document.getElementById("directory-pin-error");
+
+  error.textContent="";
+  input.value="";
+
+  overlay.classList.add("active");
+
+  setTimeout(()=>{
+    input.focus();
+  },50);
+}
+
+function closeDirectoryPin(){
+  document
+    .getElementById("directory-pin-overlay")
+    .classList.remove("active");
+}
+
+function handleDirectoryPinInput(){
+
+  const input=document.getElementById("directory-pin-input");
+  const error=document.getElementById("directory-pin-error");
+
+  input.value=input.value.replace(/\D/g,"");
+
+  if(input.value.length<3){
+    error.textContent="";
+    return;
+  }
+
+  if(input.value===DIRECTORY_PIN){
+
+    closeDirectoryPin();
+    switchScreen("directory-screen");
+    loadDirectory();
+
+  }else{
+
+    error.textContent="Wrong PIN";
+
+    setTimeout(()=>{
+      input.value="";
+      error.textContent="";
+    },700);
+  }
+}
+
+async function loadDirectory(){
+
+  const list=document.getElementById("directory-list");
+
+  list.innerHTML=`
+    <div class="empty-state">
+      <div class="empty-icon">👥</div>
+      <strong>Loading directory...</strong>
+    </div>
+  `;
+
+  if(!currentUser) return;
+
+  try{
+
+    const res=await fetch(
+      `${USERS_API}?phone=${encodeURIComponent(currentUser.phone)}&_t=${Date.now()}`,
+      {
+        cache:"no-store"
+      }
+    );
+
+    const users=await res.json();
+
+    if(!res.ok){
+      throw new Error(users.error || "Unable to load directory.");
+    }
+
+    if(!Array.isArray(users) || users.length===0){
+
+      list.innerHTML=`
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <strong>No other users</strong>
+          <p>No registered contacts are available yet.</p>
+        </div>
+      `;
+
+      return;
+    }
+
+    list.innerHTML="";
+
+    users.forEach(user=>{
+
+      const card=document.createElement("div");
+      card.className="directory-card";
+
+      const initial=(user.name || "?")
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+      card.innerHTML=`
+        <div class="directory-avatar">${escapeHtml(initial)}</div>
+
+        <div class="directory-info">
+          <div class="directory-name">
+            ${escapeHtml(user.name || "Unknown")}
+          </div>
+
+          <div class="directory-phone">
+            ${escapeHtml(formatIndianPhone(user.phone))}
+          </div>
+
+          ${
+            user.has_email
+            ? `<div class="directory-email">Verified email</div>`
+            : ""
+          }
+        </div>
+      `;
+
+      card.onclick=()=>{
+        openChatWithUser(user);
+      };
+
+      list.appendChild(card);
+    });
+
+  }catch(error){
+
+    list.innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <strong>Unable to load directory</strong>
+        <p>${escapeHtml(error.message || "Please try again.")}</p>
+      </div>
+    `;
+  }
+}
+
+/* --------------------------------
+   YADHU CHAT
+-------------------------------- */
+
+function openYadhuChat(){
+
+  openChatWithUser({
+    name:"Yadhu Krishna",
+    phone:"7025707720",
+    email:"yadhukrishnabp777@gmail.com"
+  });
+}
+
+/* --------------------------------
+   CHAT
+-------------------------------- */
+
+function createRoomId(phone1,phone2){
+
+  const phones=[
+    String(phone1),
+    String(phone2)
+  ].sort();
+
+  return `room_${phones[0]}_${phones[1]}`;
+}
+
+function openChatWithUser(user){
+
+  if(!currentUser || !user){
+    return;
+  }
+
+  currentChatUser=user;
+  currentRoomId=createRoomId(
+    currentUser.phone,
+    user.phone
+  );
+
+  document.getElementById("chat-header-name").textContent=
+    user.name || "Chat";
+
+  document.getElementById("chat-header-phone").textContent=
+    formatIndianPhone(user.phone);
+
+  switchScreen("chat-screen");
+
+  loadMessages();
+  startMessagesPolling();
+
+  setTimeout(()=>{
+    document.getElementById("chat-input")?.focus();
+  },150);
+}
+
+function closeChat(){
+
+  stopMessagesPolling();
+
+  currentChatUser=null;
+  currentRoomId=null;
+
+  switchScreen("hub-screen");
+}
+
+function startMessagesPolling(){
+
+  stopMessagesPolling();
+
+  messagesPollTimer=setInterval(()=>{
+    loadMessages(true);
+  },600);
+}
+
+function stopMessagesPolling(){
+
+  if(messagesPollTimer){
+    clearInterval(messagesPollTimer);
+    messagesPollTimer=null;
+  }
+}
+
+async function loadMessages(silent=false){
+
+  if(!currentRoomId) return;
+
+  try{
+
+    const res=await fetch(
+      `${MESSAGES_API}?room_id=${encodeURIComponent(currentRoomId)}&_t=${Date.now()}`,
+      {
+        cache:"no-store"
+      }
+    );
+
+    const messages=await res.json();
+
+    if(!res.ok){
+      throw new Error(messages.error || "Unable to load messages.");
+    }
+
+    renderMessages(
+      Array.isArray(messages) ? messages : []
+    );
+
+  }catch(error){
+
+    if(!silent){
+      showToast(error.message || "Unable to load messages.");
+    }
+  }
+}
+
+function renderMessages(messages){
+
+  const container=document.getElementById("chat-messages");
+
+  if(!messages.length){
+
+    container.innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">💬</div>
+        <strong>No messages yet</strong>
+        <p>Start the conversation.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const wasNearBottom=
+    container.scrollHeight -
+    container.scrollTop -
+    container.clientHeight <
+    100;
+
+  container.innerHTML="";
+
+  messages.forEach(message=>{
+
+    const mine=
+      String(message.sender_phone) ===
+      String(currentUser.phone);
+
+    const row=document.createElement("div");
+
+    row.className=
+      "message-row " +
+      (mine ? "mine" : "theirs");
+
+    const bubble=document.createElement("div");
+    bubble.className="message-bubble";
+
+    const text=document.createElement("div");
+    text.className="message-text";
+    text.textContent=message.message || "";
+
+    const meta=document.createElement("div");
+    meta.className="message-meta";
+
+    const date=new Date(message.created_at);
+
+    meta.textContent=
+      isNaN(date.getTime())
+      ? ""
+      : date.toLocaleTimeString([],{
+          hour:"2-digit",
+          minute:"2-digit"
+        });
+
+    bubble.appendChild(text);
+    bubble.appendChild(meta);
+
+    row.appendChild(bubble);
+    container.appendChild(row);
+  });
+
+  if(wasNearBottom){
+    container.scrollTop=container.scrollHeight;
+  }
+}
+
+async function sendMessage(){
+
+  await sendChatMessage(false);
+}
+
+async function sendEmergencyMessage(){
+
+  await sendChatMessage(true);
+}
+
+async function sendChatMessage(sendViaEmail){
+
+  const input=document.getElementById("chat-input");
+
+  const message=(input.value || "").trim();
+
+  if(!message){
+    return;
+  }
+
+  if(!currentUser || !currentChatUser || !currentRoomId){
+    return;
+  }
+
+  input.value="";
+  autoResizeChatInput(input);
+
+  try{
+
+    const res=await fetch(
+      MESSAGES_API,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          room_id:currentRoomId,
+          sender_id:currentUser.phone,
+          sender_name:currentUser.name,
+          recipient_phone:currentChatUser.phone,
+          message,
+          send_via_email:sendViaEmail,
+          created_at:new Date().toISOString()
+        })
+      }
+    );
+
+    const data=await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Unable to send message.");
+    }
+
+    await loadMessages();
+
+    if(sendViaEmail){
+      showToast("Message sent with email alert.");
+    }
+
+  }catch(error){
+
+    input.value=message;
+    autoResizeChatInput(input);
+
+    showToast(
+      error.message || "Unable to send message."
+    );
+  }
+}
+
+function handleChatKeydown(event){
+
+  if(event.key==="Enter" && !event.shiftKey){
+
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResizeChatInput(element){
+
+  element.style.height="auto";
+
+  element.style.height=
+    Math.min(element.scrollHeight,120) + "px";
+}
+
+/* --------------------------------
+   SETTINGS
+-------------------------------- */
 
 function openSettings(){
 
-    document
-        .getElementById("settings-overlay")
-        .classList.add("open");
+  adminSettingsMode=false;
 
+  document.getElementById("settings-title").innerText=
+    "Appearance";
+
+  document.getElementById("admin-settings-actions").style.display=
+    "none";
+
+  switchScreen("settings-screen");
+
+  updateThemeOptionStates();
 }
 
 function closeSettings(){
 
-    document
-        .getElementById("settings-overlay")
-        .classList.remove("open");
+  adminSettingsMode=false;
 
+  document.getElementById("settings-title").innerText=
+    "Appearance";
+
+  document.getElementById("admin-settings-actions").style.display=
+    "none";
+
+  switchScreen(
+    adminPin
+      ? "admin-screen"
+      : "hub-screen"
+  );
 }
 
-function handleSettingsBackdrop(e){
+function selectTheme(theme){
 
-    if(e.target.id==="settings-overlay"){
-        closeSettings();
+  if(!VALID_THEMES.includes(theme)){
+    return;
+  }
+
+  applyTheme(theme);
+
+  showToast(
+    adminSettingsMode
+      ? `Selected ${theme} theme.`
+      : `Theme changed to ${theme}.`
+  );
+}
+
+function applyTheme(theme){
+
+  const themes={
+
+    emerald:{
+      primary:"#075e54",
+      primary2:"#128c7e",
+      accent:"#25d366",
+      bg:"#eef4f3",
+      card:"#ffffff",
+      text:"#17231f",
+      muted:"#71807b",
+      border:"#dce7e4",
+      soft:"#e8f4f1"
+    },
+
+    midnight:{
+      primary:"#111827",
+      primary2:"#374151",
+      accent:"#60a5fa",
+      bg:"#eef1f5",
+      card:"#ffffff",
+      text:"#151922",
+      muted:"#6b7280",
+      border:"#dce1e8",
+      soft:"#edf1f7"
+    },
+
+    ocean:{
+      primary:"#075985",
+      primary2:"#0ea5e9",
+      accent:"#38bdf8",
+      bg:"#eef7fb",
+      card:"#ffffff",
+      text:"#14232d",
+      muted:"#6c7f89",
+      border:"#d8e8ef",
+      soft:"#e7f4fa"
+    },
+
+    graphite:{
+      primary:"#262626",
+      primary2:"#525252",
+      accent:"#a3a3a3",
+      bg:"#f1f1f1",
+      card:"#ffffff",
+      text:"#202020",
+      muted:"#737373",
+      border:"#dedede",
+      soft:"#eeeeee"
+    },
+
+    royal:{
+      primary:"#312e81",
+      primary2:"#7c3aed",
+      accent:"#a78bfa",
+      bg:"#f3f1fb",
+      card:"#ffffff",
+      text:"#211d35",
+      muted:"#77728b",
+      border:"#dfdcf0",
+      soft:"#eeeafb"
+    },
+
+    ivory:{
+      primary:"#765c36",
+      primary2:"#a9824c",
+      accent:"#c29b62",
+      bg:"#f7f1e6",
+      card:"#fffdf8",
+      text:"#30291f",
+      muted:"#847866",
+      border:"#e6dccb",
+      soft:"#f4ecdd"
     }
 
+  };
+
+  const t=themes[theme] || themes.emerald;
+
+  document.documentElement.style.setProperty(
+    "--theme-primary",t.primary
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-primary-2",t.primary2
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-accent",t.accent
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-bg",t.bg
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-card",t.card
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-text",t.text
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-muted",t.muted
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-border",t.border
+  );
+
+  document.documentElement.style.setProperty(
+    "--theme-soft",t.soft
+  );
+
+  localStorage.setItem("axtres_theme",theme);
+
+  updateThemeOptionStates();
 }
 
+function updateThemeOptionStates(){
 
-/* STARTUP */
+  const current=
+    localStorage.getItem("axtres_theme") ||
+    "emerald";
 
-window.addEventListener("load",()=>{
+  document.querySelectorAll(".theme-option").forEach(option=>{
 
-    const savedTheme=
-        localStorage.getItem("axtres_theme")
-        ||"emerald";
-
-    applyTheme(savedTheme);
-
-    setTimeout(()=>{
-
-        const saved=
-            localStorage.getItem("axtres_user");
-
-        if(saved){
-
-            try{
-                currentUser=JSON.parse(saved);
-            }catch{
-                currentUser=null;
-            }
-
-        }
-
-        if(
-            currentUser &&
-            currentUser.phone &&
-            currentUser.name
-        ){
-
-            navigateAfterAuth();
-
-        }else{
-
-            switchScreen("login-screen");
-
-        }
-
-    },800);
-
-});
-
-
-function navigateAfterAuth(){
-
-    if(
-        String(currentUser.phone).trim()
-        ===YADHU_PHONE
-    ){
-
-        openContactsScreen();
-
-    }else{
-
-        openHubScreen();
-
-    }
-
+    option.classList.toggle(
+      "active",
+      option.dataset.theme===current
+    );
+  });
 }
 
+async function loadDefaultTheme(){
 
-function openHubScreen(){
+  try{
 
-    switchScreen("hub-screen");
-
-    document
-        .getElementById("hub-welcome-text")
-        .innerText=
-        `Welcome, ${currentUser.name}!`;
-
-    document
-        .getElementById("hub-user-name")
-        .innerText=
-        "Yadhu Krishna";
-
-    document
-        .getElementById("hub-user-phone")
-        .innerText=
-        "7025707720";
-
-    document
-        .getElementById("hub-user-email")
-        .innerText=
-        "yadhukrishnabp777@gmail.com";
-
-}
-
-
-function chatWithYadhu(){
-
-    startChatWith({
-        name:"Yadhu Krishna",
-        phone:YADHU_PHONE,
-        has_email:1
-    });
-
-}
-
-
-/* SCREEN */
-
-function switchScreen(id){
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(s=>s.classList.remove("active"));
-
-    const screen=document.getElementById(id);
-
-    if(screen){
-        screen.classList.add("active");
-    }
-
-}
-
-
-/* DIRECTORY PIN */
-
-function openDirectoryWithPin(){
-
-    const input=
-        document.getElementById(
-            "directory-pin-input"
-        );
-
-    const error=
-        document.getElementById(
-            "directory-pin-error"
-        );
-
-    input.value="";
-    error.innerText="";
-
-    switchScreen(
-        "directory-pin-screen"
+    const res=await fetch(
+      `${USERS_API}?action=theme&_t=${Date.now()}`,
+      {
+        cache:"no-store"
+      }
     );
 
-    setTimeout(
-        ()=>input.focus(),
-        50
+    const data=await res.json();
+
+    const saved=
+      localStorage.getItem("axtres_theme");
+
+    applyTheme(
+      saved ||
+      data.theme ||
+      "emerald"
     );
 
-}
-
-function closeDirectoryPin(){
-
-    switchScreen("hub-screen");
-
-}
-
-function handleDirectoryBackdrop(e){
-
-    if(
-        e.target.id==="directory-pin-screen"
-    ){
-
-        closeDirectoryPin();
-
-    }
-
-}
-
-function handleDirectoryPinInput(e){
-
-    const input=e.target;
-
-    const error=
-        document.getElementById(
-            "directory-pin-error"
-        );
-
-    input.value=
-        input.value
-            .replace(/[^0-9]/g,"")
-            .slice(0,3);
-
-    error.innerText="";
-
-    if(input.value.length===3){
-
-        if(input.value==="257"){
-
-            closeDirectoryPin();
-            openContactsScreen();
-
-        }else{
-
-            error.innerText="Wrong PIN";
-            input.value="";
-
-            setTimeout(
-                ()=>input.focus(),
-                50
-            );
-
-        }
-
-    }
-
-}
-
-function returnFromDirectory(){
-
-    if(contactsInterval){
-        clearInterval(contactsInterval);
-    }
-
-    contactsInterval=null;
-
-    const input=
-        document.getElementById(
-            "directory-pin-input"
-        );
-
-    const error=
-        document.getElementById(
-            "directory-pin-error"
-        );
-
-    if(input){
-        input.value="";
-    }
-
-    if(error){
-        error.innerText="";
-    }
-
-    openHubScreen();
-
-}
-
-
-/* CHAT BACK */
-
-function handleChatBack(){
-
-    if(syncInterval){
-        clearInterval(syncInterval);
-    }
-
-    if(adminMode){
-
-        openAdmin();
-
-    }else if(
-        String(currentUser.phone).trim()
-        ===YADHU_PHONE
-    ){
-
-        openContactsScreen();
-
-    }else{
-
-        openHubScreen();
-
-    }
-
-}
-
-
-/* NOTIFICATIONS */
-
-async function requestNotificationPermission(){
-
-    const status=
-        document.getElementById(
-            "notif-status"
-        );
-
-    if(!("Notification" in window)){
-        return;
-    }
-
-    const permission=
-        await Notification.requestPermission();
-
-    status.innerText=
-        permission==="granted"
-        ?"Status: Notifications Enabled!"
-        :"Status: Denied.";
-
-    status.style.color=
-        permission==="granted"
-        ?"green"
-        :"#d32f2f";
-
-}
-
-
-/* EMAIL INPUT */
-
-function interceptEmailInput(e){
-
-    const input=e.target;
-
-    if(
-        input.value.includes("@") ||
-        input.value.includes(".")
-    ){
-
-        input.value=
-            input.value
-                .replace(/[@.gmailyout-]/gi,"")
-                .trim();
-
-        showToast(
-            "Email extension handled by dropdown."
-        );
-
-    }
-
-}
-
-
-/* REGISTER */
-
-async function handleRegister(){
-
-    const name=
-        document
-            .getElementById("reg-name")
-            .value
-            .trim();
-
-    const phone=
-        document
-            .getElementById("reg-phone")
-            .value
-            .trim();
-
-    const emailUser=
-        document
-            .getElementById("reg-email-user")
-            .value
-            .trim();
-
-    const emailDomain=
-        document
-            .getElementById("reg-email-domain")
-            .value;
-
-    const email=
-        emailUser
-        ?emailUser+emailDomain
-        :"";
-
-    const error=
-        document.getElementById(
-            "reg-error"
-        );
-
-    error.innerText="";
-
-    if(!name||!phone){
-
-        error.innerText=
-            "Name and phone are required.";
-
-        return;
-
-    }
-
-    if(phone.length!==10){
-
-        error.innerText=
-            "Phone number must be 10 digits.";
-
-        return;
-
-    }
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=register&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        name,
-                        phone,
-                        email,
-                        device_id:navigator.userAgent
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||"Registration failed"
-            );
-        }
-
-        pendingPhone=phone;
-
-        if(data.requires_verification){
-
-            switchScreen("verify-screen");
-
-            document
-                .getElementById(
-                    "verify-pin-input"
-                )
-                .value="";
-
-        }else{
-
-            currentUser={
-                name,
-                phone,
-                email
-            };
-
-            localStorage.setItem(
-                "axtres_user",
-                JSON.stringify(currentUser)
-            );
-
-            navigateAfterAuth();
-
-        }
-
-    }catch(err){
-
-        error.innerText=err.message;
-
-    }
-
-}
-
-
-/* VERIFY REGISTER */
-
-async function handleAutoVerifyRegister(e){
-
-    const input=e.target;
-
-    input.value=
-        input.value
-            .replace(/[^0-9]/g,"")
-            .slice(0,3);
-
-    if(input.value.length!==3){
-        return;
-    }
-
-    const error=
-        document.getElementById(
-            "verify-error"
-        );
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=verify-register&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        phone:pendingPhone,
-                        pin:input.value
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Verification failed"
-            );
-        }
-
-        const name=
-            document
-                .getElementById("reg-name")
-                .value
-                .trim();
-
-        const emailUser=
-            document
-                .getElementById("reg-email-user")
-                .value
-                .trim();
-
-        const emailDomain=
-            document
-                .getElementById("reg-email-domain")
-                .value;
-
-        const email=
-            emailUser
-            ?emailUser+emailDomain
-            :"";
-
-        currentUser={
-            name,
-            phone:pendingPhone,
-            email
-        };
-
-        localStorage.setItem(
-            "axtres_user",
-            JSON.stringify(currentUser)
-        );
-
-        setTimeout(
-            navigateAfterAuth,
-            400
-        );
-
-    }catch(err){
-
-        error.innerText=err.message;
-        input.value="";
-
-    }
-
-}
-
-
-/* LOGIN */
-
-async function handleLogin(){
-
-    const phone=
-        document
-            .getElementById("login-phone")
-            .value
-            .trim();
-
-    const error=
-        document.getElementById(
-            "login-error"
-        );
-
-    error.innerText="";
-
-    if(
-        !phone||
-        phone.length!==10
-    ){
-
-        error.innerText=
-            "Enter a valid 10-digit phone number.";
-
-        return;
-
-    }
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=login&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json",
-                        "Cache-Control":
-                            "no-cache,no-store"
-                    },
-                    body:JSON.stringify({
-                        phone
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Login failed"
-            );
-        }
-
-        currentUser=data.user;
-
-        localStorage.setItem(
-            "axtres_user",
-            JSON.stringify(currentUser)
-        );
-
-        navigateAfterAuth();
-
-    }catch(err){
-
-        error.innerText=err.message;
-
-    }
-
-}
-
-
-/* ADD EMAIL */
-
-function openAddEmailModal(){
-
-    switchScreen(
-        "add-email-screen"
+  }catch(error){
+
+    applyTheme(
+      localStorage.getItem("axtres_theme") ||
+      "emerald"
     );
-
+  }
 }
 
-async function handleAddEmailInit(){
-
-    const phone=
-        document
-            .getElementById("ae-phone")
-            .value
-            .trim();
-
-    const emailUser=
-        document
-            .getElementById("ae-email-user")
-            .value
-            .trim();
-
-    const emailDomain=
-        document
-            .getElementById("ae-email-domain")
-            .value;
-
-    const email=
-        emailUser
-        ?emailUser+emailDomain
-        :"";
-
-    const error=
-        document.getElementById(
-            "ae-error"
-        );
-
-    error.innerText="";
-
-    if(
-        !phone||
-        phone.length!==10
-    ){
-
-        error.innerText=
-            "Enter a valid 10-digit phone number.";
-
-        return;
-
-    }
-
-    if(!emailUser){
-
-        error.innerText=
-            "Enter an email address.";
-
-        return;
-
-    }
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        phone,
-                        email
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Unable to update email"
-            );
-        }
-
-        pendingPhone=phone;
-
-        switchScreen(
-            "verify-email-screen"
-        );
-
-        document
-            .getElementById(
-                "ae-pin-input"
-            )
-            .value="";
-
-    }catch(err){
-
-        error.innerText=err.message;
-
-    }
-
-}
-
-
-/* VERIFY EMAIL */
-
-async function handleAutoVerifyEmail(e){
-
-    const input=e.target;
-
-    input.value=
-        input.value
-            .replace(/[^0-9]/g,"")
-            .slice(0,3);
-
-    if(input.value.length!==3){
-        return;
-    }
-
-    const error=
-        document.getElementById(
-            "ae-verify-error"
-        );
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        phone:pendingPhone,
-                        pin:input.value
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Verification failed"
-            );
-        }
-
-        error.style.color="#2e7d32";
-        error.innerText=
-            "Email linked and verified!";
-
-        setTimeout(
-            ()=>switchScreen("login-screen"),
-            700
-        );
-
-    }catch(err){
-
-        error.style.color="#d32f2f";
-        error.innerText=err.message;
-        input.value="";
-
-    }
-
-}
-
-
-/* DIRECTORY */
-
-async function openContactsScreen(){
-
-    switchScreen(
-        "contacts-screen"
-    );
-
-    document
-        .getElementById("my-name-display")
-        .innerText=
-        currentUser.name;
-
-    startContactsPolling();
-
-}
-
-function startContactsPolling(){
-
-    if(contactsInterval){
-        clearInterval(contactsInterval);
-    }
-
-    fetchContacts();
-
-    contactsInterval=
-        setInterval(
-            fetchContacts,
-            1000
-        );
-
-}
-
-async function fetchContacts(){
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?phone=${encodeURIComponent(currentUser.phone)}&_t=${Date.now()}`,
-                {
-                    cache:"no-store",
-                    headers:{
-                        "Cache-Control":
-                            "no-cache,no-store"
-                    }
-                }
-            );
-
-        const contacts=await res.json();
-
-        const container=
-            document.getElementById(
-                "contacts-container"
-            );
-
-        container.innerHTML="";
-
-        if(
-            !Array.isArray(contacts)||
-            contacts.length===0
-        ){
-
-            container.innerHTML=
-                `
-                <div
-                    style="
-                        text-align:center;
-                        padding:20px;
-                        color:#667781;
-                        font-size:.9rem;
-                    "
-                >
-                    No other contacts found yet.
-                </div>
-                `;
-
-            return;
-
-        }
-
-        contacts.forEach(c=>{
-
-            const item=
-                document.createElement("div");
-
-            item.className="contact-item";
-
-            const badge=
-                c.has_email===1
-                ?'<span class="status-pill active">Email Verified 🟢</span>'
-                :'<span class="status-pill inactive">No Email ⚪</span>';
-
-            item.innerHTML=
-                `
-                <div>
-                    <div class="contact-name">
-                        ${escapeHtml(c.name)}
-                    </div>
-
-                    <div class="contact-phone">
-                        ${escapeHtml(c.phone)}
-                    </div>
-
-                    ${badge}
-                </div>
-
-                <span
-                    style="
-                        color:#075e54;
-                        font-weight:600;
-                        font-size:.9rem;
-                    "
-                >
-                    Chat &rarr;
-                </span>
-                `;
-
-            item.onclick=
-                ()=>startChatWith(c);
-
-            container.appendChild(item);
-
-        });
-
-    }catch(e){
-
-        /* silent polling failure */
-
-    }
-
-}
-
-
-/* CHAT */
-
-function startChatWith(recipient){
-
-    activeRecipient=recipient;
-
-    if(contactsInterval){
-        clearInterval(contactsInterval);
-    }
-
-    const sortedPhones=[
-        currentUser.phone,
-        recipient.phone
-    ].sort();
-
-    currentRoomId=
-        `room_${sortedPhones[0]}_${sortedPhones[1]}`;
-
-    document
-        .getElementById("chat-room-title")
-        .innerText=
-        recipient.name;
-
-    switchScreen(
-        "chat-screen"
-    );
-
-    document
-        .getElementById("email-toggle")
-        .checked=false;
-
-    document
-        .getElementById("messages-container")
-        .innerHTML="";
-
-    knownMessageIds.clear();
-
-    startChatPolling();
-
-}
-
-function startChatPolling(){
-
-    if(syncInterval){
-        clearInterval(syncInterval);
-    }
-
-    pollChatMessages(true);
-
-    syncInterval=
-        setInterval(
-            ()=>pollChatMessages(false),
-            600
-        );
-
-}
-
-async function pollChatMessages(isInitial){
-
-    if(!currentRoomId){
-        return;
-    }
-
-    try{
-
-        const res=
-            await fetch(
-                `${MESSAGES_API}?room_id=${encodeURIComponent(currentRoomId)}&_t=${Date.now()}`,
-                {
-                    cache:"no-store",
-                    headers:{
-                        "Cache-Control":
-                            "no-cache,no-store"
-                    }
-                }
-            );
-
-        const history=await res.json();
-
-        if(!Array.isArray(history)){
-            return;
-        }
-
-        const container=
-            document.getElementById(
-                "messages-container"
-            );
-
-        if(isInitial){
-            container.innerHTML="";
-            knownMessageIds.clear();
-        }
-
-        let shouldScroll=false;
-
-        history.forEach(msg=>{
-
-            const sender=
-                msg.sender_phone||
-                msg.senderPhone||
-                msg.sender_id||
-                "";
-
-            const text=
-                msg.message||"";
-
-            const createdAt=
-                msg.created_at||"";
-
-            const emergency=
-                msg.is_emergency||0;
-
-            const id=
-                msg.id
-                ?String(msg.id)
-                :`${sender}_${createdAt}_${text}`;
-
-            if(knownMessageIds.has(id)){
-                return;
-            }
-
-            knownMessageIds.add(id);
-            shouldScroll=true;
-
-            let time="";
-
-            if(createdAt){
-
-                const date=
-                    new Date(createdAt);
-
-                if(!isNaN(date.getTime())){
-
-                    time=
-                        date.toLocaleTimeString(
-                            [],
-                            {
-                                hour:"2-digit",
-                                minute:"2-digit"
-                            }
-                        );
-
-                }
-
-            }
-
-            const isMe=
-                String(sender).trim()
-                ===
-                String(currentUser.phone).trim();
-
-            const el=
-                document.createElement("div");
-
-            el.className=
-                "msg "+
-                (isMe?"me":"them");
-
-            if(
-                emergency===1||
-                emergency===true
-            ){
-
-                el.classList.add(
-                    "email-alert"
-                );
-
-            }
-
-            const badge=
-                emergency===1||
-                emergency===true
-                ?'<span class="email-badge">📧 SENT VIA EMAIL</span><br>'
-                :"";
-
-            el.innerHTML=
-                `${badge}${escapeHtml(text)}<span class="msg-time">${time}</span>`;
-
-            container.appendChild(el);
-
-        });
-
-        if(
-            shouldScroll||
-            isInitial
-        ){
-
-            container.scrollTop=
-                container.scrollHeight;
-
-        }
-
-    }catch(e){
-
-        /* silent polling failure */
-
-    }
-
-}
-
-
-/* SEND */
-
-async function sendMessage(){
-
-    const input=
-        document.getElementById(
-            "message-input"
-        );
-
-    const text=
-        input.value.trim();
-
-    const sendViaEmail=
-        document
-            .getElementById("email-toggle")
-            .checked
-            ?1
-            :0;
-
-    if(
-        !text||
-        !currentRoomId
-    ){
-        return;
-    }
-
-    input.value="";
-    input.focus();
-
-    try{
-
-        await fetch(
-            `${MESSAGES_API}?_t=${Date.now()}`,
-            {
-                method:"POST",
-                cache:"no-store",
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
-                body:JSON.stringify({
-
-                    room_id:
-                        currentRoomId,
-
-                    sender_id:
-                        currentUser.phone,
-
-                    sender_name:
-                        currentUser.name,
-
-                    recipient_phone:
-                        activeRecipient.phone,
-
-                    message:
-                        text,
-
-                    send_via_email:
-                        sendViaEmail,
-
-                    created_at:
-                        new Date().toISOString()
-
-                })
-            }
-        );
-
-        pollChatMessages(false);
-
-    }catch(e){
-
-        /* silent */
-
-    }
-
-}
-
-function checkEnter(e){
-
-    if(e.key==="Enter"){
-        sendMessage();
-    }
-
-}
-
-
-/* LOGOUT */
-
-function handleLogout(){
-
-    localStorage.removeItem(
-        "axtres_user"
-    );
-
-    currentUser=null;
-    adminPin=null;
-    adminMode=false;
-
-    if(syncInterval){
-        clearInterval(syncInterval);
-    }
-
-    if(contactsInterval){
-        clearInterval(contactsInterval);
-    }
-
-    switchScreen(
-        "login-screen"
-    );
-
-}
-
-
-/* ADMIN PIN */
-
-function openAdminWithPin(){
-
-    const input=
-        document.getElementById(
-            "admin-pin-input"
-        );
-
-    const error=
-        document.getElementById(
-            "admin-pin-error"
-        );
-
-    input.value="";
-    error.innerText="";
-
-    switchScreen(
-        "admin-pin-screen"
-    );
-
-    setTimeout(
-        ()=>input.focus(),
-        50
-    );
-
-}
-
-function handleAdminBackdrop(e){
-
-    if(
-        e.target.id==="admin-pin-screen"
-    ){
-
-        switchScreen(
-            "login-screen"
-        );
-
-    }
-
-}
-
-async function handleAdminPinInput(e){
-
-    const input=e.target;
-
-    const error=
-        document.getElementById(
-            "admin-pin-error"
-        );
-
-    input.value=
-        input.value
-            .replace(/[^0-9]/g,"")
-            .slice(0,3);
-
-    error.innerText="";
-
-    if(input.value.length!==3){
-        return;
-    }
-
-    try{
-
-        const res=
-            await fetch(
-                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        pin:input.value
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||"Wrong PIN"
-            );
-        }
-
-        adminPin=input.value;
-        adminMode=true;
-
-        currentUser={
-            name:"Yadhu Krishna",
-            phone:YADHU_PHONE,
-            email:"yadhukrishnabp777@gmail.com"
-        };
-
-        renderAdminUsers(
-            data.users||[]
-        );
-
-        switchScreen(
-            "admin-screen"
-        );
-
-    }catch(err){
-
-        error.innerText=
-            err.message||"Wrong PIN";
-
-        input.value="";
-
-        setTimeout(
-            ()=>input.focus(),
-            50
-        );
-
-    }
-
-}
-
-
-/* ADMIN */
-
-function closeAdmin(){
-
-    adminPin=null;
-    adminMode=false;
-    adminEditingPhone=null;
-
-    if(syncInterval){
-        clearInterval(syncInterval);
-    }
-
-    switchScreen(
-        "login-screen"
-    );
-
-}
+/* --------------------------------
+   ADMIN
+-------------------------------- */
 
 function openAdmin(){
 
-    switchScreen(
-        "admin-screen"
-    );
+  const overlay=document.getElementById("admin-pin-overlay");
+  const input=document.getElementById("admin-pin-input");
+  const error=document.getElementById("admin-pin-error");
+
+  error.textContent="";
+  input.value="";
+
+  overlay.classList.add("active");
+
+  setTimeout(()=>{
+    input.focus();
+  },50);
+}
+
+function closeAdminPin(){
+
+  document
+    .getElementById("admin-pin-overlay")
+    .classList.remove("active");
+}
+
+function handleAdminPinInput(){
+
+  const input=document.getElementById("admin-pin-input");
+  const error=document.getElementById("admin-pin-error");
+
+  input.value=input.value.replace(/\D/g,"");
+
+  if(input.value.length<3){
+    error.textContent="";
+    return;
+  }
+
+  if(input.value===ADMIN_PIN){
+
+    adminPin=ADMIN_PIN;
+
+    closeAdminPin();
+
+    switchScreen("admin-screen");
 
     refreshAdminUsers();
 
+  }else{
+
+    error.textContent="Wrong PIN";
+
+    setTimeout(()=>{
+      input.value="";
+      error.textContent="";
+    },700);
+  }
 }
 
 async function refreshAdminUsers(){
 
-    if(!adminPin){
-        return;
+  if(!adminPin){
+    openAdmin();
+    return;
+  }
+
+  const list=document.getElementById("admin-users-list");
+
+  list.innerHTML=`
+    <div class="empty-state">
+      <div class="empty-icon">⏳</div>
+      <strong>Refreshing...</strong>
+    </div>
+  `;
+
+  try{
+
+    const res=await fetch(
+      `${USERS_API}?action=admin-list&_t=${Date.now()}`,
+      {
+        method:"POST",
+        cache:"no-store",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          pin:adminPin
+        })
+      }
+    );
+
+    const data=await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Unable to load admin users.");
     }
 
-    try{
+    renderAdminUsers(data.users || []);
 
-        const res=
-            await fetch(
-                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        pin:adminPin
-                    })
-                }
-            );
+  }catch(error){
 
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Unable to load users"
-            );
-        }
-
-        renderAdminUsers(
-            data.users||[]
-        );
-
-    }catch(err){
-
-        document
-            .getElementById(
-                "admin-users-container"
-            )
-            .innerHTML=
-            `
-            <div class="admin-empty">
-                ${escapeHtml(err.message)}
-            </div>
-            `;
-
-    }
-
+    list.innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">⚠</div>
+        <strong>Unable to load users</strong>
+        <p>${escapeHtml(error.message || "Please try again.")}</p>
+      </div>
+    `;
+  }
 }
-
-
-/*
-    IMPORTANT:
-    No Chat/Edit buttons are shown
-    beside users anymore.
-
-    The entire row opens chat.
-*/
 
 function renderAdminUsers(users){
 
-    const container=
-        document.getElementById(
-            "admin-users-container"
-        );
+  const list=document.getElementById("admin-users-list");
 
-    container.innerHTML="";
+  if(!users.length){
 
-    if(!users.length){
+    list.innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        <strong>No users</strong>
+        <p>The directory is currently empty.</p>
+      </div>
+    `;
 
-        container.innerHTML=
-            `
-            <div class="admin-empty">
-                No registered users found.
-            </div>
-            `;
+    return;
+  }
 
-        return;
+  list.innerHTML="";
 
-    }
+  users.forEach(user=>{
 
-    users.forEach(u=>{
+    const row=document.createElement("div");
 
-        const item=
-            document.createElement("div");
+    row.className="admin-user-row";
 
-        item.className=
-            "admin-user-item";
+    const initial=(user.name || "?")
+      .trim()
+      .charAt(0)
+      .toUpperCase();
 
-        item.innerHTML=
-            `
-            <div class="admin-user-main">
+    row.innerHTML=`
+      <div class="directory-avatar">
+        ${escapeHtml(initial)}
+      </div>
 
-                <div class="admin-user-name">
-                    ${escapeHtml(
-                        u.name||"Unnamed"
-                    )}
-                </div>
+      <div class="admin-user-info">
 
-                <div class="admin-user-meta">
-                    ${escapeHtml(
-                        u.phone||""
-                    )}
-                    ·
-                    ${escapeHtml(
-                        u.email||"No email"
-                    )}
-                </div>
+        <div class="admin-user-name">
+          ${escapeHtml(user.name || "Unknown")}
+        </div>
 
-            </div>
+        <div class="admin-user-phone">
+          ${escapeHtml(formatIndianPhone(user.phone))}
+        </div>
 
-            <span
-                style="
-                    color:var(--theme-primary);
-                    font-weight:700;
-                    font-size:.85rem;
-                "
-            >
-                Chat &rarr;
-            </span>
-            `;
+        <div class="admin-user-email">
+          ${escapeHtml(user.email || "No email")}
+        </div>
 
-        item.onclick=
-            ()=>adminChatWithUser(u);
+      </div>
 
-        container.appendChild(item);
+      <div class="admin-status">
+        ${Number(user.email_verified)===1 ? "Verified" : "Unverified"}
+      </div>
+    `;
 
-    });
-
-}
-
-
-function adminChatWithUser(user){
-
-    if(
-        String(user.phone).trim()
-        ===YADHU_PHONE
-    ){
-
-        showToast(
-            "That is the admin account."
-        );
-
-        return;
-
-    }
-
-    currentUser={
-        name:"Yadhu Krishna",
-        phone:YADHU_PHONE,
-        email:"yadhukrishnabp777@gmail.com"
+    row.onclick=()=>{
+      openAdminChat(user);
     };
 
-    adminMode=true;
-
-    startChatWith(user);
-
+    list.appendChild(row);
+  });
 }
 
+function openAdminChat(user){
 
-/* EDIT DIRECTORY */
+  if(!user){
+    return;
+  }
 
-async function openAdminDirectoryEditor(){
-
-    switchScreen(
-        "admin-edit-screen"
-    );
-
-    await refreshAdminDirectoryEditor();
-
+  openChatWithUser({
+    name:user.name,
+    phone:user.phone,
+    email:user.email
+  });
 }
 
-async function refreshAdminDirectoryEditor(){
+function openAdminDirectoryEditor(){
 
-    if(!adminPin){
-        return;
-    }
+  if(!adminPin){
+    openAdmin();
+    return;
+  }
 
-    try{
+  switchScreen("admin-editor-screen");
 
-        const res=
-            await fetch(
-                `${USERS_API}?action=admin-list&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        pin:adminPin
-                    })
-                }
-            );
-
-        const data=await res.json();
-
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Unable to load users"
-            );
-        }
-
-        const container=
-            document.getElementById(
-                "admin-edit-container"
-            );
-
-        container.innerHTML="";
-
-        (data.users||[]).forEach(u=>{
-
-            const item=
-                document.createElement("div");
-
-            item.className=
-                "admin-user-item";
-
-            item.style.cursor="default";
-
-            item.innerHTML=
-                `
-                <div class="admin-user-main">
-
-                    <div class="admin-user-name">
-                        ${escapeHtml(
-                            u.name||"Unnamed"
-                        )}
-                    </div>
-
-                    <div class="admin-user-meta">
-                        ${escapeHtml(
-                            u.phone||""
-                        )}
-                        ·
-                        ${escapeHtml(
-                            u.email||"No email"
-                        )}
-                    </div>
-
-                </div>
-
-                <button
-                    class="admin-small-btn edit"
-                    type="button"
-                >
-                    Edit
-                </button>
-                `;
-
-            item
-                .querySelector("button")
-                .onclick=
-                ()=>openAdminUserForm(u);
-
-            container.appendChild(item);
-
-        });
-
-        if(
-            !data.users||
-            !data.users.length
-        ){
-
-            container.innerHTML=
-                `
-                <div class="admin-empty">
-                    No registered users found.
-                </div>
-                `;
-
-        }
-
-    }catch(err){
-
-        document
-            .getElementById(
-                "admin-edit-container"
-            )
-            .innerHTML=
-            `
-            <div class="admin-empty">
-                ${escapeHtml(err.message)}
-            </div>
-            `;
-
-    }
-
+  startNewAdminUser();
 }
 
+function startNewAdminUser(){
 
-/* ADMIN USER FORM */
+  document.getElementById("admin-original-phone").value="";
+  document.getElementById("admin-name").value="";
+  document.getElementById("admin-phone").value="";
+  document.getElementById("admin-email").value="";
+}
 
-function openAdminUserForm(user=null){
+function editAdminUser(user){
 
-    adminEditingPhone=
-        user
-        ?String(user.phone)
-        :null;
+  document.getElementById("admin-original-phone").value=
+    user.phone || "";
 
-    document
-        .getElementById(
-            "admin-form-title"
-        )
-        .innerText=
-        user
-        ?"Edit User"
-        :"Add User";
+  document.getElementById("admin-name").value=
+    user.name || "";
 
-    document
-        .getElementById(
-            "admin-form-heading"
-        )
-        .innerText=
-        user
-        ?"Edit User"
-        :"Add User";
+  document.getElementById("admin-phone").value=
+    user.phone || "";
 
-    document
-        .getElementById(
-            "admin-original-phone"
-        )
-        .value=
-        user
-        ?String(user.phone)
-        :"";
+  document.getElementById("admin-email").value=
+    user.email || "";
 
-    document
-        .getElementById(
-            "admin-name"
-        )
-        .value=
-        user
-        ?user.name||""
-        :"";
+  switchScreen("admin-editor-screen");
+}
 
-    document
-        .getElementById(
-            "admin-phone"
-        )
-        .value=
-        user
-        ?user.phone||""
-        :"";
+function closeAdminEditor(){
 
-    document
-        .getElementById(
-            "admin-email"
-        )
-        .value=
-        user
-        ?user.email||""
-        :"";
-
-    document
-        .getElementById(
-            "admin-form-error"
-        )
-        .innerText="";
-
-    switchScreen(
-        "admin-user-form-screen"
-    );
-
+  switchScreen("admin-screen");
 }
 
 async function saveAdminUser(){
 
-    if(!adminPin){
-        return;
+  if(!adminPin){
+    showToast("Admin access required.");
+    return;
+  }
+
+  const originalPhone=
+    document.getElementById("admin-original-phone").value.trim();
+
+  const name=
+    document.getElementById("admin-name").value.trim();
+
+  const phone=
+    document.getElementById("admin-phone").value.trim();
+
+  const email=
+    document.getElementById("admin-email").value.trim();
+
+  if(!name){
+    showToast("Enter the user's name.");
+    return;
+  }
+
+  if(!/^\d{10}$/.test(phone)){
+    showToast("Enter a valid 10-digit phone number.");
+    return;
+  }
+
+  try{
+
+    const res=await fetch(
+      `${USERS_API}?action=admin-save`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          pin:adminPin,
+          original_phone:originalPhone,
+          name,
+          phone,
+          email
+        })
+      }
+    );
+
+    const data=await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Unable to save user.");
     }
 
-    const originalPhone=
-        document
-            .getElementById(
-                "admin-original-phone"
-            )
-            .value
-            .trim();
+    showToast(
+      data.updated
+        ? "User updated successfully."
+        : "User added successfully."
+    );
 
-    const name=
-        document
-            .getElementById(
-                "admin-name"
-            )
-            .value
-            .trim();
+    switchScreen("admin-screen");
 
-    const phone=
-        document
-            .getElementById(
-                "admin-phone"
-            )
-            .value
-            .trim();
+    refreshAdminUsers();
 
-    const email=
-        document
-            .getElementById(
-                "admin-email"
-            )
-            .value
-            .trim();
+  }catch(error){
 
-    const error=
-        document.getElementById(
-            "admin-form-error"
-        );
+    showToast(
+      error.message ||
+      "Unable to save user."
+    );
+  }
+}
 
-    error.innerText="";
+/* --------------------------------
+   ADMIN SETTINGS
+-------------------------------- */
 
-    if(
-        !name||
-        phone.length!==10
-    ){
+function openAdminSettings(){
 
-        error.innerText=
-            "Name and valid 10-digit phone are required.";
+  if(!adminPin){
+    showToast("Admin access required.");
+    return;
+  }
 
-        return;
+  adminSettingsMode=true;
 
+  document.getElementById("settings-title").innerText=
+    "Admin Appearance";
+
+  document.getElementById("admin-settings-actions").style.display=
+    "flex";
+
+  switchScreen("settings-screen");
+
+  updateThemeOptionStates();
+}
+
+async function setCurrentThemeAsDefault(){
+
+  if(!adminPin){
+    showToast("Admin access required.");
+    return;
+  }
+
+  const theme=
+    localStorage.getItem("axtres_theme") ||
+    "emerald";
+
+  try{
+
+    const res=await fetch(
+      `${USERS_API}?action=admin-theme&_t=${Date.now()}`,
+      {
+        method:"POST",
+        cache:"no-store",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          pin:adminPin,
+          theme
+        })
+      }
+    );
+
+    const data=await res.json();
+
+    if(!res.ok){
+      throw new Error(
+        data.error ||
+        "Unable to save default theme"
+      );
     }
+
+    showToast(
+      `Default theme set to ${theme}.`
+    );
+
+  }catch(error){
+
+    showToast(
+      error.message ||
+      "Unable to save default theme."
+    );
+  }
+}
+
+function closeAdmin(){
+
+  adminPin="";
+  adminSettingsMode=false;
+
+  stopMessagesPolling();
+
+  switchScreen("hub-screen");
+}
+
+/* --------------------------------
+   CLICK OUTSIDE PIN MODALS
+-------------------------------- */
+
+document
+  .getElementById("directory-pin-overlay")
+  .addEventListener("click",function(event){
+
+    if(event.target===this){
+      closeDirectoryPin();
+    }
+  });
+
+document
+  .getElementById("admin-pin-overlay")
+  .addEventListener("click",function(event){
+
+    if(event.target===this){
+      closeAdminPin();
+    }
+  });
+
+/* --------------------------------
+   HELPERS
+-------------------------------- */
+
+function formatIndianPhone(phone){
+
+  const digits=String(phone || "")
+    .replace(/\D/g,"");
+
+  if(digits.length===10){
+
+    return `+91 ${digits.slice(0,5)} ${digits.slice(5)}`;
+  }
+
+  if(digits.length===12 && digits.startsWith("91")){
+
+    const local=digits.slice(2);
+
+    return `+91 ${local.slice(0,5)} ${local.slice(5)}`;
+  }
+
+  return String(phone || "");
+}
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+/* --------------------------------
+   ADMIN ACCESS
+-------------------------------- */
+
+/*
+  Hidden admin access:
+  Triple click the axtres header.
+*/
+let adminClickCount=0;
+let adminClickTimer=null;
+
+document
+  .querySelector("#hub-screen .app-header")
+  .addEventListener("click",function(){
+
+    adminClickCount++;
+
+    clearTimeout(adminClickTimer);
+
+    adminClickTimer=setTimeout(()=>{
+      adminClickCount=0;
+    },900);
+
+    if(adminClickCount>=3){
+
+      adminClickCount=0;
+      openAdmin();
+    }
+  });
+
+/* --------------------------------
+   STARTUP
+-------------------------------- */
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+  getDeviceId();
+
+  const savedUser=
+    localStorage.getItem("axtres_user");
+
+  if(savedUser){
 
     try{
 
-        const res=
-            await fetch(
-                `${USERS_API}?action=admin-save&_t=${Date.now()}`,
-                {
-                    method:"POST",
-                    cache:"no-store",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
+      currentUser=JSON.parse(savedUser);
 
-                        pin:adminPin,
+    }catch(error){
 
-                        original_phone:
-                            originalPhone,
+      currentUser=null;
 
-                        name,
+      localStorage.removeItem(
+        "axtres_user"
+      );
+    }
+  }
 
-                        phone,
+  switchScreen("welcome-screen");
 
-                        email
+  loadDefaultTheme();
 
-                    })
-                }
-            );
+  /*
+    Keep loading page visible for exactly 1.7 seconds.
+  */
+  setTimeout(()=>{
 
-        const data=await res.json();
+    if(
+      currentUser &&
+      currentUser.phone &&
+      currentUser.name
+    ){
 
-        if(!res.ok){
-            throw new Error(
-                data.error||
-                "Unable to save user"
-            );
-        }
+      navigateAfterAuth();
 
-        showToast(
-            originalPhone
-            ?"User updated."
-            :"User added."
-        );
+    }else{
 
-        await openAdminDirectoryEditor();
-
-    }catch(err){
-
-        error.innerText=
-            err.message;
-
+      switchScreen("login-screen");
     }
 
-}
-
-
-/* TOAST */
-
-function showToast(message){
-
-    const toast=
-        document.getElementById(
-            "toast-notification"
-        );
-
-    toast.innerText=message;
-    toast.style.display="block";
-
-    setTimeout(
-        ()=>toast.style.display="none",
-        2500
-    );
-
-}
-
-
-/* ESCAPE */
-
-function escapeHtml(text){
-
-    const value=
-        String(text??"");
-
-    const map={
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#039;"
-    };
-
-    return value.replace(
-        /[&<>"']/g,
-        m=>map[m]
-    );
-
-}
-
+  },1700);
+});
 </script>
 
 </body>
