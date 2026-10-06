@@ -1,8 +1,10 @@
 // functions/users.js
-// Axtres user auth, email verification and Resend integration
+// axtres User Auth, Directory & Admin Management
+
+const ADMIN_PIN = "527";
 
 const NO_CACHE_HEADERS = {
-  "Content-Type": "application/json; charset=utf-8",
+  "Content-Type": "application/json",
   "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
   "Pragma": "no-cache",
   "Expires": "0",
@@ -21,43 +23,32 @@ function json(data, status = 200) {
   );
 }
 
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+function validPhone(phone) {
+  return /^\d{10}$/.test(
+    String(phone || "").trim()
+  );
 }
+
+function validAdminPin(pin) {
+  return String(pin || "") === ADMIN_PIN;
+}
+
+
+/* RESEND */
 
 async function sendResendEmail(
   apiKey,
   recipientEmail,
   subject,
-  bodyHtml,
-  fromAddress
+  bodyHtml
 ) {
 
-  if (!apiKey) {
-
-    throw new Error(
-      "RESEND_API_KEY is not configured in Cloudflare."
-    );
+  if (!apiKey || !recipientEmail) {
+    return;
   }
 
-  if (!recipientEmail) {
+  try {
 
-    throw new Error(
-      "Recipient email is missing."
-    );
-  }
-
-  const from =
-    fromAddress ||
-    "axtres Messenger <onboarding@resend.dev>";
-
-  const response =
     await fetch(
       "https://api.resend.com/emails",
       {
@@ -66,60 +57,43 @@ async function sendResendEmail(
         headers: {
           "Authorization":
             `Bearer ${apiKey}`,
-
           "Content-Type":
             "application/json"
         },
 
-        body:
-          JSON.stringify({
-            from,
-            to: [
-              recipientEmail
-            ],
-            subject,
-            html: bodyHtml
-          })
+        body: JSON.stringify({
+
+          from:
+            "axtres Messenger <onboarding@resend.dev>",
+
+          to: [
+            recipientEmail
+          ],
+
+          subject,
+
+          html:
+            bodyHtml
+
+        })
       }
     );
 
-  const responseText =
-    await response.text();
-
-  let data = {};
-
-  try {
-
-    data =
-      responseText
-        ? JSON.parse(
-            responseText
-          )
-        : {};
-
-  } catch (_) {}
-
-  if (!response.ok) {
+  } catch (err) {
 
     console.error(
-      "Resend API error:",
-      response.status,
-      responseText
+      "Resend send error:",
+      err
     );
 
-    throw new Error(
-      data?.message ||
-      data?.error ||
-      `Resend rejected the email (${response.status}).`
-    );
   }
 
-  return data;
 }
 
-export async function onRequest(
-  context
-) {
+
+/* MAIN */
+
+export async function onRequest(context) {
 
   const {
     request,
@@ -129,6 +103,9 @@ export async function onRequest(
   const url =
     new URL(request.url);
 
+
+  /* CORS */
+
   if (
     request.method ===
     "OPTIONS"
@@ -137,30 +114,20 @@ export async function onRequest(
     return new Response(
       null,
       {
-        status: 204,
         headers:
           NO_CACHE_HEADERS
       }
     );
+
   }
+
 
   try {
 
-    if (!env.DB) {
+    /* =========================
+       GET DIRECTORY
+       ========================= */
 
-      return json(
-        {
-          error:
-            "Cloudflare D1 binding DB is missing."
-        },
-        500
-      );
-    }
-
-    /*
-     * GET
-     * Contacts
-     */
     if (
       request.method ===
       "GET"
@@ -180,24 +147,36 @@ export async function onRequest(
           },
           400
         );
+
       }
+
+      /*
+        Only verified email addresses
+        show as Email Verified in the
+        normal Directory.
+      */
 
       const {
         results
       } =
         await env.DB.prepare(
-          `SELECT
-             name,
-             phone,
-             CASE
-               WHEN email IS NOT NULL
-               AND email != ''
-               AND email_verified = 1
-               THEN 1
-               ELSE 0
-             END AS has_email
-           FROM users
-           WHERE phone != ?`
+          `
+          SELECT
+            name,
+            phone,
+            CASE
+              WHEN email IS NOT NULL
+                AND email != ''
+                AND email_verified = 1
+              THEN 1
+              ELSE 0
+            END AS has_email
+          FROM users
+          WHERE phone != ?
+          ORDER BY
+            name COLLATE NOCASE ASC,
+            phone ASC
+          `
         )
         .bind(myPhone)
         .all();
@@ -205,475 +184,844 @@ export async function onRequest(
       return json(
         results || []
       );
+
     }
 
-    /*
-     * POST
-     */
+
     if (
-      request.method ===
+      request.method !==
       "POST"
     ) {
-
-      const action =
-        url.searchParams.get(
-          "action"
-        );
-
-      let body;
-
-      try {
-
-        body =
-          await request.json();
-
-      } catch (_) {
-
-        return json(
-          {
-            error:
-              "Invalid JSON request body."
-          },
-          400
-        );
-      }
-
-      /*
-       * REGISTER
-       */
-      if (
-        action ===
-        "register"
-      ) {
-
-        const {
-          name,
-          phone,
-          email,
-          device_id
-        } = body;
-
-        if (
-          !name ||
-          !phone ||
-          String(phone).length !== 10
-        ) {
-
-          return json(
-            {
-              error:
-                "Valid name and 10-digit phone required"
-            },
-            400
-          );
-        }
-
-        const cleanPhone =
-          String(phone).trim();
-
-        const cleanEmail =
-          String(email || "").trim();
-
-        const requiresVerification =
-          cleanEmail.length > 0
-            ? 1
-            : 0;
-
-        const pin =
-          requiresVerification
-            ? Math.floor(
-                100 +
-                Math.random() *
-                900
-              ).toString()
-            : null;
-
-        await env.DB.prepare(
-          `INSERT INTO users
-            (
-              phone,
-              name,
-              email,
-              email_verified,
-              device_id,
-              pin
-            )
-           VALUES (?, ?, ?, ?, ?, ?)
-
-           ON CONFLICT(phone)
-           DO UPDATE SET
-             name=?,
-             email=?,
-             email_verified=?,
-             device_id=?,
-             pin=?`
-        )
-        .bind(
-          cleanPhone,
-          name.trim(),
-          cleanEmail,
-          requiresVerification
-            ? 0
-            : 1,
-          device_id || "",
-          pin,
-
-          name.trim(),
-          cleanEmail,
-          requiresVerification
-            ? 0
-            : 1,
-          device_id || "",
-          pin
-        )
-        .run();
-
-        if (
-          requiresVerification
-        ) {
-
-          try {
-
-            await sendResendEmail(
-              env.RESEND_API_KEY,
-              cleanEmail,
-              "Your axtres Verification Code",
-
-              `<p>
-                Hello
-                <strong>
-                  ${escapeHtml(name)}
-                </strong>,
-              </p>
-
-              <p>
-                Your verification code for
-                axtres messenger is:
-              </p>
-
-              <p>
-                <strong style="font-size:1.4rem;">
-                  ${escapeHtml(pin)}
-                </strong>
-              </p>`,
-
-              env.RESEND_FROM_EMAIL
-            );
-
-          } catch (
-            emailError
-          ) {
-
-            console.error(
-              "Registration verification email failed:",
-              emailError
-            );
-
-            return json(
-              {
-                error:
-                  `Account saved, but verification email failed: ${emailError.message}`
-              },
-              502
-            );
-          }
-        }
-
-        return json(
-          {
-            success: true,
-            requires_verification:
-              !!requiresVerification
-          }
-        );
-      }
-
-      /*
-       * VERIFY REGISTER
-       */
-      if (
-        action ===
-        "verify-register"
-      ) {
-
-        const {
-          phone,
-          pin
-        } = body;
-
-        const user =
-          await env.DB.prepare(
-            "SELECT * FROM users WHERE phone = ?"
-          )
-          .bind(phone)
-          .first();
-
-        if (
-          !user ||
-          String(user.pin) !==
-            String(pin)
-        ) {
-
-          return json(
-            {
-              error:
-                "Invalid verification PIN"
-            },
-            400
-          );
-        }
-
-        await env.DB.prepare(
-          `UPDATE users
-           SET
-             email_verified = 1,
-             pin = NULL
-           WHERE phone = ?`
-        )
-        .bind(phone)
-        .run();
-
-        return json({
-          success: true
-        });
-      }
-
-      /*
-       * LOGIN
-       */
-      if (
-        action ===
-        "login"
-      ) {
-
-        const {
-          phone
-        } = body;
-
-        const user =
-          await env.DB.prepare(
-            `SELECT
-               phone,
-               name,
-               email
-             FROM users
-             WHERE phone = ?`
-          )
-          .bind(phone)
-          .first();
-
-        if (!user) {
-
-          return json(
-            {
-              error:
-                "User not found. Please register first."
-            },
-            404
-          );
-        }
-
-        return json({
-          success: true,
-          user
-        });
-      }
-
-      /*
-       * UPDATE EMAIL
-       */
-      if (
-        action ===
-        "update-email-init"
-      ) {
-
-        const {
-          phone,
-          email
-        } = body;
-
-        const cleanEmail =
-          String(email || "").trim();
-
-        if (
-          !phone ||
-          !cleanEmail
-        ) {
-
-          return json(
-            {
-              error:
-                "Phone and email are required."
-            },
-            400
-          );
-        }
-
-        const pin =
-          Math.floor(
-            100 +
-            Math.random() *
-            900
-          ).toString();
-
-        const user =
-          await env.DB.prepare(
-            "SELECT * FROM users WHERE phone = ?"
-          )
-          .bind(phone)
-          .first();
-
-        if (!user) {
-
-          return json(
-            {
-              error:
-                "Phone number not registered"
-            },
-            404
-          );
-        }
-
-        await env.DB.prepare(
-          `UPDATE users
-           SET
-             email = ?,
-             email_verified = 0,
-             pin = ?
-           WHERE phone = ?`
-        )
-        .bind(
-          cleanEmail,
-          pin,
-          phone
-        )
-        .run();
-
-        try {
-
-          await sendResendEmail(
-            env.RESEND_API_KEY,
-            cleanEmail,
-            "Verify New Email - axtres",
-
-            `<p>
-              Your email update verification
-              code for axtres is:
-            </p>
-
-            <p>
-              <strong style="font-size:1.4rem;">
-                ${escapeHtml(pin)}
-              </strong>
-            </p>`,
-
-            env.RESEND_FROM_EMAIL
-          );
-
-        } catch (
-          emailError
-        ) {
-
-          console.error(
-            "Email update verification failed:",
-            emailError
-          );
-
-          return json(
-            {
-              error:
-                `Email was saved, but verification email failed: ${emailError.message}`
-            },
-            502
-          );
-        }
-
-        return json({
-          success: true
-        });
-      }
-
-      /*
-       * VERIFY EMAIL UPDATE
-       */
-      if (
-        action ===
-        "verify-email-update"
-      ) {
-
-        const {
-          phone,
-          pin
-        } = body;
-
-        const user =
-          await env.DB.prepare(
-            "SELECT * FROM users WHERE phone = ?"
-          )
-          .bind(phone)
-          .first();
-
-        if (
-          !user ||
-          String(user.pin) !==
-            String(pin)
-        ) {
-
-          return json(
-            {
-              error:
-                "Invalid PIN"
-            },
-            400
-          );
-        }
-
-        await env.DB.prepare(
-          `UPDATE users
-           SET
-             email_verified = 1,
-             pin = NULL
-           WHERE phone = ?`
-        )
-        .bind(phone)
-        .run();
-
-        return json({
-          success: true
-        });
-      }
 
       return json(
         {
           error:
-            "Invalid action"
+            "Method not allowed"
         },
-        400
+        405
       );
+
     }
+
+
+    const action =
+      url.searchParams.get(
+        "action"
+      );
+
+    const body =
+      await request.json();
+
+
+    /* =========================
+       ADMIN LIST
+       ========================= */
+
+    if (
+      action ===
+      "admin-list"
+    ) {
+
+      if (
+        !validAdminPin(
+          body.pin
+        )
+      ) {
+
+        return json(
+          {
+            error:
+              "Wrong PIN"
+          },
+          401
+        );
+
+      }
+
+      const {
+        results
+      } =
+        await env.DB.prepare(
+          `
+          SELECT
+            phone,
+            name,
+            email,
+            email_verified
+          FROM users
+          ORDER BY
+            name COLLATE NOCASE ASC,
+            phone ASC
+          `
+        )
+        .all();
+
+      return json(
+        {
+          success:
+            true,
+
+          users:
+            results || []
+        }
+      );
+
+    }
+
+
+    /* =========================
+       ADMIN SAVE
+       =========================
+
+       Add:
+         original_phone = ""
+
+       Edit:
+         original_phone = old phone
+
+       Admin changes are immediately
+       verified and do not require
+       email verification.
+    */
+
+    if (
+      action ===
+      "admin-save"
+    ) {
+
+      if (
+        !validAdminPin(
+          body.pin
+        )
+      ) {
+
+        return json(
+          {
+            error:
+              "Wrong PIN"
+          },
+          401
+        );
+
+      }
+
+      const originalPhone =
+        String(
+          body.original_phone ||
+          ""
+        ).trim();
+
+      const name =
+        String(
+          body.name ||
+          ""
+        ).trim();
+
+      const phone =
+        String(
+          body.phone ||
+          ""
+        ).trim();
+
+      const email =
+        String(
+          body.email ||
+          ""
+        ).trim();
+
+
+      if (
+        !name ||
+        !validPhone(phone)
+      ) {
+
+        return json(
+          {
+            error:
+              "Name and valid 10-digit phone are required"
+          },
+          400
+        );
+
+      }
+
+
+      /* EDIT EXISTING USER */
+
+      if (originalPhone) {
+
+        const existingTarget =
+          await env.DB.prepare(
+            `
+            SELECT phone
+            FROM users
+            WHERE phone = ?
+            `
+          )
+          .bind(phone)
+          .first();
+
+
+        if (
+          phone !== originalPhone &&
+          existingTarget
+        ) {
+
+          return json(
+            {
+              error:
+                "That phone number is already registered"
+            },
+            409
+          );
+
+        }
+
+
+        const existingSource =
+          await env.DB.prepare(
+            `
+            SELECT phone
+            FROM users
+            WHERE phone = ?
+            `
+          )
+          .bind(originalPhone)
+          .first();
+
+
+        if (!existingSource) {
+
+          return json(
+            {
+              error:
+                "Original user not found"
+            },
+            404
+          );
+
+        }
+
+
+        await env.DB.prepare(
+          `
+          UPDATE users
+          SET
+            phone = ?,
+            name = ?,
+            email = ?,
+            email_verified = 1,
+            pin = NULL
+          WHERE phone = ?
+          `
+        )
+        .bind(
+          phone,
+          name,
+          email,
+          originalPhone
+        )
+        .run();
+
+
+        return json(
+          {
+            success:
+              true,
+
+            updated:
+              true,
+
+            user: {
+              phone,
+              name,
+              email,
+              email_verified:
+                1
+            }
+          }
+        );
+
+      }
+
+
+      /* ADD NEW USER */
+
+      const existing =
+        await env.DB.prepare(
+          `
+          SELECT phone
+          FROM users
+          WHERE phone = ?
+          `
+        )
+        .bind(phone)
+        .first();
+
+
+      if (existing) {
+
+        return json(
+          {
+            error:
+              "That phone number is already registered"
+          },
+          409
+        );
+
+      }
+
+
+      await env.DB.prepare(
+        `
+        INSERT INTO users
+          (
+            phone,
+            name,
+            email,
+            email_verified,
+            device_id,
+            pin
+          )
+        VALUES
+          (
+            ?,
+            ?,
+            ?,
+            1,
+            '',
+            NULL
+          )
+        `
+      )
+      .bind(
+        phone,
+        name,
+        email
+      )
+      .run();
+
+
+      return json(
+        {
+          success:
+            true,
+
+          created:
+            true,
+
+          user: {
+            phone,
+            name,
+            email,
+            email_verified:
+              1
+          }
+        }
+      );
+
+    }
+
+
+    /* =========================
+       REGISTER
+       ========================= */
+
+    if (
+      action ===
+      "register"
+    ) {
+
+      const {
+        name,
+        phone,
+        email,
+        device_id
+      } = body;
+
+
+      if (
+        !name ||
+        !validPhone(phone)
+      ) {
+
+        return json(
+          {
+            error:
+              "Valid name and 10-digit phone required"
+          },
+          400
+        );
+
+      }
+
+
+      const requires_verification =
+        email &&
+        email.length > 0
+          ? 1
+          : 0;
+
+
+      const pin =
+        requires_verification
+          ? Math.floor(
+              100 +
+              Math.random() * 900
+            ).toString()
+          : null;
+
+
+      await env.DB.prepare(
+        `
+        INSERT INTO users
+          (
+            phone,
+            name,
+            email,
+            email_verified,
+            device_id,
+            pin
+          )
+        VALUES
+          (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+          )
+
+        ON CONFLICT(phone)
+        DO UPDATE SET
+          name = ?,
+          email = ?,
+          email_verified = ?,
+          device_id = ?,
+          pin = ?
+        `
+      )
+      .bind(
+
+        phone,
+
+        name,
+
+        email || "",
+
+        requires_verification
+          ? 0
+          : 1,
+
+        device_id || "",
+
+        pin,
+
+        name,
+
+        email || "",
+
+        requires_verification
+          ? 0
+          : 1,
+
+        device_id || "",
+
+        pin
+
+      )
+      .run();
+
+
+      if (
+        requires_verification &&
+        email &&
+        env.RESEND_API_KEY
+      ) {
+
+        await sendResendEmail(
+
+          env.RESEND_API_KEY,
+
+          email,
+
+          "Your axtres Verification Code",
+
+          `
+          <p>
+            Hello
+            <strong>
+              ${name}
+            </strong>,
+          </p>
+
+          <p>
+            Your verification code
+            for axtres messenger is:
+          </p>
+
+          <p>
+            <strong
+              style="
+                font-size:1.4rem;
+              "
+            >
+              ${pin}
+            </strong>
+          </p>
+          `
+
+        );
+
+      }
+
+
+      return json(
+        {
+          success:
+            true,
+
+          requires_verification:
+            !!requires_verification,
+
+          pin_sent:
+            pin
+        }
+      );
+
+    }
+
+
+    /* =========================
+       VERIFY REGISTER
+       ========================= */
+
+    if (
+      action ===
+      "verify-register"
+    ) {
+
+      const {
+        phone,
+        pin
+      } = body;
+
+
+      const user =
+        await env.DB.prepare(
+          `
+          SELECT *
+          FROM users
+          WHERE phone = ?
+          `
+        )
+        .bind(phone)
+        .first();
+
+
+      if (
+        !user ||
+        String(user.pin)
+          !==
+        String(pin)
+      ) {
+
+        return json(
+          {
+            error:
+              "Invalid verification PIN"
+          },
+          400
+        );
+
+      }
+
+
+      await env.DB.prepare(
+        `
+        UPDATE users
+        SET
+          email_verified = 1,
+          pin = NULL
+        WHERE phone = ?
+        `
+      )
+      .bind(phone)
+      .run();
+
+
+      return json(
+        {
+          success:
+            true
+        }
+      );
+
+    }
+
+
+    /* =========================
+       LOGIN
+       ========================= */
+
+    if (
+      action ===
+      "login"
+    ) {
+
+      const {
+        phone
+      } = body;
+
+
+      const user =
+        await env.DB.prepare(
+          `
+          SELECT
+            phone,
+            name,
+            email
+          FROM users
+          WHERE phone = ?
+          `
+        )
+        .bind(phone)
+        .first();
+
+
+      if (!user) {
+
+        return json(
+          {
+            error:
+              "User not found. Please register first."
+          },
+          404
+        );
+
+      }
+
+
+      return json(
+        {
+          success:
+            true,
+
+          user
+        }
+      );
+
+    }
+
+
+    /* =========================
+       UPDATE EMAIL INIT
+       ========================= */
+
+    if (
+      action ===
+      "update-email-init"
+    ) {
+
+      const {
+        phone,
+        email
+      } = body;
+
+
+      const pin =
+        Math.floor(
+          100 +
+          Math.random() * 900
+        ).toString();
+
+
+      const user =
+        await env.DB.prepare(
+          `
+          SELECT *
+          FROM users
+          WHERE phone = ?
+          `
+        )
+        .bind(phone)
+        .first();
+
+
+      if (!user) {
+
+        return json(
+          {
+            error:
+              "Phone number not registered"
+          },
+          404
+        );
+
+      }
+
+
+      await env.DB.prepare(
+        `
+        UPDATE users
+        SET
+          email = ?,
+          email_verified = 0,
+          pin = ?
+        WHERE phone = ?
+        `
+      )
+      .bind(
+        email,
+        pin,
+        phone
+      )
+      .run();
+
+
+      if (
+        email &&
+        env.RESEND_API_KEY
+      ) {
+
+        await sendResendEmail(
+
+          env.RESEND_API_KEY,
+
+          email,
+
+          "Verify New Email - axtres",
+
+          `
+          <p>
+            Your email update
+            verification code for
+            axtres is:
+          </p>
+
+          <p>
+            <strong
+              style="
+                font-size:1.4rem;
+              "
+            >
+              ${pin}
+            </strong>
+          </p>
+          `
+
+        );
+
+      }
+
+
+      return json(
+        {
+          success:
+            true,
+
+          pin_sent:
+            pin
+        }
+      );
+
+    }
+
+
+    /* =========================
+       VERIFY EMAIL UPDATE
+       ========================= */
+
+    if (
+      action ===
+      "verify-email-update"
+    ) {
+
+      const {
+        phone,
+        pin
+      } = body;
+
+
+      const user =
+        await env.DB.prepare(
+          `
+          SELECT *
+          FROM users
+          WHERE phone = ?
+          `
+        )
+        .bind(phone)
+        .first();
+
+
+      if (
+        !user ||
+        String(user.pin)
+          !==
+        String(pin)
+      ) {
+
+        return json(
+          {
+            error:
+              "Invalid PIN"
+          },
+          400
+        );
+
+      }
+
+
+      await env.DB.prepare(
+        `
+        UPDATE users
+        SET
+          email_verified = 1,
+          pin = NULL
+        WHERE phone = ?
+        `
+      )
+      .bind(phone)
+      .run();
+
+
+      return json(
+        {
+          success:
+            true
+        }
+      );
+
+    }
+
 
     return json(
       {
         error:
-          "Method not allowed"
+          "Invalid action"
       },
-      405
+      400
     );
+
 
   } catch (err) {
 
     console.error(
-      "Axtres users function error:",
+      "users.js error:",
       err
     );
 
     return json(
       {
         error:
-          err?.message ||
-          "Internal server error"
+          err.message ||
+          "Server error"
       },
       500
     );
+
   }
+
 }
