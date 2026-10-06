@@ -54,10 +54,24 @@
         
         .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
 
-        .login-entry { display:flex; flex-direction:column; gap:5px; margin-top:2px; }
-        .login-entry input { margin:0; border-radius:13px; }
-        .login-entry .btn { margin:0; border-radius:13px; }
+        .login-entry { display:flex; flex-direction:column; gap:6px; margin-top:2px; }
+        .login-combo { display:flex; width:100%; align-items:stretch; border-radius:13px; overflow:hidden; box-shadow:0 6px 16px rgba(7,94,84,.10); }
+        .login-combo input { flex:1; min-width:0; margin:0; border-radius:13px 0 0 13px; border-right:0; background:#fff; padding:12px 13px; }
+        .login-combo input:focus { border-right:0; box-shadow:0 0 0 3px rgba(7,94,84,.10); position:relative; z-index:1; }
+        .login-combo .btn { width:auto; min-width:132px; margin:0; border-radius:0 13px 13px 0; padding:12px 14px; box-shadow:none; white-space:nowrap; }
+        .login-entry .error-msg { min-height:17px; margin:0; }
         .login-panel-note { color:#667781; font-size:.76rem; margin-bottom:2px; }
+        .login-action-stack { display:flex; flex-direction:column; gap:8px; margin-top:2px; }
+        .login-instruction-btn { background:linear-gradient(135deg,#eef6f5,#e5efee); color:#075e54; border:1px solid rgba(7,94,84,.14); box-shadow:0 5px 14px rgba(7,94,84,.07); }
+        .login-instruction-btn:hover { background:#dfecea; }
+        .login-combo input::placeholder { font-size:.82rem; letter-spacing:0; }
+        @media (max-width:390px) {
+            .login-combo .btn { min-width:118px; padding-left:10px; padding-right:10px; font-size:.88rem; }
+            .login-combo input { padding-left:11px; padding-right:9px; }
+        }
+        .switch-text { text-align:center; font-size:.88rem; color:#666; margin-top:5px; }
+        .switch-text a { color:#075e54; text-decoration:none; font-weight:750; cursor:pointer; font-size:1rem; }
+        .switch-text a:hover { text-decoration:underline; }
 
         .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
         .hub-card { background: linear-gradient(145deg, #ffffff, #f5f8fb); border: 1px solid rgba(7, 94, 84, 0.14); border-radius: 16px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 16px; box-shadow: 0 10px 28px rgba(15, 32, 39, 0.08); }
@@ -75,6 +89,7 @@
         .directory-pin-card { width: 100%; max-width: 300px; background: #ffffff; border-radius: 18px; padding: 24px 22px; box-shadow: 0 18px 50px rgba(0,0,0,0.22); text-align: center; }
         .directory-pin-card h2 { color: #075e54; font-size: 1.25rem; margin-bottom: 18px; }
         .directory-pin-card input { width: 100%; text-align: center; font-size: 1.8rem; letter-spacing: 4px; background: #f8fafb; }
+        .directory-pin-card input::placeholder { font-size: .92rem; letter-spacing: 0; }
         .directory-pin-card .error-msg { min-height: 18px; margin-top: 8px; font-weight: 600; }
 
         :root {
@@ -172,6 +187,13 @@
         .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
         .switch-text a:hover { text-decoration: underline; }
 
+        .instruction-content { justify-content:flex-start; padding-top:24px; gap:10px; }
+        .instruction-card { display:flex; align-items:flex-start; gap:12px; padding:13px 14px; background:linear-gradient(145deg,#fff,#f5f8fb); border:1px solid rgba(7,94,84,.10); border-radius:14px; box-shadow:0 6px 16px rgba(15,32,39,.06); }
+        .instruction-number { width:30px; height:30px; min-width:30px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--theme-primary); color:#fff; font-size:.78rem; font-weight:800; }
+        .instruction-card strong { display:block; color:var(--theme-text); font-size:.88rem; margin-bottom:3px; }
+        .instruction-card span { display:block; color:#667781; font-size:.75rem; line-height:1.42; }
+        .instruction-card b { color:var(--theme-primary); }
+
         #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
         .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
         .contact-item:hover { background: #f5f6f6; }
@@ -211,6 +233,7 @@
         .admin-pin-card { width:100%; max-width:320px; background:#fff; border-radius:18px; padding:24px 22px; box-shadow:0 18px 50px rgba(0,0,0,.22); text-align:center; }
         .admin-pin-card h2 { color:#075e54; font-size:1.25rem; margin-bottom:18px; }
         .admin-pin-card input { width:100%; text-align:center; font-size:1.8rem; letter-spacing:4px; background:#f8fafb; }
+        .admin-pin-card input::placeholder { font-size:.92rem; letter-spacing:0; }
         .admin-tools { display:flex; gap:10px; padding:14px 15px; background:var(--theme-card); border-bottom:1px solid #e5e7eb; flex-wrap:wrap; }
         .admin-tool-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; background:var(--theme-primary); color:#fff; }
         .admin-tool-btn.secondary { background:var(--theme-soft); color:var(--theme-text); }
@@ -292,19 +315,69 @@
             <div class="header-bar">Sign In</div>
             <div class="form-content">
                 <h2>Good to See You</h2>
-                <p class="subtitle">Sign in to continue to your conversations</p>
+                <p class="subtitle">Sign in to continue to your conversations...</p>
 
                 <div class="login-entry">
-                    <input type="tel" id="login-phone" placeholder="Enter your registered phone number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <div class="login-combo">
+                        <input type="tel" id="login-phone" placeholder="Enter your registered phone number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                    </div>
                     <div class="error-msg" id="login-error"></div>
-                    <button class="btn" onclick="handleLogin()">Log In to Chats</button>
                 </div>
 
-                <button class="btn-secondary" onclick="openAdminWithPin()" style="margin-top:10px;">Admin</button>
-                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Link Email</button>
+                <div class="login-action-stack">
+                    <button class="btn-secondary" onclick="openAdminWithPin()">Admin</button>
+                    <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Link Email</button>
+                    <button class="btn login-instruction-btn" onclick="switchScreen('instructions-screen')">ℹ Instructions</button>
+                </div>
+
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
                 <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
+            </div>
+        </div>
+
+        <!-- 3.4 INSTRUCTIONS SCREEN -->
+        <div id="instructions-screen" class="screen">
+            <div class="header-bar">
+                <div style="display:flex;align-items:center;">
+                    <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
+                    <div>How to Use axtres</div>
+                </div>
+            </div>
+            <div class="form-content instruction-content">
+                <h2>Quick Instructions</h2>
+                <p class="subtitle">A simple guide to getting started with axtres.</p>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">1</div>
+                    <div><strong>Sign in</strong><span>Enter your registered 10-digit phone number and tap <b>Log In to Chats</b>.</span></div>
+                </div>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">2</div>
+                    <div><strong>New user?</strong><span>Tap <b>Register here</b> and complete the registration and email verification steps.</span></div>
+                </div>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">3</div>
+                    <div><strong>Link your email</strong><span>Use <b>Add / Link Email</b> to connect an email address and verify it with the PIN sent to you.</span></div>
+                </div>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">4</div>
+                    <div><strong>Start chatting</strong><span>Open <b>Chat with Yadhu Krishna</b> or use the Directory to find available users.</span></div>
+                </div>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">5</div>
+                    <div><strong>Email alerts</strong><span>Use the email option in a chat when you want the message to also trigger an email alert.</span></div>
+                </div>
+
+                <div class="instruction-card">
+                    <div class="instruction-number">6</div>
+                    <div><strong>Personalize axtres</strong><span>Open Settings after signing in to choose your preferred theme.</span></div>
+                </div>
             </div>
         </div>
 
