@@ -52,23 +52,38 @@
             animation:closingAura 1.7s ease-out both;
         }
         .closing-message {
-            position:relative;
-            z-index:1;
-            max-width:90%;
-            font-size:1.42rem;
-            line-height:1.42;
-            font-weight:800;
-            letter-spacing:.15px;
-            text-shadow:0 3px 18px rgba(0,0,0,.16);
-            animation:closingText 1.7s cubic-bezier(.16,1,.3,1) both;
-        }
+  position:relative;
+  z-index:1;
+  max-width:92%;
+  font-size:1.52rem;
+  line-height:1.42;
+  font-weight:800;
+  letter-spacing:.15px;
+  text-shadow:0 3px 18px rgba(0,0,0,.14);
+  animation:closingElegantRise 1.7s cubic-bezier(.16,1,.3,1) both;
+}
         @keyframes closingAura {
             0%{opacity:0;transform:scale(.72)}
             55%{opacity:.9;transform:scale(1)}
             100%{opacity:.48;transform:scale(1.08)}
         }
-        @keyframes closingText {
-            0%{opacity:0;transform:translateY(18px) scale(.96);filter:blur(3px)}
+        @keyframes closingElegantRise {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(3px);
+  }
+  62% {
+    opacity: 1;
+    transform: translateY(-1px);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
             62%{opacity:1;transform:translateY(-2px) scale(1.01);filter:blur(0)}
             100%{opacity:1;transform:none}
         }
@@ -150,14 +165,14 @@
         .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
          .hub-card { background: var(--theme-card); color: var(--theme-text); }
         .yadhu-profile-card {
-            animation: profileCardIn 1.9s cubic-bezier(.16,1,.3,1) both;
-            border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
-            position: relative;
-            overflow: hidden;
-            isolation: isolate;
-            background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
-            box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
-        }
+  animation: profileCardPremiumLift 1.65s cubic-bezier(.16,1,.3,1) both;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
+}
         .yadhu-profile-card::before {
             content: "";
             position: absolute;
@@ -178,28 +193,56 @@
             border-radius: 50%;
             background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
             filter: blur(2px);
-            animation: profileCardGlow 2.2s 0.65s cubic-bezier(.16,1,.3,1) both;
+            animation: profileCardShineOnce 2.35s cubic-bezier(.16,1,.3,1) .15s both;
             pointer-events: none;
             z-index: 0;
         }
         .yadhu-profile-card > * { position: relative; z-index: 1; }
         .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
         .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
-        @keyframes profileCardIn {
-            0% { opacity:0; transform:translateY(34px) scale(.955); filter:blur(5px); }
-            42% { opacity:.72; transform:translateY(8px) scale(.985); filter:blur(1.5px); }
-            70% { opacity:1; transform:translateY(-2px) scale(1.006); filter:blur(0); }
-            86% { transform:translateY(1px) scale(.999); }
-            100% { opacity:1; transform:translateY(0) scale(1); }
-        }
-        @keyframes profileCardShine {
-            0% { transform:translateX(-135%) rotate(8deg); opacity:0; }
-            14% { opacity:.9; }
-            58% { opacity:.95; }
-            100% { transform:translateX(135%) rotate(8deg); opacity:0; }
-        }
-        @keyframes profileCardGlow {
-            0% { opacity:0; transform:scale(.45); }
+        @keyframes profileCardPremiumLift {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(.975);
+    filter: blur(2.5px);
+    box-shadow: 0 7px 20px rgba(7,94,84,.04), inset 0 1px 0 rgba(255,255,255,.75);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.004);
+    filter: blur(0);
+    box-shadow: 0 18px 40px rgba(7,94,84,.13), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    box-shadow: 0 16px 38px rgba(7,94,84,.11), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+}
+
+@keyframes profileCardShineOnce {
+  0%, 54% {
+    transform: translateX(-135%) rotate(8deg);
+    opacity: 0;
+  }
+  62% {
+    opacity: .24;
+  }
+  78% {
+    opacity: .12;
+  }
+  100% {
+    transform: translateX(135%) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+@keyframes profileCardGlow {
+  0% { opacity: 0; transform: scale(.88); }
+  60% { opacity: .42; transform: scale(1); }
+  100% { opacity: .2; transform: scale(1.03); }
+}
             52% { opacity:1; transform:scale(1); }
             100% { opacity:.42; transform:scale(1.12); }
         }
