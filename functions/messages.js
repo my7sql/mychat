@@ -1,4 +1,4 @@
-// functions/messages.js - Complete Backend File for Messaging & Anti-Cache Sync
+// functions/messages.js - Cloudflare Pages Function for Messaging & Resend Email Alerts
 
 const NO_CACHE_HEADERS = {
   "Content-Type": "application/json",
@@ -9,6 +9,35 @@ const NO_CACHE_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
+
+async function sendResendNotification(apiKey, recipientEmail, senderName, messageText) {
+  if (!apiKey || !recipientEmail) return;
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "axtres Alert <onboarding@resend.dev>",
+        to: [recipientEmail],
+        subject: `New Message from ${senderName} on axtres`,
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <h3 style="color: #075e54; margin-top: 0;">New Message Alert</h3>
+            <p><strong>${senderName}</strong> sent you a message:</p>
+            <blockquote style="background: #f0f2f5; padding: 10px 15px; border-left: 4px solid #075e54; margin: 10px 0;">
+              ${messageText}
+            </blockquote>
+          </div>
+        `
+      })
+    });
+  } catch (err) {
+    console.error("Failed to send Resend email alert:", err);
+  }
+}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -58,6 +87,19 @@ export async function onRequest(context) {
         isEmergency, 
         timestamp
       ).run();
+
+      // Dispatch Email via Resend if email toggle was enabled
+      if (isEmergency && recipient_phone && env.RESEND_API_KEY) {
+        const recipientUser = await env.DB.prepare("SELECT email FROM users WHERE phone = ?").bind(recipient_phone).first();
+        if (recipientUser && recipientUser.email) {
+          await sendResendNotification(
+            env.RESEND_API_KEY,
+            recipientUser.email,
+            sender_name || sender_id,
+            message
+          );
+        }
+      }
 
       return new Response(JSON.stringify({ success: true, message_id: info.meta.last_row_id }), { status: 201, headers: NO_CACHE_HEADERS });
     }
