@@ -1182,6 +1182,22 @@
         function handlePhoneBack() {
             if (axtresClosing) return;
 
+            // Leaving an active chat with the phone Back button means the user
+            // is finished with the session. Sign out immediately and return to
+            // the Sign In screen instead of stepping back through the Hub.
+            if (currentScreenId === 'chat-screen' && currentUser) {
+                signOutToLogin();
+                return;
+            }
+
+            // The Admin area is treated as a protected session. Pressing the
+            // phone Back button from any Admin screen signs the administrator
+            // out and returns directly to Sign In.
+            if (adminMode && currentScreenId.indexOf('admin-') === 0) {
+                signOutToLogin();
+                return;
+            }
+
             const target = immediateBackTarget || LOGICAL_BACK_TARGETS[currentScreenId] || null;
 
             if (!target || currentScreenId === 'login-screen') {
@@ -1191,6 +1207,42 @@
 
             switchScreen(target, { silent: true });
             immediateBackTarget = LOGICAL_BACK_TARGETS[target] ?? null;
+        }
+
+        function signOutToLogin() {
+            localStorage.removeItem('axtres_user');
+            currentUser = null;
+
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
+            if (contactsInterval) {
+                clearInterval(contactsInterval);
+                contactsInterval = null;
+            }
+
+            activeRecipient = null;
+            currentRoomId = null;
+            knownMessageIds = new Set();
+
+            adminPin = null;
+            adminEditingPhone = null;
+            adminMode = false;
+            adminSettingsMode = false;
+
+            const settingsOverlay = document.getElementById('settings-overlay');
+            if (settingsOverlay) settingsOverlay.classList.remove('active');
+
+            immediateBackTarget = null;
+            switchScreen('login-screen', { silent: true });
+
+            // Reset the login form so the next session starts cleanly.
+            const loginInput = document.getElementById('login-phone');
+            if (loginInput) loginInput.value = '';
+
+            const loginError = document.getElementById('login-error');
+            if (loginError) loginError.innerText = '';
         }
 
         function showClosingScreen() {
@@ -1424,9 +1476,7 @@
         }
 
         function closeAdmin() {
-            adminPin = null; adminEditingPhone = null; adminMode = false;
-            switchScreen('login-screen', { silent: true });
-            immediateBackTarget = null;
+            signOutToLogin();
         }
 
         function openAdmin() {
@@ -1544,11 +1594,7 @@
         }
 
         function handleLogout() {
-            localStorage.removeItem('axtres_user');
-            currentUser = null;
-            if (syncInterval) clearInterval(syncInterval);
-            if (contactsInterval) clearInterval(contactsInterval);
-            switchScreen('login-screen');
+            signOutToLogin();
         }
 
         function formatPhoneDisplay(phone) {
