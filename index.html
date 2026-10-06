@@ -162,18 +162,7 @@
         body { background: var(--theme-page); }
         .header-bar { background: var(--theme-primary); }
         .form-content h2, .hub-welcome { color: var(--theme-primary); }
-        .btn, .btn-hub-primary, #send-btn { background: var(--theme-primary); }
-        .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
-         .hub-card { background: var(--theme-card); color: var(--theme-text); }
-        .yadhu-profile-card {
-            animation: profileCardPremiumLift 1.65s cubic-bezier(.16,1,.3,1) both;
-            border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
-            position: relative;
-            overflow: hidden;
-            isolation: isolate;
-            background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
-            box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
-        }
+        .btn, .btn-hub-primary,
         .yadhu-profile-card::before {
             content: "";
             position: absolute;
@@ -344,6 +333,58 @@
         #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
         #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
         #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
+
+        .chat-date-divider {
+            align-self: center;
+            margin: 8px 0 7px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            background: rgba(239, 234, 226, .92);
+            color: #54656f;
+            font-size: .69rem;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: .1px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.08);
+            text-transform: none;
+            position: sticky;
+            top: 4px;
+            z-index: 2;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+
+        #send-btn {
+            background: #075e54;
+            color: #fff;
+            border: none;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,.16);
+            transition: transform .14s ease, background .14s ease, box-shadow .14s ease;
+        }
+        #send-btn:hover {
+            background: #128c7e;
+            box-shadow: 0 3px 7px rgba(0,0,0,.18);
+        }
+        #send-btn:active {
+            transform: scale(.94);
+            box-shadow: 0 1px 3px rgba(0,0,0,.14);
+        }
+        #send-btn svg {
+            width: 21px;
+            height: 21px;
+            display: block;
+            fill: currentColor;
+            transform: translate(1px,-1px);
+        }
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
         .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
@@ -711,7 +752,11 @@
 
             <div id="input-toolbar">
                 <input type="text" id="message-input" placeholder="Type message..." onkeypress="checkEnter(event)">
-                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
+                <button id="send-btn" onclick="sendMessage()" aria-label="Send message" title="Send">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21.7 2.3a1 1 0 0 0-1.05-.22l-18 7a1 1 0 0 0 .08 1.88l7.1 2.37 2.37 7.1a1 1 0 0 0 .93.68h.03a1 1 0 0 0 .92-.62l7-18a1 1 0 0 0-.38-1.19ZM4.04 10.02l13.92-5.41-9.63 7.63-4.29-1.43Zm9.18 8.13-1.43-4.29 7.63-9.63-5.41 13.92-.79.0Z"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -1528,6 +1573,94 @@
             syncInterval = setInterval(() => pollChatMessages(false), 600);
         }
 
+        const INDIA_TIME_ZONE = 'Asia/Kolkata';
+
+        function getIndiaDateParts(value) {
+            const date = value instanceof Date ? value : new Date(value);
+            if (isNaN(date.getTime())) return null;
+
+            const parts = new Intl.DateTimeFormat('en-IN', {
+                timeZone: INDIA_TIME_ZONE,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(date);
+
+            const out = {};
+            parts.forEach(part => {
+                if (part.type !== 'literal') out[part.type] = part.value;
+            });
+
+            return {
+                year: Number(out.year),
+                month: Number(out.month),
+                day: Number(out.day),
+                key: `${out.year}-${out.month}-${out.day}`
+            };
+        }
+
+        function getIndiaDateKey(value) {
+            const parts = getIndiaDateParts(value);
+            return parts ? parts.key : null;
+        }
+
+        function formatIndiaTime(value) {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) return '';
+
+            return new Intl.DateTimeFormat('en-IN', {
+                timeZone: INDIA_TIME_ZONE,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).format(date);
+        }
+
+        function getIndiaDayStart(value) {
+            const parts = getIndiaDateParts(value);
+            if (!parts) return null;
+            return Date.UTC(parts.year, parts.month - 1, parts.day);
+        }
+
+        function formatChatDateLabel(value) {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) return 'Date unavailable';
+
+            const current = new Date();
+            const todayStart = getIndiaDayStart(current);
+            const messageStart = getIndiaDayStart(date);
+            if (todayStart === null || messageStart === null) return 'Date unavailable';
+
+            const dayDifference = Math.round((todayStart - messageStart) / 86400000);
+
+            if (dayDifference === 0) return 'Today';
+            if (dayDifference === 1) return 'Yesterday';
+
+            // WhatsApp-style: show weekday for the recent week.
+            if (dayDifference > 1 && dayDifference < 7) {
+                return new Intl.DateTimeFormat('en-IN', {
+                    timeZone: INDIA_TIME_ZONE,
+                    weekday: 'long'
+                }).format(date);
+            }
+
+            return new Intl.DateTimeFormat('en-IN', {
+                timeZone: INDIA_TIME_ZONE,
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).format(date);
+        }
+
+        function appendChatDateDivider(container, dateValue) {
+            const label = formatChatDateLabel(dateValue);
+            const divider = document.createElement('div');
+            divider.className = 'chat-date-divider';
+            divider.dataset.dateKey = getIndiaDateKey(dateValue) || '';
+            divider.textContent = label;
+            container.appendChild(divider);
+        }
+
         async function pollChatMessages(isInitial) {
             if (!currentRoomId) return;
             try {
@@ -1567,16 +1700,20 @@
                             }
                         }
 
-                        let timeStr = "";
-                        if (createdAt) {
-                            const parsedDate = new Date(createdAt);
-                            if (!isNaN(parsedDate.getTime())) {
-                                timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            }
+                        const messageDate = createdAt && !isNaN(new Date(createdAt).getTime())
+                            ? new Date(createdAt)
+                            : new Date();
+
+                        const messageDateKey = getIndiaDateKey(messageDate);
+                        const dateDividers = messagesDiv.querySelectorAll('.chat-date-divider');
+                        const lastDivider = dateDividers.length ? dateDividers[dateDividers.length - 1] : null;
+                        const lastDateKey = lastDivider ? lastDivider.dataset.dateKey : null;
+
+                        if (messageDateKey && messageDateKey !== lastDateKey) {
+                            appendChatDateDivider(messagesDiv, messageDate);
                         }
-                        if (!timeStr) {
-                            timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        }
+
+                        const timeStr = formatIndiaTime(messageDate) || formatIndiaTime(new Date());
 
                         const cleanSender = String(sender).trim();
                         const cleanMyPhone = String(currentUser.phone).trim();
