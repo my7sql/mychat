@@ -32,60 +32,57 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         #closing-screen {
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
-            text-align:center;
-            padding:30px;
-            background:linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e);
-            color:#fff;
-            position:relative;
-            overflow:hidden;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
         }
         #closing-screen::before {
-            content:"";
-            position:absolute;
-            width:360px;
-            height:360px;
-            border-radius:50%;
-            background:radial-gradient(circle,rgba(255,255,255,.13),transparent 68%);
-            animation:closingAura 1.7s ease-out both;
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: radial-gradient(circle,rgba(255,255,255,.11),transparent 68%);
+            animation: closingAura 1.7s ease-out both;
         }
         .closing-message {
-  position:relative;
-  z-index:1;
-  max-width:92%;
-  font-size:1.52rem;
-  line-height:1.42;
-  font-weight:800;
-  letter-spacing:.15px;
-  text-shadow:0 3px 18px rgba(0,0,0,.14);
-  animation:closingElegantRise 1.7s cubic-bezier(.16,1,.3,1) both;
-}
+            position: relative;
+            z-index: 1;
+            max-width: 92%;
+            font-size: 1.52rem;
+            line-height: 1.42;
+            font-weight: 800;
+            letter-spacing: .15px;
+            text-shadow: 0 3px 18px rgba(0,0,0,.14);
+            animation: closingElegantRise 1.7s cubic-bezier(.16,1,.3,1) both;
+        }
         @keyframes closingAura {
-            0%{opacity:0;transform:scale(.72)}
-            55%{opacity:.9;transform:scale(1)}
-            100%{opacity:.48;transform:scale(1.08)}
+            0% { opacity: 0; transform: scale(.82); }
+            55% { opacity: .65; transform: scale(1); }
+            100% { opacity: .25; transform: scale(1.05); }
         }
         @keyframes closingElegantRise {
-  0% {
-    opacity: 0;
-    transform: translateY(24px);
-    filter: blur(3px);
-  }
-  62% {
-    opacity: 1;
-    transform: translateY(-1px);
-    filter: blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-            62%{opacity:1;transform:translateY(-2px) scale(1.01);filter:blur(0)}
-            100%{opacity:1;transform:none}
+            0% {
+                opacity: 0;
+                transform: translateY(24px);
+                filter: blur(3px);
+            }
+            62% {
+                opacity: 1;
+                transform: translateY(-1px);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
         }
 
         .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -165,21 +162,21 @@
         .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
          .hub-card { background: var(--theme-card); color: var(--theme-text); }
         .yadhu-profile-card {
-  animation: profileCardPremiumLift 1.65s cubic-bezier(.16,1,.3,1) both;
-  border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
-  box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
-}
+            animation: profileCardPremiumLift 1.65s cubic-bezier(.16,1,.3,1) both;
+            border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
+            box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
+        }
         .yadhu-profile-card::before {
             content: "";
             position: absolute;
             inset: -25%;
             background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.08) 42%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.08) 58%, transparent 68%);
             transform: translateX(-125%) rotate(8deg);
-            animation: profileCardShine 3.8s 1.35s cubic-bezier(.2,.7,.2,1) both;
+            animation: profileCardShineOnce 2.35s cubic-bezier(.16,1,.3,1) .15s both;
             pointer-events: none;
             z-index: 0;
         }
@@ -193,7 +190,7 @@
             border-radius: 50%;
             background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
             filter: blur(2px);
-            animation: profileCardShineOnce 2.35s cubic-bezier(.16,1,.3,1) .15s both;
+            animation: profileCardGlow 2.2s 0.65s cubic-bezier(.16,1,.3,1) both;
             pointer-events: none;
             z-index: 0;
         }
@@ -201,50 +198,41 @@
         .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
         .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
         @keyframes profileCardPremiumLift {
-  0% {
-    opacity: 0;
-    transform: translateY(30px) scale(.975);
-    filter: blur(2.5px);
-    box-shadow: 0 7px 20px rgba(7,94,84,.04), inset 0 1px 0 rgba(255,255,255,.75);
-  }
-  58% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.004);
-    filter: blur(0);
-    box-shadow: 0 18px 40px rgba(7,94,84,.13), inset 0 1px 0 rgba(255,255,255,.9);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-    box-shadow: 0 16px 38px rgba(7,94,84,.11), inset 0 1px 0 rgba(255,255,255,.9);
-  }
-}
-
-@keyframes profileCardShineOnce {
-  0%, 54% {
-    transform: translateX(-135%) rotate(8deg);
-    opacity: 0;
-  }
-  62% {
-    opacity: .24;
-  }
-  78% {
-    opacity: .12;
-  }
-  100% {
-    transform: translateX(135%) rotate(8deg);
-    opacity: 0;
-  }
-}
-
-@keyframes profileCardGlow {
-  0% { opacity: 0; transform: scale(.88); }
-  60% { opacity: .42; transform: scale(1); }
-  100% { opacity: .2; transform: scale(1.03); }
-}
-            52% { opacity:1; transform:scale(1); }
-            100% { opacity:.42; transform:scale(1.12); }
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(.975);
+                filter: blur(2.5px);
+                box-shadow: 0 7px 20px rgba(7,94,84,.04), inset 0 1px 0 rgba(255,255,255,.75);
+            }
+            58% {
+                opacity: 1;
+                transform: translateY(-2px) scale(1.004);
+                filter: blur(0);
+                box-shadow: 0 18px 40px rgba(7,94,84,.13), inset 0 1px 0 rgba(255,255,255,.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+                box-shadow: 0 16px 38px rgba(7,94,84,.11), inset 0 1px 0 rgba(255,255,255,.9);
+            }
+        }
+        @keyframes profileCardShineOnce {
+            0%, 54% {
+                transform: translateX(-135%) rotate(8deg);
+                opacity: 0;
+            }
+            62% { opacity: .22; }
+            78% { opacity: .10; }
+            100% {
+                transform: translateX(135%) rotate(8deg);
+                opacity: 0;
+            }
+        }
+        @keyframes profileCardGlow {
+            0% { opacity: 0; transform: scale(.88); }
+            60% { opacity: .35; transform: scale(1); }
+            100% { opacity: .18; transform: scale(1.03); }
         }
         #contacts-container { background: var(--theme-soft); }
 
@@ -571,9 +559,6 @@
                     <button class="btn-hub btn-hub-secondary" onclick="openDirectoryWithPin()">📖 Directory</button>
                 </div>
 
-                <div class="settings-footer">
-                    <button class="settings-button" onclick="openSettings()">⚙ Settings</button>
-                </div>
             </div>
         </div>
 
@@ -682,7 +667,7 @@
                 </div>
                 <div id="admin-chat-bg-section" class="chat-bg-section" style="display:none;">
                     <div class="chat-bg-title">Chat Background</div>
-                    <div class="chat-bg-grid">
+                                        <div class="chat-bg-grid">
                         <div class="chat-bg-option" data-chat-bg="classic" onclick="selectChatBackground('classic')"><div class="chat-bg-preview" style="background-color:#efeae2;background-image:radial-gradient(rgba(92,82,69,.18) 1px,transparent 1.1px);background-size:18px 18px"><span></span><span></span></div><div class="chat-bg-name">Classic</div></div>
                         <div class="chat-bg-option" data-chat-bg="mint" onclick="selectChatBackground('mint')"><div class="chat-bg-preview" style="background-color:#e4f1e9;background-image:radial-gradient(circle at 25% 25%,rgba(7,94,84,.12) 0 1.2px,transparent 1.4px),radial-gradient(circle at 75% 75%,rgba(7,94,84,.08) 0 1px,transparent 1.2px);background-size:28px 28px"><span></span><span></span></div><div class="chat-bg-name">Mint</div></div>
                         <div class="chat-bg-option" data-chat-bg="sky" onclick="selectChatBackground('sky')"><div class="chat-bg-preview" style="background-color:#e7f2f7;background-image:linear-gradient(30deg,transparent 45%,rgba(22,138,173,.12) 46%,rgba(22,138,173,.12) 54%,transparent 55%);background-size:22px 22px"><span></span><span></span></div><div class="chat-bg-name">Sky</div></div>
@@ -942,21 +927,20 @@
                 }
             }
 
-            // Keep exactly one browser-history sentinel. Internal screens are
-            // handled by axtres itself, not by browser-history entries.
+            // Build a small in-app browser history. The sentinel lets the phone
+            // back button close axtres gracefully instead of closing the web page immediately.
             try {
                 history.replaceState({ axtres: true, sentinel: true }, '', location.href);
+                history.pushState({ axtres: true, sentinel: true }, '', location.href);
             } catch (e) {}
-            navigationReady = true;
 
             switchScreen('welcome-screen', { silent: true });
             loadDefaultTheme();
 
             setTimeout(() => {
-                // Keep Sign In as the first return point even when a saved session
-                // automatically opens the user's hub after the splash.
                 switchScreen('login-screen', { silent: true });
                 immediateBackTarget = null;
+
                 if (currentUser && currentUser.phone && currentUser.name) {
                     navigateAfterAuth(false);
                 }
@@ -1055,15 +1039,13 @@
         let axtresClosing = false;
         let currentScreenId = 'welcome-screen';
         let immediateBackTarget = null;
-        let navigationReady = false;
 
-        // axtres deliberately does NOT build a browser history of every screen.
-        // The phone Back button always returns to the immediate logical parent.
         const LOGICAL_BACK_TARGETS = {
             'register-screen': 'login-screen',
-            'instructions-screen': 'login-screen',
-            'add-email-screen': 'login-screen',
             'verify-screen': 'register-screen',
+            'add-email-screen': 'login-screen',
+            'verify-email-screen': 'add-email-screen',
+            'instructions-screen': 'login-screen',
             'hub-screen': 'login-screen',
             'directory-pin-screen': 'hub-screen',
             'contacts-screen': 'hub-screen',
@@ -1087,12 +1069,10 @@
             target.classList.add('active');
             currentScreenId = screenId;
 
-            // Only remember the immediate parent for screens where the entry point
-            // can legitimately differ (for example Chat can be opened from Hub or Directory).
-            if (!options.silent && previous !== screenId && screenId !== 'welcome-screen' && screenId !== 'closing-screen') {
+            if (!options.silent && screenId !== 'welcome-screen' && screenId !== 'closing-screen') {
                 if (options.backTarget !== undefined) {
                     immediateBackTarget = options.backTarget;
-                } else if (LOGICAL_BACK_TARGETS[screenId] !== undefined) {
+                } else if (Object.prototype.hasOwnProperty.call(LOGICAL_BACK_TARGETS, screenId)) {
                     immediateBackTarget = LOGICAL_BACK_TARGETS[screenId];
                 } else {
                     immediateBackTarget = previous;
@@ -1105,43 +1085,41 @@
 
             const target = immediateBackTarget || LOGICAL_BACK_TARGETS[currentScreenId] || null;
 
-            // Login is the app's root. Pressing Back again exits through the
-            // 1.7-second closing screen instead of navigating through old pages.
             if (!target || currentScreenId === 'login-screen') {
                 showClosingScreen();
                 return;
             }
 
             switchScreen(target, { silent: true });
-
-            // Recalculate the next logical parent from the destination instead
-            // of replaying a browser-history stack.
-            immediateBackTarget = LOGICAL_BACK_TARGETS[target] || null;
+            immediateBackTarget = LOGICAL_BACK_TARGETS[target] ?? null;
         }
 
         function showClosingScreen() {
             if (axtresClosing) return;
+
             axtresClosing = true;
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-            document.getElementById('closing-screen').classList.add('active');
+            const closing = document.getElementById('closing-screen');
+            if (closing) closing.classList.add('active');
             currentScreenId = 'closing-screen';
 
             setTimeout(() => {
-                // window.close() works when the browser allows a script-created
-                // page to close itself. Otherwise leave the page cleanly.
                 try { window.close(); } catch (e) {}
+                // If the browser does not allow window.close(), leave the
+                // page at the browser's boundary rather than replaying app screens.
                 try { history.back(); } catch (e) {}
             }, 1700);
         }
 
-        // One sentinel entry only. We never push a new history entry for each
-        // in-app screen, so Back cannot replay pages the user visited.
+        // axtres uses one browser-history sentinel only. Internal screens never
+        // create browser-history entries, so Back always means "previous app screen".
         window.addEventListener('popstate', () => {
             if (axtresClosing) return;
 
-            // Restore the single sentinel immediately, then perform the app's
-            // own logical Back navigation.
-            try { history.pushState({ axtres: true, sentinel: true }, '', location.href); } catch (e) {}
+            try {
+                history.pushState({ axtres: true, sentinel: true }, '', location.href);
+            } catch (e) {}
+
             handlePhoneBack();
         });
 
@@ -1344,7 +1322,8 @@
 
         function closeAdmin() {
             adminPin = null; adminEditingPhone = null; adminMode = false;
-            switchScreen('login-screen');
+            switchScreen('login-screen', { silent: true });
+            immediateBackTarget = null;
         }
 
         function openAdmin() {
