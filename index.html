@@ -32,28 +32,46 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         #closing-screen {
-            justify-content:center; align-items:center; text-align:center; padding:30px;
-            background:linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e); color:#fff;
-            position:relative; overflow:hidden;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            text-align:center;
+            padding:30px;
+            background:linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e);
+            color:#fff;
+            position:relative;
+            overflow:hidden;
         }
         #closing-screen::before {
-            content:""; position:absolute; width:280px; height:280px; border-radius:50%;
-            background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);
-            animation:closingAura 2.1s ease-out both;
+            content:"";
+            position:absolute;
+            width:360px;
+            height:360px;
+            border-radius:50%;
+            background:radial-gradient(circle,rgba(255,255,255,.13),transparent 68%);
+            animation:closingAura 1.7s ease-out both;
         }
-        .closing-mark { position:relative; z-index:1; font-size:2.45rem; font-weight:850; letter-spacing:-1.2px; animation:closingLogo 1.35s cubic-bezier(.16,1,.3,1) both; }
-        .closing-orbit { position:relative; z-index:1; width:54px; height:54px; margin:22px 0 18px; animation:closingOrbit 1.7s linear infinite; }
-        .closing-orbit::before { content:""; position:absolute; inset:2px; border:2px solid rgba(255,255,255,.18); border-radius:50%; }
-        .closing-orbit span { position:absolute; width:7px; height:7px; border-radius:50%; background:#fff; box-shadow:0 0 12px rgba(255,255,255,.65); }
-        .closing-orbit span:nth-child(1){top:0;left:24px;}
-        .closing-orbit span:nth-child(2){right:2px;bottom:9px;opacity:.75;}
-        .closing-orbit span:nth-child(3){left:2px;bottom:9px;opacity:.45;}
-        .closing-title { position:relative; z-index:1; font-size:1.02rem; font-weight:750; letter-spacing:.2px; animation:closingText 1.05s .15s ease-out both; }
-        .closing-subtitle { position:relative; z-index:1; margin-top:7px; font-size:.78rem; color:rgba(255,255,255,.78); animation:closingText 1.05s .3s ease-out both; }
-        @keyframes closingAura { 0%{opacity:0;transform:scale(.55)} 55%{opacity:1;transform:scale(1)} 100%{opacity:.5;transform:scale(1.12)} }
-        @keyframes closingLogo { 0%{opacity:0;transform:translateY(16px) scale(.94);filter:blur(4px)} 70%{opacity:1;transform:translateY(-1px) scale(1.01);filter:blur(0)} 100%{opacity:1;transform:none} }
-        @keyframes closingOrbit { to { transform:rotate(360deg); } }
-        @keyframes closingText { 0%{opacity:0;transform:translateY(8px)} 100%{opacity:1;transform:none} }
+        .closing-message {
+            position:relative;
+            z-index:1;
+            max-width:90%;
+            font-size:1.42rem;
+            line-height:1.42;
+            font-weight:800;
+            letter-spacing:.15px;
+            text-shadow:0 3px 18px rgba(0,0,0,.16);
+            animation:closingText 1.7s cubic-bezier(.16,1,.3,1) both;
+        }
+        @keyframes closingAura {
+            0%{opacity:0;transform:scale(.72)}
+            55%{opacity:.9;transform:scale(1)}
+            100%{opacity:.48;transform:scale(1.08)}
+        }
+        @keyframes closingText {
+            0%{opacity:0;transform:translateY(18px) scale(.96);filter:blur(3px)}
+            62%{opacity:1;transform:translateY(-2px) scale(1.01);filter:blur(0)}
+            100%{opacity:1;transform:none}
+        }
 
         .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
@@ -335,10 +353,7 @@
 
         <!-- EXIT / CLOSING SCREEN -->
         <div id="closing-screen" class="screen">
-            <div class="closing-mark">axtres</div>
-            <div class="closing-orbit"><span></span><span></span><span></span></div>
-            <div class="closing-title">Closing axtres</div>
-            <div class="closing-subtitle">Thanks for chatting. See you again soon.</div>
+            <div class="closing-message">Thanks for chatting.<br>See you again soon.</div>
         </div>
 
         <!-- 2. REGISTER SCREEN -->
@@ -624,7 +639,7 @@
                 </div>
                 <div id="admin-chat-bg-section" class="chat-bg-section" style="display:none;">
                     <div class="chat-bg-title">Chat Background</div>
-                                        <div class="chat-bg-grid">
+                    <div class="chat-bg-grid">
                         <div class="chat-bg-option" data-chat-bg="classic" onclick="selectChatBackground('classic')"><div class="chat-bg-preview" style="background-color:#efeae2;background-image:radial-gradient(rgba(92,82,69,.18) 1px,transparent 1.1px);background-size:18px 18px"><span></span><span></span></div><div class="chat-bg-name">Classic</div></div>
                         <div class="chat-bg-option" data-chat-bg="mint" onclick="selectChatBackground('mint')"><div class="chat-bg-preview" style="background-color:#e4f1e9;background-image:radial-gradient(circle at 25% 25%,rgba(7,94,84,.12) 0 1.2px,transparent 1.4px),radial-gradient(circle at 75% 75%,rgba(7,94,84,.08) 0 1px,transparent 1.2px);background-size:28px 28px"><span></span><span></span></div><div class="chat-bg-name">Mint</div></div>
                         <div class="chat-bg-option" data-chat-bg="sky" onclick="selectChatBackground('sky')"><div class="chat-bg-preview" style="background-color:#e7f2f7;background-image:linear-gradient(30deg,transparent 45%,rgba(22,138,173,.12) 46%,rgba(22,138,173,.12) 54%,transparent 55%);background-size:22px 22px"><span></span><span></span></div><div class="chat-bg-name">Sky</div></div>
@@ -884,11 +899,12 @@
                 }
             }
 
-            // Build a small in-app browser history. The sentinel lets the phone
-            // back button close axtres gracefully instead of closing the web page immediately.
-            history.replaceState({ axtres: true, sentinel: true }, '', location.href);
-            history.pushState({ axtres: true, screen: 'welcome-screen' }, '', location.href);
-            axtresHistoryReady = true;
+            // Keep exactly one browser-history sentinel. Internal screens are
+            // handled by axtres itself, not by browser-history entries.
+            try {
+                history.replaceState({ axtres: true, sentinel: true }, '', location.href);
+            } catch (e) {}
+            navigationReady = true;
 
             switchScreen('welcome-screen', { silent: true });
             loadDefaultTheme();
@@ -896,7 +912,8 @@
             setTimeout(() => {
                 // Keep Sign In as the first return point even when a saved session
                 // automatically opens the user's hub after the splash.
-                switchScreen('login-screen', { replace: true });
+                switchScreen('login-screen', { silent: true });
+                immediateBackTarget = null;
                 if (currentUser && currentUser.phone && currentUser.name) {
                     navigateAfterAuth(false);
                 }
@@ -992,47 +1009,97 @@
             if (document.visibilityState === "visible") forceSyncOnWake();
         });
 
-        let axtresHistoryReady = false;
         let axtresClosing = false;
+        let currentScreenId = 'welcome-screen';
+        let immediateBackTarget = null;
+        let navigationReady = false;
+
+        // axtres deliberately does NOT build a browser history of every screen.
+        // The phone Back button always returns to the immediate logical parent.
+        const LOGICAL_BACK_TARGETS = {
+            'register-screen': 'login-screen',
+            'instructions-screen': 'login-screen',
+            'add-email-screen': 'login-screen',
+            'verify-screen': 'register-screen',
+            'hub-screen': 'login-screen',
+            'directory-pin-screen': 'hub-screen',
+            'contacts-screen': 'hub-screen',
+            'chat-screen': 'hub-screen',
+            'admin-pin-screen': 'login-screen',
+            'admin-screen': 'admin-pin-screen',
+            'admin-edit-screen': 'admin-screen',
+            'admin-user-form-screen': 'admin-edit-screen',
+            'login-screen': null,
+            'welcome-screen': null,
+            'closing-screen': null
+        };
 
         function switchScreen(screenId, options = {}) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(screenId);
-            if (target) target.classList.add('active');
+            if (!target) return;
 
-            if (!options.silent && axtresHistoryReady && screenId !== 'welcome-screen' && screenId !== 'closing-screen') {
-                const state = { axtres: true, screen: screenId };
-                if (options.replace) history.replaceState(state, '', location.href);
-                else history.pushState(state, '', location.href);
+            const previous = currentScreenId;
+
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            target.classList.add('active');
+            currentScreenId = screenId;
+
+            // Only remember the immediate parent for screens where the entry point
+            // can legitimately differ (for example Chat can be opened from Hub or Directory).
+            if (!options.silent && previous !== screenId && screenId !== 'welcome-screen' && screenId !== 'closing-screen') {
+                if (options.backTarget !== undefined) {
+                    immediateBackTarget = options.backTarget;
+                } else if (LOGICAL_BACK_TARGETS[screenId] !== undefined) {
+                    immediateBackTarget = LOGICAL_BACK_TARGETS[screenId];
+                } else {
+                    immediateBackTarget = previous;
+                }
             }
+        }
+
+        function handlePhoneBack() {
+            if (axtresClosing) return;
+
+            const target = immediateBackTarget || LOGICAL_BACK_TARGETS[currentScreenId] || null;
+
+            // Login is the app's root. Pressing Back again exits through the
+            // 1.7-second closing screen instead of navigating through old pages.
+            if (!target || currentScreenId === 'login-screen') {
+                showClosingScreen();
+                return;
+            }
+
+            switchScreen(target, { silent: true });
+
+            // Recalculate the next logical parent from the destination instead
+            // of replaying a browser-history stack.
+            immediateBackTarget = LOGICAL_BACK_TARGETS[target] || null;
         }
 
         function showClosingScreen() {
             if (axtresClosing) return;
             axtresClosing = true;
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('closing-screen').classList.add('active');
+            currentScreenId = 'closing-screen';
 
-            // Give the closing animation the same deliberate 1.7s timing as the splash.
             setTimeout(() => {
+                // window.close() works when the browser allows a script-created
+                // page to close itself. Otherwise leave the page cleanly.
                 try { window.close(); } catch (e) {}
-                // Normal browser tabs usually block window.close(). In that case,
-                // move back to the page that opened axtres rather than leaving a dead history state.
                 try { history.back(); } catch (e) {}
             }, 1700);
         }
 
-        window.addEventListener('popstate', (event) => {
+        // One sentinel entry only. We never push a new history entry for each
+        // in-app screen, so Back cannot replay pages the user visited.
+        window.addEventListener('popstate', () => {
             if (axtresClosing) return;
 
-            const state = event.state;
-            if (state && state.axtres && state.screen) {
-                switchScreen(state.screen, { silent: true });
-                return;
-            }
-
-            // No previous axtres screen remains: show the professional exit page.
-            showClosingScreen();
+            // Restore the single sentinel immediately, then perform the app's
+            // own logical Back navigation.
+            try { history.pushState({ axtres: true, sentinel: true }, '', location.href); } catch (e) {}
+            handlePhoneBack();
         });
 
         function interceptEmailInput(e) {
@@ -1414,7 +1481,7 @@
             currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
 
             document.getElementById('chat-room-title').innerText = recipient.name;
-            switchScreen('chat-screen');
+            switchScreen('chat-screen', { backTarget: currentScreenId === 'contacts-screen' ? 'contacts-screen' : 'hub-screen' });
             document.getElementById('email-toggle').checked = false;
 
             const messagesDiv = document.getElementById('messages-container');
