@@ -1,2746 +1,1258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#075e54">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>axtres</title>
-
-<style>
-:root{
-  --theme-primary:#075e54;
-  --theme-primary-2:#128c7e;
-  --theme-accent:#25d366;
-  --theme-bg:#eef4f3;
-  --theme-card:#ffffff;
-  --theme-text:#17231f;
-  --theme-muted:#71807b;
-  --theme-border:#dce7e4;
-  --theme-soft:#e8f4f1;
-  --theme-danger:#d9534f;
-  --theme-shadow:0 20px 55px rgba(0,0,0,.14);
-}
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-  width:100%;
-  height:100%;
-  margin:0;
-  overflow:hidden;
-}
-
-body{
-  min-height:100dvh;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(18,140,126,.15), transparent 35%),
-    linear-gradient(145deg,#dceae7,#f7faf9);
-  color:var(--theme-text);
-}
-
-button,
-input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.app-shell{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.card{
-  width:min(100vw,520px);
-  height:min(100dvh,900px);
-  min-height:0;
-  background:var(--theme-card);
-  border-radius:clamp(0px,2vw,20px);
-  overflow:hidden;
-  box-shadow:var(--theme-shadow);
-  position:relative;
-}
-
-@media (max-width:520px),(max-height:900px){
-  .card{
-    border-radius:0;
-    box-shadow:none;
-  }
-}
-
-.screen{
-  position:absolute;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  background:var(--theme-card);
-}
-
-.screen.active{
-  display:flex;
-}
-
-.hidden{
-  display:none !important;
-}
-
-/* LOADING */
-
-#welcome-screen{
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  background:
-    radial-gradient(circle at 50% 35%,rgba(37,211,102,.16),transparent 30%),
-    linear-gradient(145deg,var(--theme-primary),var(--theme-primary-2));
-  color:#fff;
-}
-
-.logo-mark{
-  width:76px;
-  height:76px;
-  border-radius:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:0 auto 18px;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.25);
-  box-shadow:0 15px 40px rgba(0,0,0,.18);
-  backdrop-filter:blur(10px);
-}
-
-.logo-mark span{
-  font-size:34px;
-  font-weight:850;
-  letter-spacing:-2px;
-}
-
-.splash-title{
-  font-size:2rem;
-  font-weight:850;
-  letter-spacing:-1px;
-  margin:0;
-}
-
-.splash-subtitle{
-  margin:8px 0 0;
-  opacity:.78;
-  font-size:.88rem;
-}
-
-/* COMMON HEADER */
-
-.app-header{
-  height:68px;
-  min-height:68px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 16px;
-  color:#fff;
-  background:
-    linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
-  box-shadow:0 3px 14px rgba(0,0,0,.12);
-  position:relative;
-  z-index:5;
-}
-
-.back-btn{
-  width:40px;
-  height:40px;
-  border:0;
-  border-radius:12px;
-  background:rgba(255,255,255,.11);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:25px;
-  line-height:1;
-  flex-shrink:0;
-}
-
-.back-btn:active{
-  transform:scale(.95);
-}
-
-.header-title{
-  min-width:0;
-  flex:1;
-}
-
-.header-title h2{
-  margin:0;
-  font-size:1.04rem;
-  font-weight:800;
-}
-
-.header-title p{
-  margin:3px 0 0;
-  font-size:.72rem;
-  opacity:.72;
-}
-
-/* LOGIN */
-
-#login-screen{
-  overflow-y:auto;
-  padding:28px 22px 24px;
-  background:
-    radial-gradient(circle at 100% 0%,rgba(18,140,126,.12),transparent 30%),
-    var(--theme-bg);
-}
-
-.login-content{
-  width:100%;
-  max-width:440px;
-  margin:auto;
-}
-
-.login-brand{
-  text-align:center;
-  margin-bottom:26px;
-}
-
-.login-brand .mini-logo{
-  width:58px;
-  height:58px;
-  border-radius:18px;
-  margin:0 auto 14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
-  color:#fff;
-  font-weight:900;
-  font-size:24px;
-  box-shadow:0 12px 30px rgba(7,94,84,.22);
-}
-
-.login-brand h1{
-  margin:0;
-  font-size:1.55rem;
-  letter-spacing:-.5px;
-}
-
-.login-brand p{
-  margin:6px 0 0;
-  color:var(--theme-muted);
-  font-size:.84rem;
-}
-
-.login-panel{
-  background:rgba(255,255,255,.82);
-  border:1px solid var(--theme-border);
-  border-radius:20px;
-  padding:18px;
-  box-shadow:0 12px 30px rgba(20,50,45,.07);
-  backdrop-filter:blur(10px);
-}
-
-.login-panel-label{
-  font-size:.72rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  color:var(--theme-muted);
-  margin:0 0 10px 2px;
-}
-
-.login-entry{
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  margin-top:2px;
-}
-
-.login-entry input{
-  margin:0;
-  border-radius:13px;
-}
-
-.login-entry .btn{
-  margin:0;
-  border-radius:13px;
-}
-
-.login-entry input:focus{
-  border-color:var(--theme-primary-2);
-  box-shadow:0 0 0 3px rgba(18,140,126,.10);
-}
-
-input{
-  width:100%;
-  border:1px solid var(--theme-border);
-  background:#fff;
-  color:var(--theme-text);
-  padding:14px 15px;
-  outline:none;
-  border-radius:12px;
-  transition:.18s ease;
-}
-
-input::placeholder{
-  color:#9aa7a4;
-}
-
-.btn{
-  width:100%;
-  border:0;
-  padding:14px 16px;
-  border-radius:12px;
-  color:#fff;
-  background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-2));
-  font-weight:800;
-  box-shadow:0 9px 20px rgba(7,94,84,.16);
-  transition:.18s ease;
-}
-
-.btn:active{
-  transform:translateY(1px) scale(.99);
-}
-
-.btn-secondary{
-  border:1px solid var(--theme-border);
-  background:var(--theme-card);
-  color:var(--theme-primary);
-  border-radius:11px;
-  padding:10px 13px;
-  font-weight:750;
-}
-
-.error-msg{
-  min-height:17px;
-  color:var(--theme-danger);
-  font-size:.76rem;
-  padding-left:2px;
-}
-
-.hub-card{
-  background:var(--theme-card);
-  border:1px solid var(--theme-border);
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 8px 25px rgba(0,0,0,.05);
-}
-
-.yadhu-profile-card{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
-.login-profile-card{
-  margin-top:12px;
-  margin-bottom:0;
-  padding:15px 16px;
-  gap:4px;
-  border-radius:14px;
-  transform-origin:center;
-}
-
-.login-profile-card .hub-user-name{
-  font-size:1.08rem;
-}
-
-.login-profile-card .hub-user-phone{
-  font-size:.88rem;
-  font-weight:650;
-  color:var(--theme-primary);
-  letter-spacing:.15px;
-}
-
-.login-profile-card .hub-user-email{
-  font-size:.78rem;
-}
-
-.login-profile-label{
-  font-size:.68rem;
-  font-weight:800;
-  color:#7a8a93;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  margin-bottom:1px;
-}
-
-.hub-user-name{
-  font-weight:850;
-  font-size:1.02rem;
-}
-
-.hub-user-phone{
-  font-size:.82rem;
-  color:var(--theme-muted);
-}
-
-.hub-user-email{
-  font-size:.76rem;
-  color:var(--theme-muted);
-  word-break:break-word;
-}
-
-/* HUB */
-
-#hub-screen{
-  background:var(--theme-bg);
-}
-
-.hub-scroll{
-  flex:1;
-  overflow-y:auto;
-  padding:18px;
-}
-
-.greeting{
-  margin-bottom:15px;
-}
-
-.greeting .small{
-  color:var(--theme-muted);
-  font-size:.78rem;
-}
-
-.greeting h1{
-  margin:4px 0 0;
-  font-size:1.48rem;
-  letter-spacing:-.6px;
-}
-
-.hub-section{
-  margin-top:16px;
-}
-
-.hub-section-title{
-  font-size:.7rem;
-  font-weight:850;
-  text-transform:uppercase;
-  letter-spacing:.85px;
-  color:var(--theme-muted);
-  margin:0 0 8px 2px;
-}
-
-.hub-action{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:14px;
-  border:1px solid var(--theme-border);
-  background:var(--theme-card);
-  color:var(--theme-text);
-  border-radius:15px;
-  margin-bottom:9px;
-  text-align:left;
-  box-shadow:0 5px 18px rgba(0,0,0,.04);
-}
-
-.hub-action .icon{
-  width:39px;
-  height:39px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--theme-soft);
-  color:var(--theme-primary);
-  font-size:18px;
-}
-
-.hub-action strong{
-  display:block;
-  font-size:.9rem;
-}
-
-.hub-action span{
-  display:block;
-  font-size:.72rem;
-  color:var(--theme-muted);
-  margin-top:3px;
-}
-
-/* DIRECTORY */
-
-#directory-screen,
-#admin-screen{
-  background:var(--theme-bg);
-}
-
-.scroll-area{
-  flex:1;
-  overflow-y:auto;
-  padding:16px;
-}
-
-.directory-card{
-  background:var(--theme-card);
-  border:1px solid var(--theme-border);
-  border-radius:15px;
-  margin-bottom:9px;
-  padding:14px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
-}
-
-.directory-avatar{
-  width:43px;
-  height:43px;
-  border-radius:50%;
-  background:var(--theme-soft);
-  color:var(--theme-primary);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:850;
-  flex-shrink:0;
-}
-
-.directory-info{
-  min-width:0;
-  flex:1;
-}
-
-.directory-name{
-  font-weight:800;
-  font-size:.9rem;
-}
-
-.directory-phone{
-  margin-top:3px;
-  font-size:.73rem;
-  color:var(--theme-muted);
-}
-
-.directory-email{
-  margin-top:2px;
-  font-size:.69rem;
-  color:var(--theme-muted);
-  word-break:break-word;
-}
-
-/* CHAT */
-
-#chat-screen{
-  background:var(--theme-bg);
-}
-
-.chat-header-user{
-  min-width:0;
-  flex:1;
-}
-
-.chat-header-name{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:.98rem;
-  font-weight:800;
-}
-
-.chat-header-phone{
-  font-size:.68rem;
-  opacity:.72;
-  margin-top:2px;
-}
-
-.chat-messages{
-  flex:1;
-  overflow-y:auto;
-  padding:16px 13px 10px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.message-row{
-  display:flex;
-  width:100%;
-}
-
-.message-row.mine{
-  justify-content:flex-end;
-}
-
-.message-row.theirs{
-  justify-content:flex-start;
-}
-
-.message-bubble{
-  max-width:82%;
-  padding:9px 11px 7px;
-  border-radius:15px;
-  background:#fff;
-  border:1px solid var(--theme-border);
-  box-shadow:0 3px 10px rgba(0,0,0,.035);
-}
-
-.message-row.mine .message-bubble{
-  background:var(--theme-soft);
-  border-color:rgba(18,140,126,.16);
-  border-bottom-right-radius:5px;
-}
-
-.message-row.theirs .message-bubble{
-  border-bottom-left-radius:5px;
-}
-
-.message-text{
-  font-size:.86rem;
-  line-height:1.42;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.message-meta{
-  margin-top:4px;
-  font-size:.62rem;
-  color:var(--theme-muted);
-  text-align:right;
-}
-
-.chat-input-area{
-  padding:9px 10px calc(9px + env(safe-area-inset-bottom));
-  background:var(--theme-card);
-  border-top:1px solid var(--theme-border);
-  display:flex;
-  align-items:flex-end;
-  gap:7px;
-}
-
-.chat-input{
-  flex:1;
-  min-height:43px;
-  max-height:120px;
-  resize:none;
-  padding:11px 13px;
-  border-radius:14px;
-  line-height:1.35;
-}
-
-.send-btn{
-  width:44px;
-  height:44px;
-  border:0;
-  border-radius:13px;
-  color:#fff;
-  background:var(--theme-primary);
-  font-size:18px;
-  flex-shrink:0;
-}
-
-.emergency-btn{
-  width:44px;
-  height:44px;
-  border:1px solid #f0c8c6;
-  background:#fff5f4;
-  color:#c83c37;
-  border-radius:13px;
-  font-size:17px;
-  flex-shrink:0;
-}
-
-/* PIN */
-
-.pin-overlay{
-  position:absolute;
-  inset:0;
-  z-index:100;
-  background:rgba(9,25,22,.42);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  backdrop-filter:blur(5px);
-}
-
-.pin-overlay.active{
-  display:flex;
-}
-
-.pin-modal{
-  width:min(100%,360px);
-  background:var(--theme-card);
-  border-radius:20px;
-  padding:21px;
-  box-shadow:0 25px 70px rgba(0,0,0,.25);
-}
-
-.pin-modal h3{
-  margin:0;
-  font-size:1.05rem;
-}
-
-.pin-modal p{
-  margin:6px 0 15px;
-  color:var(--theme-muted);
-  font-size:.77rem;
-}
-
-.pin-modal input{
-  text-align:center;
-  letter-spacing:6px;
-  font-weight:800;
-}
-
-.pin-error{
-  min-height:18px;
-  color:var(--theme-danger);
-  font-size:.73rem;
-  margin-top:7px;
-  text-align:center;
-}
-
-/* ADMIN */
-
-.admin-tools{
-  display:flex;
-  gap:8px;
-  margin-bottom:13px;
-}
-
-.admin-tool-btn{
-  flex:1;
-  border:1px solid var(--theme-border);
-  background:var(--theme-card);
-  color:var(--theme-primary);
-  border-radius:11px;
-  padding:10px 8px;
-  font-size:.72rem;
-  font-weight:800;
-}
-
-.admin-tool-btn.secondary{
-  background:var(--theme-soft);
-}
-
-.admin-user-row{
-  background:var(--theme-card);
-  border:1px solid var(--theme-border);
-  border-radius:14px;
-  padding:13px;
-  margin-bottom:8px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
-
-.admin-user-row:active{
-  transform:scale(.995);
-}
-
-.admin-user-info{
-  min-width:0;
-  flex:1;
-}
-
-.admin-user-name{
-  font-weight:800;
-  font-size:.88rem;
-}
-
-.admin-user-phone,
-.admin-user-email{
-  color:var(--theme-muted);
-  font-size:.7rem;
-  margin-top:3px;
-  word-break:break-word;
-}
-
-.admin-status{
-  font-size:.62rem;
-  padding:4px 7px;
-  border-radius:20px;
-  background:var(--theme-soft);
-  color:var(--theme-primary);
-  font-weight:800;
-}
-
-/* ADMIN EDIT */
-
-.editor-form{
-  background:var(--theme-card);
-  border:1px solid var(--theme-border);
-  border-radius:16px;
-  padding:16px;
-}
-
-.form-label{
-  display:block;
-  font-size:.7rem;
-  font-weight:800;
-  color:var(--theme-muted);
-  margin:0 0 6px 2px;
-}
-
-.form-group{
-  margin-bottom:12px;
-}
-
-/* SETTINGS */
-
-.settings-section{
-  padding:17px;
-  overflow-y:auto;
-  flex:1;
-}
-
-.settings-title{
-  margin:0 0 5px;
-  font-size:1.05rem;
-  font-weight:850;
-}
-
-.settings-subtitle{
-  color:var(--theme-muted);
-  font-size:.74rem;
-  margin:0 0 16px;
-}
-
-.theme-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-.theme-option{
-  border:1px solid var(--theme-border);
-  background:var(--theme-card);
-  border-radius:15px;
-  padding:10px;
-  cursor:pointer;
-}
-
-.theme-option.active{
-  border-color:var(--theme-primary);
-  box-shadow:0 0 0 2px rgba(18,140,126,.1);
-}
-
-.theme-preview{
-  height:55px;
-  border-radius:10px;
-  position:relative;
-  overflow:hidden;
-  margin-bottom:8px;
-}
-
-.theme-preview::before{
-  content:"";
-  position:absolute;
-  left:8px;
-  right:20px;
-  bottom:9px;
-  height:11px;
-  border-radius:8px;
-  background:rgba(255,255,255,.85);
-}
-
-.theme-preview::after{
-  content:"";
-  position:absolute;
-  right:7px;
-  top:8px;
-  width:45%;
-  height:14px;
-  border-radius:8px;
-  background:rgba(255,255,255,.35);
-}
-
-.theme-name{
-  font-size:.74rem;
-  font-weight:800;
-}
-
-.theme-emerald{
-  background:linear-gradient(135deg,#075e54,#25d366);
-}
-
-.theme-midnight{
-  background:linear-gradient(135deg,#111827,#374151);
-}
-
-.theme-ocean{
-  background:linear-gradient(135deg,#075985,#0ea5e9);
-}
-
-.theme-graphite{
-  background:linear-gradient(135deg,#262626,#737373);
-}
-
-.theme-royal{
-  background:linear-gradient(135deg,#312e81,#7c3aed);
-}
-
-.theme-ivory{
-  background:linear-gradient(135deg,#f4ead5,#d7b98e);
-}
-
-.admin-settings-actions{
-  display:flex;
-  gap:8px;
-  margin-top:17px;
-}
-
-.admin-settings-actions button{
-  flex:1;
-}
-
-/* TOAST */
-
-.toast{
-  position:absolute;
-  left:50%;
-  bottom:78px;
-  transform:translateX(-50%) translateY(15px);
-  z-index:300;
-  max-width:calc(100% - 30px);
-  background:#17231f;
-  color:#fff;
-  border-radius:12px;
-  padding:10px 14px;
-  font-size:.74rem;
-  opacity:0;
-  pointer-events:none;
-  transition:.22s ease;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  text-align:center;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-
-/* EMPTY */
-
-.empty-state{
-  text-align:center;
-  padding:50px 20px;
-  color:var(--theme-muted);
-}
-
-.empty-state .empty-icon{
-  font-size:34px;
-  margin-bottom:9px;
-}
-
-.empty-state strong{
-  display:block;
-  color:var(--theme-text);
-  font-size:.9rem;
-}
-
-.empty-state p{
-  font-size:.74rem;
-  margin:5px 0 0;
-}
-
-/* MOBILE */
-
-@media(max-width:380px){
-  .hub-scroll,
-  .scroll-area{
-    padding:13px;
-  }
-
-  #login-screen{
-    padding-left:15px;
-    padding-right:15px;
-  }
-
-  .login-panel{
-    padding:14px;
-  }
-
-  .admin-tools{
-    gap:5px;
-  }
-
-  .admin-tool-btn{
-    padding-left:5px;
-    padding-right:5px;
-    font-size:.68rem;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>axtres</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+        body { 
+            background: var(--theme-page); 
+            display: flex; justify-content: center; align-items: center; 
+            min-height:100dvh; color: #333; overflow: hidden; 
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            width:min(100vw,520px); height:min(100dvh,900px); min-height:0;
+            border-radius:clamp(0px,2vw,20px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); 
+            display: flex; flex-direction: column; overflow: hidden; position: relative; 
+        }
+
+        .screen { display: none; flex-direction: column; height: 100%; width: 100%; min-height:0; }
+        @media (max-width:520px),(max-height:900px) { .card { border-radius:0; box-shadow:none; } }
+        .screen.active { display: flex; }
+
+        #welcome-screen { justify-content: center; align-items: center; text-align: center; padding: 30px; background: linear-gradient(135deg, #075e54, #128c7e); color: white; }
+        #welcome-screen h1 { font-size: 2.3rem; margin-bottom: 10px; font-weight: 800; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .header-bar { background: #075e54; color: white; padding: 15px 20px; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header-bar span { font-size: 0.85rem; opacity: 0.9; font-weight: normal; cursor: pointer; text-decoration: underline; }
+
+        .form-content { padding: 18px 25px; display: flex; flex-direction: column; gap: 8px; justify-content: center; flex: 1; overflow-y: auto; }
+        .form-content h2 { color: #075e54; font-size: 1.35rem; margin-bottom: 2px; }
+        .form-content p.subtitle { color: #666; font-size: 0.82rem; margin-bottom: 2px; }
+
+        input, select { padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fafafa; }
+        input:focus, select:focus { border-color: #075e54; background: #fff; box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
+
+        .email-group { display: flex; gap: 6px; }
+        .email-group input { flex: 2; }
+        .email-group select { flex: 1.2; font-size: 0.85rem; }
+
+        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
+        .btn:hover { background: #054c44; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
+        .btn-secondary:hover { background: #183d63; }
+        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .btn-accent:hover { background: #bf360c; }
+        
+        .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+
+        .login-entry { display:flex; flex-direction:column; gap:5px; margin-top:2px; }
+        .login-entry input { margin:0; border-radius:13px; }
+        .login-entry .btn { margin:0; border-radius:13px; }
+        .login-profile-card { margin-top:13px; padding:15px 16px; align-items:flex-start; text-align:left; gap:4px; border-radius:15px; position:relative; overflow:hidden; }
+        .login-profile-card::after { content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:color-mix(in srgb,var(--theme-primary) 9%,transparent); }
+        .login-profile-label { font-size:.66rem; font-weight:800; color:#7a8a93; text-transform:uppercase; letter-spacing:.8px; }
+        .login-profile-card .hub-user-name { font-size:1.08rem; }
+        .login-profile-card .hub-user-phone { color:var(--theme-primary); font-size:.88rem; font-weight:700; }
+        .login-profile-card .hub-user-email { font-size:.77rem; }
+        .login-panel-note { color:#667781; font-size:.76rem; margin-bottom:2px; }
+
+        .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
+        .hub-card { background: linear-gradient(145deg, #ffffff, #f5f8fb); border: 1px solid rgba(7, 94, 84, 0.14); border-radius: 16px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 16px; box-shadow: 0 10px 28px rgba(15, 32, 39, 0.08); }
+        .hub-user-name { font-size: 1.35rem; font-weight: 750; color: #111b21; margin-bottom: 2px; }
+        .hub-user-phone { font-size: 0.95rem; color: #53636d; font-weight: 500; }
+        .hub-user-email { font-size: 0.9rem; color: #667781; font-weight: 500; word-break: break-word; }
+        
+        .hub-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 0; }
+        .btn-hub { width: 100%; height: 48px; padding: 12px 16px; font-size: 0.98rem; font-weight: 600; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.06); transition: background 0.2s; }
+        .btn-hub-primary { background: #075e54; color: white; }
+        .btn-hub-primary:hover { background: #054c44; }
+        .btn-hub-secondary { background: #f0f2f5; color: #111b21; border: 1px solid #ccc; }
+        .btn-hub-secondary:hover { background: #e4e6eb; }
+
+        .directory-pin-card { width: 100%; max-width: 300px; background: #ffffff; border-radius: 18px; padding: 24px 22px; box-shadow: 0 18px 50px rgba(0,0,0,0.22); text-align: center; }
+        .directory-pin-card h2 { color: #075e54; font-size: 1.25rem; margin-bottom: 18px; }
+        .directory-pin-card input { width: 100%; text-align: center; font-size: 1.8rem; letter-spacing: 4px; background: #f8fafb; }
+        .directory-pin-card .error-msg { min-height: 18px; margin-top: 8px; font-weight: 600; }
+
+        :root {
+            --theme-primary: #075e54;
+            --theme-secondary: #128c7e;
+            --theme-page: linear-gradient(135deg, #063f38, #075e54, #0b806f, #128c7e);
+            --theme-soft: #f0f2f5;
+            --theme-card: #ffffff;
+            --theme-text: #111b21;
+        }
+
+        body { background: var(--theme-page); }
+        .header-bar { background: var(--theme-primary); }
+        .form-content h2, .hub-welcome { color: var(--theme-primary); }
+        .btn, .btn-hub-primary, #send-btn { background: var(--theme-primary); }
+        .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
+         .hub-card { background: var(--theme-card); color: var(--theme-text); }
+        .yadhu-profile-card { animation: profileCardIn .55s ease-out both; border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent); }
+        .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
+        .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
+        @keyframes profileCardIn { from { opacity:0; transform:translateY(12px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+        #contacts-container { background: var(--theme-soft); }
+
+        .hub-top-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .settings-button {
+            border: 1px solid rgba(7,94,84,.16);
+            background: rgba(255,255,255,.85);
+            color: var(--theme-primary);
+            border-radius: 10px;
+            padding: 8px 13px;
+            font-size: .84rem;
+            font-weight: 650;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
+        }
+
+        .settings-overlay {
+            position: absolute; inset: 0; z-index: 60;
+            background: rgba(8,18,24,.52);
+            backdrop-filter: blur(10px);
+            display: none; align-items: flex-end; justify-content: center;
+        }
+        .settings-overlay.active { display: flex; }
+        .settings-panel {
+            width: 100%; max-height: 88%; overflow-y: auto;
+            background: var(--theme-card); border-radius: 22px 22px 0 0;
+            padding: 22px 18px 24px; box-shadow: 0 -15px 50px rgba(0,0,0,.22);
+        }
+        .settings-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .settings-head h2 { color:var(--theme-primary); font-size:1.25rem; }
+        .settings-close { border:0; background:var(--theme-soft); color:var(--theme-text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.1rem; }
+        .theme-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .theme-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; }
+        .theme-option.selected { border-color:var(--theme-primary); }
+        .theme-preview { height:72px; border-radius:10px; overflow:hidden; position:relative; padding:8px; display:flex; flex-direction:column; justify-content:space-between; }
+        .preview-bar { height:9px; width:62%; border-radius:5px; background:rgba(255,255,255,.9); }
+        .preview-bubble { align-self:flex-end; width:48%; height:20px; border-radius:8px; background:rgba(255,255,255,.86); }
+        .preview-name { margin-top:7px; font-size:.78rem; font-weight:650; color:var(--theme-text); }
+        .switch-text { text-align: center; font-size: 0.82rem; color: #666; margin-top: 2px; }
+        .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+
+        #contacts-container { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        .contact-item { background: white; padding: 14px 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.2s; }
+        .contact-item:hover { background: #f5f6f6; }
+        .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
+        .contact-phone { font-size: 0.85rem; color: #667781; }
+        
+        .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
+        .status-pill.active { background: #e8f5e9; color: #2e7d32; }
+        .status-pill.inactive { background: #f5f5f5; color: #757575; }
+
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; -webkit-overflow-scrolling: touch; }
+        
+        .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
+        .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
+        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        
+        .msg.email-alert { background: #e3f2fd !important; border: 1.5px solid #1976d2 !important; color: #0d47a1 !important; }
+        .email-badge { font-size: 0.65rem; background: #1976d2; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
+
+        .msg-time { font-size: 0.65rem; color: #667781; float: right; margin-left: 12px; margin-top: 4px; }
+
+        .email-toolbar { background: #e3f2fd; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #bbdefb; font-size: 0.82rem; font-weight: 600; color: #1565c0; }
+        .toggle-switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #1976d2; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #input-toolbar { display: flex; padding: 10px 15px; background: #f0f2f5; gap: 10px; align-items: center; border-top: 1px solid #e0e0e0; }
+        #message-input { flex: 1; border-radius: 20px; padding: 10px 16px; border: 1px solid #ccc; background: white; font-size: 0.95rem; }
+        #send-btn { background: #075e54; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem; }
+        .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+        .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
+        .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        .admin-pin-card { width:100%; max-width:320px; background:#fff; border-radius:18px; padding:24px 22px; box-shadow:0 18px 50px rgba(0,0,0,.22); text-align:center; }
+        .admin-pin-card h2 { color:#075e54; font-size:1.25rem; margin-bottom:18px; }
+        .admin-pin-card input { width:100%; text-align:center; font-size:1.8rem; letter-spacing:4px; background:#f8fafb; }
+        .admin-tools { display:flex; gap:10px; padding:14px 15px; background:var(--theme-card); border-bottom:1px solid #e5e7eb; flex-wrap:wrap; }
+        .admin-tool-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; background:var(--theme-primary); color:#fff; }
+        .admin-tool-btn.secondary { background:var(--theme-soft); color:var(--theme-text); }
+        .admin-tool-btn.settings { background:var(--theme-soft); color:var(--theme-text); }
+        .admin-user-item { cursor:pointer; }
+        .admin-user-item:active { transform:scale(.998); }
+        .admin-user-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 15px; border-bottom:1px solid #e7eaed; background:var(--theme-card); }
+        .admin-user-main { min-width:0; flex:1; }
+        .admin-user-name { font-weight:750; color:var(--theme-text); }
+        .admin-user-meta { margin-top:3px; color:#667781; font-size:.84rem; overflow-wrap:anywhere; }
+        .admin-user-actions { display:flex; gap:8px; flex-shrink:0; }
+        .admin-small-btn { border:0; border-radius:9px; padding:8px 11px; font-weight:700; cursor:pointer; background:var(--theme-primary); color:#fff; }
+        .admin-small-btn.edit { background:#eef6f4; color:#075e54; }
+        .admin-form-wrap { padding:16px; overflow:auto; background:var(--theme-soft); }
+        .admin-form-card { max-width:620px; margin:0 auto; background:var(--theme-card); border-radius:16px; padding:18px; box-shadow:0 8px 25px rgba(0,0,0,.08); }
+        .admin-form-card h2 { color:var(--theme-text); margin-bottom:14px; }
+        .admin-form-card label { display:block; margin:12px 0 6px; font-size:.84rem; font-weight:700; color:#667781; }
+        .admin-form-card input { width:100%; }
+        .admin-form-actions { display:flex; gap:10px; margin-top:16px; }
+        .admin-empty { padding:28px 18px; text-align:center; color:#667781; background:var(--theme-card); }
+    </style>
 </head>
-
 <body>
 
-<div class="app-shell">
-<div class="card">
+    <div class="card">
+        <div id="toast-notification" class="notice-toast">Email extension is handled by the dropdown menu.</div>
 
-  <!-- WELCOME / LOADING -->
-  <section id="welcome-screen" class="screen active">
-    <div class="logo-mark">
-      <span>ax</span>
-    </div>
-    <h1 class="splash-title">axtres</h1>
-    <p class="splash-subtitle">Private. Simple. Connected.</p>
-  </section>
-
-  <!-- LOGIN -->
-  <section id="login-screen" class="screen">
-    <div class="login-content">
-
-      <div class="login-brand">
-        <div class="mini-logo">ax</div>
-        <h1>Good to See You</h1>
-        <p>Sign in to continue to your conversations</p>
-      </div>
-
-      <div class="login-panel">
-        <div class="login-panel-label">Your registered phone</div>
-
-        <div class="login-entry">
-          <input
-            type="tel"
-            id="login-phone"
-            placeholder="Enter your registered phone number"
-            maxlength="10"
-            inputmode="numeric"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-          >
-
-          <div class="error-msg" id="login-error"></div>
-
-          <button class="btn" onclick="handleLogin()">
-            Log In to Chats
-          </button>
+        <!-- 1. SPLASH SCREEN -->
+        <div id="welcome-screen" class="screen active">
+            <h1>axtres</h1>
+            <p>Secure Email & Chat Messenger</p>
+            <div class="spinner"></div>
         </div>
 
-        <div class="hub-card yadhu-profile-card login-profile-card">
-          <div class="login-profile-label">axtres contact</div>
-          <div class="hub-user-name">Yadhu Krishna</div>
-          <div class="hub-user-phone">+91 70257 07720</div>
-          <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
-        </div>
-      </div>
+        <!-- 2. REGISTER SCREEN -->
+        <div id="register-screen" class="screen">
+            <div class="header-bar">Registration</div>
+            <div class="form-content">
+                <h2>Sign Up</h2>
+                <p class="subtitle">Email is optional. Add one to receive email alerts.</p>
+                <input type="text" id="reg-name" placeholder="Your Full Name">
+                <input type="tel" id="reg-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="email-group">
+                    <input type="text" id="reg-email-user" placeholder="Email username (optional)" oninput="interceptEmailInput(event)">
+                    <select id="reg-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+                
+                <button class="btn-secondary" onclick="requestNotificationPermission()">1. Enable Notifications</button>
+                <div id="notif-status" style="font-size: 0.75rem; text-align: center; color: #666;">Status: Not Enabled</div>
 
-    </div>
-  </section>
+                <div class="error-msg" id="reg-error"></div>
+                
+                <button class="btn" onclick="handleRegister()">Complete Sign Up</button>
+                <button id="install-btn-reg" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
 
-  <!-- HUB -->
-  <section id="hub-screen" class="screen">
-
-    <header class="app-header">
-      <div class="header-title">
-        <h2>axtres</h2>
-        <p>Secure messenger</p>
-      </div>
-    </header>
-
-    <div class="hub-scroll">
-
-      <div class="greeting">
-        <div class="small">Good to see you</div>
-        <h1 id="hub-greeting">Hello</h1>
-      </div>
-
-      <div class="hub-card yadhu-profile-card">
-        <div class="login-profile-label">Yadhu Krishna</div>
-        <div class="hub-user-name">Yadhu Krishna</div>
-        <div class="hub-user-phone">+91 70257 07720</div>
-        <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
-      </div>
-
-      <div class="hub-section">
-
-        <div class="hub-section-title">Messages</div>
-
-        <button class="hub-action" onclick="openYadhuChat()">
-          <div class="icon">💬</div>
-          <div>
-            <strong>Chat with Yadhu Krishna</strong>
-            <span>Open your private conversation</span>
-          </div>
-        </button>
-
-        <button class="hub-action" onclick="openDirectory()">
-          <div class="icon">👥</div>
-          <div>
-            <strong>Directory</strong>
-            <span>Browse registered axtres users</span>
-          </div>
-        </button>
-
-        <button class="hub-action" onclick="openSettings()">
-          <div class="icon">⚙</div>
-          <div>
-            <strong>Settings</strong>
-            <span>Personal appearance and preferences</span>
-          </div>
-        </button>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- DIRECTORY -->
-  <section id="directory-screen" class="screen">
-
-    <header class="app-header">
-      <button class="back-btn" onclick="goToHub()">‹</button>
-
-      <div class="header-title">
-        <h2>Directory</h2>
-        <p>Registered axtres users</p>
-      </div>
-    </header>
-
-    <div class="scroll-area" id="directory-list">
-      <div class="empty-state">
-        <div class="empty-icon">👥</div>
-        <strong>Loading directory...</strong>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- CHAT -->
-  <section id="chat-screen" class="screen">
-
-    <header class="app-header">
-
-      <button class="back-btn" onclick="closeChat()">‹</button>
-
-      <div class="chat-header-user">
-        <div class="chat-header-name" id="chat-header-name">
-          Chat
-        </div>
-        <div class="chat-header-phone" id="chat-header-phone"></div>
-      </div>
-
-    </header>
-
-    <div class="chat-messages" id="chat-messages"></div>
-
-    <div class="chat-input-area">
-
-      <button
-        class="emergency-btn"
-        onclick="sendEmergencyMessage()"
-        title="Send message with email alert"
-      >⚠</button>
-
-      <textarea
-        id="chat-input"
-        class="chat-input"
-        rows="1"
-        placeholder="Type a message..."
-        oninput="autoResizeChatInput(this)"
-        onkeydown="handleChatKeydown(event)"
-      ></textarea>
-
-      <button class="send-btn" onclick="sendMessage()">➤</button>
-
-    </div>
-
-  </section>
-
-  <!-- SETTINGS -->
-  <section id="settings-screen" class="screen">
-
-    <header class="app-header">
-
-      <button class="back-btn" onclick="closeSettings()">‹</button>
-
-      <div class="header-title">
-        <h2 id="settings-title">Appearance</h2>
-        <p>Customize your axtres experience</p>
-      </div>
-
-    </header>
-
-    <div class="settings-section">
-
-      <h3 class="settings-title">Themes</h3>
-      <p class="settings-subtitle">
-        Choose a personal theme. Your selection overrides the admin default on this device.
-      </p>
-
-      <div class="theme-grid">
-
-        <div class="theme-option" data-theme="emerald" onclick="selectTheme('emerald')">
-          <div class="theme-preview theme-emerald"></div>
-          <div class="theme-name">Emerald</div>
+                <div class="switch-text">Already registered? <a onclick="switchScreen('login-screen')">Log In here</a></div>
+            </div>
         </div>
 
-        <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
-          <div class="theme-preview theme-midnight"></div>
-          <div class="theme-name">Midnight</div>
+        <!-- 2.5 PIN VERIFICATION SCREEN -->
+        <div id="verify-screen" class="screen">
+            <div class="header-bar">Verify Email</div>
+            <div class="form-content" style="text-align: center;">
+                <h2>Enter 3-Digit PIN</h2>
+                <p class="subtitle">Check your email inbox for the verification code.</p>
+                <input type="tel" id="verify-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="handleAutoVerifyRegister(event)">
+                
+                <div class="error-msg" id="verify-error"></div>
+                <button class="btn-secondary" onclick="switchScreen('register-screen')">Back</button>
+            </div>
         </div>
 
-        <div class="theme-option" data-theme="ocean" onclick="selectTheme('ocean')">
-          <div class="theme-preview theme-ocean"></div>
-          <div class="theme-name">Ocean</div>
+        <!-- 3. LOGIN SCREEN -->
+        <div id="login-screen" class="screen">
+            <div class="header-bar">Sign In</div>
+            <div class="form-content">
+                <h2>Good to See You</h2>
+                <p class="subtitle">Sign in to continue to your conversations</p>
+
+                <div class="login-entry">
+                    <input type="tel" id="login-phone" placeholder="Enter your registered phone number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <div class="error-msg" id="login-error"></div>
+                    <button class="btn" onclick="handleLogin()">Log In to Chats</button>
+                </div>
+
+                <div class="hub-card yadhu-profile-card login-profile-card">
+                    <div class="login-profile-label">axtres contact</div>
+                    <div class="hub-user-name">Yadhu Krishna</div>
+                    <div class="hub-user-phone">+91 70257 07720</div>
+                    <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
+                </div>
+
+                <button class="btn-secondary" onclick="openAdminWithPin()" style="margin-top:10px;">Admin</button>
+                <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Link Email</button>
+                <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
+
+                <div class="switch-text">New user? <a onclick="switchScreen('register-screen')">Register here</a></div>
+            </div>
         </div>
 
-        <div class="theme-option" data-theme="graphite" onclick="selectTheme('graphite')">
-          <div class="theme-preview theme-graphite"></div>
-          <div class="theme-name">Graphite</div>
+        <!-- 3.5 ADD EMAIL SCREEN -->
+        <div id="add-email-screen" class="screen">
+            <div class="header-bar">
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="switchScreen('login-screen')">&#8592;</span>
+                    <div>Link Email</div>
+                </div>
+            </div>
+            <div class="form-content">
+                <h2>Update Email</h2>
+                <p class="subtitle">Enter phone and new email</p>
+                <input type="tel" id="ae-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <div class="email-group">
+                    <input type="text" id="ae-email-user" placeholder="Email username" oninput="interceptEmailInput(event)">
+                    <select id="ae-email-domain">
+                        <option value="@gmail.com" selected>@gmail.com</option>
+                        <option value="@outlook.com">@outlook.com</option>
+                    </select>
+                </div>
+
+                <div class="error-msg" id="ae-error"></div>
+                <button class="btn" onclick="handleAddEmailInit()">Send Verification PIN</button>
+            </div>
         </div>
 
-        <div class="theme-option" data-theme="royal" onclick="selectTheme('royal')">
-          <div class="theme-preview theme-royal"></div>
-          <div class="theme-name">Royal</div>
+        <!-- 3.6 AUTO-VERIFY EMAIL UPDATE SCREEN -->
+        <div id="verify-email-screen" class="screen">
+            <div class="header-bar">Confirm Email PIN</div>
+            <div class="form-content" style="text-align: center;">
+                <h2>Enter 3-Digit PIN</h2>
+                <p class="subtitle">Auto-submits when 3 digits are entered.</p>
+                <input type="tel" id="ae-pin-input" placeholder="---" maxlength="3" inputmode="numeric" style="text-align: center; font-size: 1.8rem; letter-spacing: 10px;" oninput="handleAutoVerifyEmail(event)">
+                
+                <div class="error-msg" id="ae-verify-error"></div>
+                <button class="btn-secondary" onclick="switchScreen('login-screen')">Cancel</button>
+            </div>
         </div>
 
-        <div class="theme-option" data-theme="ivory" onclick="selectTheme('ivory')">
-          <div class="theme-preview theme-ivory"></div>
-          <div class="theme-name">Ivory</div>
+        <!-- 4. HUB SCREEN (Default view for non-Yadhu users) -->
+        <div id="hub-screen" class="screen">
+            <div class="header-bar">
+                <div>axtres</div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div class="form-content" style="justify-content: flex-start; padding-top: 32px;">
+                <div class="hub-welcome" id="hub-welcome-text">Welcome, User!</div>
+                
+                <div class="hub-card yadhu-profile-card">
+                    <div class="hub-user-name" id="hub-user-name">Yadhu Krishna</div>
+                    <div class="hub-user-phone" id="hub-user-phone">7025707720</div>
+                    <div class="hub-user-email" id="hub-user-email">yadhukrishnabp777@gmail.com</div>
+                </div>
+
+                <div class="hub-actions">
+                    <button class="btn-hub btn-hub-primary" onclick="chatWithYadhu()">💬 Chat with Yadhu Krishna</button>
+                    <button class="btn-hub btn-hub-secondary" onclick="openDirectoryWithPin()">📖 Directory</button>
+                </div>
+
+                <div class="settings-footer">
+                    <button class="settings-button" onclick="openSettings()">⚙ Settings</button>
+                </div>
+            </div>
         </div>
 
-      </div>
+        <!-- DIRECTORY PIN -->
+        <div id="directory-pin-screen" class="screen" onclick="handleDirectoryBackdrop(event)" style="position:absolute; inset:0; background:rgba(7, 24, 32, 0.48); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px; z-index:50;">
+            <div class="directory-pin-card" onclick="event.stopPropagation()">
+                <h2>Directory</h2>
+                <input type="tel" id="directory-pin-input" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="Enter PIN" oninput="handleDirectoryPinInput(event)" autofocus>
+                <div class="error-msg" id="directory-pin-error"></div>
+            </div>
+        </div>
 
-      <div
-        id="admin-settings-actions"
-        class="admin-settings-actions"
-        style="display:none;"
-      >
-        <button class="btn-secondary" onclick="setCurrentThemeAsDefault()">
-          Set as Default
-        </button>
+        <!-- 5. CONTACTS / DIRECTORY SCREEN -->
+        <div id="contacts-screen" class="screen">
+            <div class="header-bar">
+                <div style="display:flex;align-items:center;">
+                    <span class="back-arrow" onclick="returnFromDirectory()">&#8592;</span>
+                    <div>Directory (<span id="my-name-display"></span>)</div>
+                </div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div style="padding:10px 15px;background:#fff;font-size:0.85rem;color:#667781;border-bottom:1px solid #eee;">Select a contact to start chatting:</div>
+            <div id="contacts-container"></div>
+        </div>
 
-        <button class="btn-secondary" onclick="closeSettings()">
-          Done
-        </button>
-      </div>
+        <div id="admin-pin-screen" class="screen" onclick="handleAdminBackdrop(event)" style="position:absolute;inset:0;background:rgba(7,24,32,.48);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;z-index:60;">
+            <div class="admin-pin-card" onclick="event.stopPropagation()">
+                <h2>Admin Access</h2>
+                <input type="tel" id="admin-pin-input" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="Enter PIN" oninput="handleAdminPinInput(event)" autofocus>
+                <div class="error-msg" id="admin-pin-error"></div>
+            </div>
+        </div>
 
-    </div>
-  </section>
+        <div id="admin-screen" class="screen">
+            <div class="header-bar">
+                <div style="display:flex;align-items:center;">
+                    <span class="back-arrow" onclick="closeAdmin()">&#8592;</span>
+                    <div>Admin</div>
+                </div>
+                <span onclick="closeAdmin()">Sign Out</span>
+            </div>
+            <div class="admin-tools">
+                <button class="admin-tool-btn" onclick="openAdminDirectoryEditor()">Edit Directory</button>
+                <button class="admin-tool-btn secondary" onclick="refreshAdminUsers()">Refresh</button>
+                <button class="admin-tool-btn settings" onclick="openAdminSettings()">⚙ Settings</button>
+            </div>
+            <div style="padding:10px 15px;background:var(--theme-card);font-size:.85rem;color:#667781;border-bottom:1px solid #eee;">All registered users. Select a user to chat.</div>
+            <div id="admin-users-container"></div>
+        </div>
 
-  <!-- ADMIN PIN -->
-  <div id="admin-pin-overlay" class="pin-overlay">
+        <div id="admin-edit-screen" class="screen">
+            <div class="header-bar">
+                <div style="display:flex;align-items:center;">
+                    <span class="back-arrow" onclick="openAdmin()">&#8592;</span>
+                    <div>Edit Directory</div>
+                </div>
+                <span onclick="closeAdmin()">Sign Out</span>
+            </div>
+            <div class="admin-tools">
+                <button class="admin-tool-btn" onclick="openAdminUserForm()">+ Add User</button>
+                <button class="admin-tool-btn secondary" onclick="refreshAdminDirectoryEditor()">Refresh</button>
+            </div>
+            <div id="admin-edit-container"></div>
+        </div>
 
-    <div class="pin-modal" onclick="event.stopPropagation()">
+        <div id="admin-user-form-screen" class="screen">
+            <div class="header-bar">
+                <div style="display:flex;align-items:center;">
+                    <span class="back-arrow" onclick="openAdminDirectoryEditor()">&#8592;</span>
+                    <div id="admin-form-title">Add User</div>
+                </div>
+                <span onclick="closeAdmin()">Sign Out</span>
+            </div>
+            <div class="admin-form-wrap">
+                <div class="admin-form-card">
+                    <h2 id="admin-form-heading">Add User</h2>
+                    <input type="hidden" id="admin-original-phone">
+                    <label for="admin-name">Name</label>
+                    <input type="text" id="admin-name" placeholder="Full name" autocomplete="off">
+                    <label for="admin-phone">Phone</label>
+                    <input type="tel" id="admin-phone" placeholder="10-digit Phone Number" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    <label for="admin-email">Email</label>
+                    <input type="email" id="admin-email" placeholder="Email address" autocomplete="off">
+                    <div class="error-msg" id="admin-form-error"></div>
+                    <div class="admin-form-actions">
+                        <button class="btn" onclick="saveAdminUser()">Save User</button>
+                        <button class="btn-secondary" onclick="openAdminDirectoryEditor()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <h3>Admin Access</h3>
+        <!-- SETTINGS -->
+        <div id="settings-overlay" class="settings-overlay" onclick="handleSettingsBackdrop(event)">
+            <div class="settings-panel" onclick="event.stopPropagation()">
+                <div class="settings-head">
+                    <h2 id="settings-heading">Appearance</h2>
+                    <button class="settings-close" onclick="closeSettings()">&#10005;</button>
+                </div>
+                <div class="theme-grid">
+                    <div class="theme-option" data-theme="emerald" onclick="selectTheme('emerald')"><div class="theme-preview" style="background:linear-gradient(135deg,#075e54,#128c7e)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Emerald</div></div>
+                    <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')"><div class="theme-preview" style="background:linear-gradient(135deg,#0b1020,#1d2745)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Midnight</div></div>
+                    <div class="theme-option" data-theme="ocean" onclick="selectTheme('ocean')"><div class="theme-preview" style="background:linear-gradient(135deg,#0b3d62,#168aad)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Ocean</div></div>
+                    <div class="theme-option" data-theme="graphite" onclick="selectTheme('graphite')"><div class="theme-preview" style="background:linear-gradient(135deg,#202124,#4b5563)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Graphite</div></div>
+                    <div class="theme-option" data-theme="royal" onclick="selectTheme('royal')"><div class="theme-preview" style="background:linear-gradient(135deg,#35205f,#7c3aed)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Royal</div></div>
+                    <div class="theme-option" data-theme="ivory" onclick="selectTheme('ivory')"><div class="theme-preview" style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Ivory</div></div>
+                </div>
+                <div id="admin-default-actions" style="display:none;gap:9px;margin-top:14px;">
+                    <button class="btn" style="flex:1;" onclick="setCurrentThemeAsDefault()">Set as Default</button>
+                    <button class="btn-secondary" style="flex:1;" onclick="closeSettings()">Done</button>
+                </div>
+            </div>
+        </div>
 
-      <p>Enter the administrator PIN to continue.</p>
+        <!-- 6. CHAT ROOM SCREEN -->
+        <div id="chat-screen" class="screen">
+            <div class="header-bar">
+                <div style="display: flex; align-items: center;">
+                    <span class="back-arrow" onclick="handleChatBack()">&#8592;</span>
+                    <div id="chat-room-title">Chat</div>
+                </div>
+                <span onclick="handleLogout()">Sign Out</span>
+            </div>
+            <div id="messages-container"></div>
+            
+            <div class="email-toolbar">
+                <span>📧 Send via Email</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="email-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
 
-      <input
-        type="tel"
-        id="admin-pin-input"
-        placeholder="Enter PIN"
-        maxlength="3"
-        inputmode="numeric"
-        oninput="handleAdminPinInput()"
-      >
-
-      <div id="admin-pin-error" class="pin-error"></div>
-
-    </div>
-
-  </div>
-
-  <!-- DIRECTORY PIN -->
-  <div id="directory-pin-overlay" class="pin-overlay">
-
-    <div class="pin-modal" onclick="event.stopPropagation()">
-
-      <h3>Directory Access</h3>
-
-      <p>Enter the directory PIN to continue.</p>
-
-      <input
-        type="tel"
-        id="directory-pin-input"
-        placeholder="Enter PIN"
-        maxlength="3"
-        inputmode="numeric"
-        oninput="handleDirectoryPinInput()"
-      >
-
-      <div id="directory-pin-error" class="pin-error"></div>
-
+            <div id="input-toolbar">
+                <input type="text" id="message-input" placeholder="Type message..." onkeypress="checkEnter(event)">
+                <button id="send-btn" onclick="sendMessage()">&#9658;</button>
+            </div>
+        </div>
     </div>
 
-  </div>
-
-  <!-- ADMIN -->
-  <section id="admin-screen" class="screen">
-
-    <header class="app-header">
-
-      <button class="back-btn" onclick="closeAdmin()">‹</button>
-
-      <div class="header-title">
-        <h2>Admin</h2>
-        <p>Directory management</p>
-      </div>
-
-    </header>
-
-    <div class="scroll-area">
-
-      <div class="admin-tools">
-
-        <button
-          class="admin-tool-btn"
-          onclick="openAdminDirectoryEditor()"
-        >
-          Edit Directory
-        </button>
-
-        <button
-          class="admin-tool-btn secondary"
-          onclick="refreshAdminUsers()"
-        >
-          Refresh
-        </button>
-
-        <button
-          class="admin-tool-btn secondary"
-          onclick="openAdminSettings()"
-        >
-          ⚙ Settings
-        </button>
-
-      </div>
-
-      <div id="admin-users-list">
-
-        <div class="empty-state">
-          <div class="empty-icon">🔐</div>
-          <strong>Loading admin directory...</strong>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ADMIN EDITOR -->
-  <section id="admin-editor-screen" class="screen">
-
-    <header class="app-header">
-
-      <button class="back-btn" onclick="closeAdminEditor()">‹</button>
-
-      <div class="header-title">
-        <h2>Edit Directory</h2>
-        <p>Add or update registered users</p>
-      </div>
-
-    </header>
-
-    <div class="scroll-area">
-
-      <div class="editor-form">
-
-        <input type="hidden" id="admin-original-phone">
-
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <input
-            type="text"
-            id="admin-name"
-            placeholder="Full name"
-          >
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Phone</label>
-          <input
-            type="tel"
-            id="admin-phone"
-            placeholder="10-digit phone number"
-            maxlength="10"
-            inputmode="numeric"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-          >
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input
-            type="email"
-            id="admin-email"
-            placeholder="Email address"
-          >
-        </div>
-
-        <button class="btn" onclick="saveAdminUser()">
-          Save User
-        </button>
-
-      </div>
-
-      <div style="height:14px;"></div>
-
-      <button class="btn-secondary" style="width:100%;" onclick="startNewAdminUser()">
-        + Add New User
-      </button>
-
-    </div>
-
-  </section>
-
-  <!-- TOAST -->
-  <div id="toast" class="toast"></div>
-
-</div>
-</div>
-
-<script>
-const USERS_API = "/users";
-const MESSAGES_API = "/messages";
-
-const DIRECTORY_PIN = "257";
-const ADMIN_PIN = "527";
-
-let currentUser = null;
-let currentChatUser = null;
-let currentRoomId = null;
-let messagesPollTimer = null;
-
-let adminPin = "";
-let adminSettingsMode = false;
-
-const VALID_THEMES = [
-  "emerald",
-  "midnight",
-  "ocean",
-  "graphite",
-  "royal",
-  "ivory"
-];
-
-/* --------------------------------
-   SCREEN NAVIGATION
--------------------------------- */
-
-function switchScreen(id){
-  document.querySelectorAll(".screen").forEach(screen=>{
-    screen.classList.remove("active");
-  });
-
-  const target=document.getElementById(id);
-
-  if(target){
-    target.classList.add("active");
-  }
-}
-
-function goToHub(){
-  stopMessagesPolling();
-  switchScreen("hub-screen");
-}
-
-function navigateAfterAuth(){
-  updateHubGreeting();
-  switchScreen("hub-screen");
-}
-
-function updateHubGreeting(){
-  const el=document.getElementById("hub-greeting");
-
-  if(!el) return;
-
-  if(currentUser && currentUser.name){
-    el.textContent=`Hello, ${currentUser.name}`;
-  }else{
-    el.textContent="Hello";
-  }
-}
-
-/* --------------------------------
-   DEVICE ID
--------------------------------- */
-
-function getDeviceId(){
-  let id=localStorage.getItem("axtres_device_id");
-
-  if(!id){
-    id=
-      "ax-" +
-      Date.now().toString(36) +
-      "-" +
-      Math.random().toString(36).slice(2,10);
-
-    localStorage.setItem("axtres_device_id",id);
-  }
-
-  return id;
-}
-
-/* --------------------------------
-   TOAST
--------------------------------- */
-
-let toastTimer=null;
-
-function showToast(message){
-  const toast=document.getElementById("toast");
-
-  if(!toast) return;
-
-  toast.textContent=message;
-  toast.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer=setTimeout(()=>{
-    toast.classList.remove("show");
-  },2500);
-}
-
-/* --------------------------------
-   LOGIN
--------------------------------- */
-
-async function handleLogin(){
-
-  const input=document.getElementById("login-phone");
-  const error=document.getElementById("login-error");
-
-  const phone=(input.value || "").replace(/\D/g,"");
-
-  error.textContent="";
-
-  if(phone.length!==10){
-    error.textContent="Enter your 10-digit registered phone number.";
-    return;
-  }
-
-  const button=document.querySelector("#login-screen .btn");
-
-  if(button){
-    button.disabled=true;
-    button.textContent="Signing In...";
-  }
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?action=login&_t=${Date.now()}`,
-      {
-        method:"POST",
-        cache:"no-store",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          phone
-        })
-      }
-    );
-
-    const data=await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "Unable to log in.");
-    }
-
-    currentUser=data.user;
-
-    localStorage.setItem(
-      "axtres_user",
-      JSON.stringify(currentUser)
-    );
-
-    updateHubGreeting();
-    switchScreen("hub-screen");
-
-  }catch(errorObject){
-
-    error.textContent=errorObject.message || "Unable to log in.";
-
-  }finally{
-
-    if(button){
-      button.disabled=false;
-      button.textContent="Log In to Chats";
-    }
-  }
-}
-
-/* --------------------------------
-   DIRECTORY
--------------------------------- */
-
-function openDirectory(){
-
-  const overlay=document.getElementById("directory-pin-overlay");
-  const input=document.getElementById("directory-pin-input");
-  const error=document.getElementById("directory-pin-error");
-
-  error.textContent="";
-  input.value="";
-
-  overlay.classList.add("active");
-
-  setTimeout(()=>{
-    input.focus();
-  },50);
-}
-
-function closeDirectoryPin(){
-  document
-    .getElementById("directory-pin-overlay")
-    .classList.remove("active");
-}
-
-function handleDirectoryPinInput(){
-
-  const input=document.getElementById("directory-pin-input");
-  const error=document.getElementById("directory-pin-error");
-
-  input.value=input.value.replace(/\D/g,"");
-
-  if(input.value.length<3){
-    error.textContent="";
-    return;
-  }
-
-  if(input.value===DIRECTORY_PIN){
-
-    closeDirectoryPin();
-    switchScreen("directory-screen");
-    loadDirectory();
-
-  }else{
-
-    error.textContent="Wrong PIN";
-
-    setTimeout(()=>{
-      input.value="";
-      error.textContent="";
-    },700);
-  }
-}
-
-async function loadDirectory(){
-
-  const list=document.getElementById("directory-list");
-
-  list.innerHTML=`
-    <div class="empty-state">
-      <div class="empty-icon">👥</div>
-      <strong>Loading directory...</strong>
-    </div>
-  `;
-
-  if(!currentUser) return;
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?phone=${encodeURIComponent(currentUser.phone)}&_t=${Date.now()}`,
-      {
-        cache:"no-store"
-      }
-    );
-
-    const users=await res.json();
-
-    if(!res.ok){
-      throw new Error(users.error || "Unable to load directory.");
-    }
-
-    if(!Array.isArray(users) || users.length===0){
-
-      list.innerHTML=`
-        <div class="empty-state">
-          <div class="empty-icon">👥</div>
-          <strong>No other users</strong>
-          <p>No registered contacts are available yet.</p>
-        </div>
-      `;
-
-      return;
-    }
-
-    list.innerHTML="";
-
-    users.forEach(user=>{
-
-      const card=document.createElement("div");
-      card.className="directory-card";
-
-      const initial=(user.name || "?")
-        .trim()
-        .charAt(0)
-        .toUpperCase();
-
-      card.innerHTML=`
-        <div class="directory-avatar">${escapeHtml(initial)}</div>
-
-        <div class="directory-info">
-          <div class="directory-name">
-            ${escapeHtml(user.name || "Unknown")}
-          </div>
-
-          <div class="directory-phone">
-            ${escapeHtml(formatIndianPhone(user.phone))}
-          </div>
-
-          ${
-            user.has_email
-            ? `<div class="directory-email">Verified email</div>`
-            : ""
-          }
-        </div>
-      `;
-
-      card.onclick=()=>{
-        openChatWithUser(user);
-      };
-
-      list.appendChild(card);
-    });
-
-  }catch(error){
-
-    list.innerHTML=`
-      <div class="empty-state">
-        <div class="empty-icon">⚠</div>
-        <strong>Unable to load directory</strong>
-        <p>${escapeHtml(error.message || "Please try again.")}</p>
-      </div>
-    `;
-  }
-}
-
-/* --------------------------------
-   YADHU CHAT
--------------------------------- */
-
-function openYadhuChat(){
-
-  openChatWithUser({
-    name:"Yadhu Krishna",
-    phone:"7025707720",
-    email:"yadhukrishnabp777@gmail.com"
-  });
-}
-
-/* --------------------------------
-   CHAT
--------------------------------- */
-
-function createRoomId(phone1,phone2){
-
-  const phones=[
-    String(phone1),
-    String(phone2)
-  ].sort();
-
-  return `room_${phones[0]}_${phones[1]}`;
-}
-
-function openChatWithUser(user){
-
-  if(!currentUser || !user){
-    return;
-  }
-
-  currentChatUser=user;
-  currentRoomId=createRoomId(
-    currentUser.phone,
-    user.phone
-  );
-
-  document.getElementById("chat-header-name").textContent=
-    user.name || "Chat";
-
-  document.getElementById("chat-header-phone").textContent=
-    formatIndianPhone(user.phone);
-
-  switchScreen("chat-screen");
-
-  loadMessages();
-  startMessagesPolling();
-
-  setTimeout(()=>{
-    document.getElementById("chat-input")?.focus();
-  },150);
-}
-
-function closeChat(){
-
-  stopMessagesPolling();
-
-  currentChatUser=null;
-  currentRoomId=null;
-
-  switchScreen("hub-screen");
-}
-
-function startMessagesPolling(){
-
-  stopMessagesPolling();
-
-  messagesPollTimer=setInterval(()=>{
-    loadMessages(true);
-  },600);
-}
-
-function stopMessagesPolling(){
-
-  if(messagesPollTimer){
-    clearInterval(messagesPollTimer);
-    messagesPollTimer=null;
-  }
-}
-
-async function loadMessages(silent=false){
-
-  if(!currentRoomId) return;
-
-  try{
-
-    const res=await fetch(
-      `${MESSAGES_API}?room_id=${encodeURIComponent(currentRoomId)}&_t=${Date.now()}`,
-      {
-        cache:"no-store"
-      }
-    );
-
-    const messages=await res.json();
-
-    if(!res.ok){
-      throw new Error(messages.error || "Unable to load messages.");
-    }
-
-    renderMessages(
-      Array.isArray(messages) ? messages : []
-    );
-
-  }catch(error){
-
-    if(!silent){
-      showToast(error.message || "Unable to load messages.");
-    }
-  }
-}
-
-function renderMessages(messages){
-
-  const container=document.getElementById("chat-messages");
-
-  if(!messages.length){
-
-    container.innerHTML=`
-      <div class="empty-state">
-        <div class="empty-icon">💬</div>
-        <strong>No messages yet</strong>
-        <p>Start the conversation.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-  const wasNearBottom=
-    container.scrollHeight -
-    container.scrollTop -
-    container.clientHeight <
-    100;
-
-  container.innerHTML="";
-
-  messages.forEach(message=>{
-
-    const mine=
-      String(message.sender_phone) ===
-      String(currentUser.phone);
-
-    const row=document.createElement("div");
-
-    row.className=
-      "message-row " +
-      (mine ? "mine" : "theirs");
-
-    const bubble=document.createElement("div");
-    bubble.className="message-bubble";
-
-    const text=document.createElement("div");
-    text.className="message-text";
-    text.textContent=message.message || "";
-
-    const meta=document.createElement("div");
-    meta.className="message-meta";
-
-    const date=new Date(message.created_at);
-
-    meta.textContent=
-      isNaN(date.getTime())
-      ? ""
-      : date.toLocaleTimeString([],{
-          hour:"2-digit",
-          minute:"2-digit"
+    <script>
+        const USERS_API = "/users";
+        const MESSAGES_API = "/messages";
+        const YADHU_PHONE = "7025707720";
+        
+        let currentUser = null;
+        let activeRecipient = null;
+        let currentRoomId = null;
+        let pendingPhone = null;
+        let syncInterval = null;
+        let contactsInterval = null;
+        let knownMessageIds = new Set();
+        let deferredPrompt = null;
+        let adminPin = null;
+        let adminEditingPhone = null;
+        let adminMode = false;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'flex');
         });
 
-    bubble.appendChild(text);
-    bubble.appendChild(meta);
-
-    row.appendChild(bubble);
-    container.appendChild(row);
-  });
-
-  if(wasNearBottom){
-    container.scrollTop=container.scrollHeight;
-  }
-}
-
-async function sendMessage(){
-
-  await sendChatMessage(false);
-}
-
-async function sendEmergencyMessage(){
-
-  await sendChatMessage(true);
-}
-
-async function sendChatMessage(sendViaEmail){
-
-  const input=document.getElementById("chat-input");
-
-  const message=(input.value || "").trim();
-
-  if(!message){
-    return;
-  }
-
-  if(!currentUser || !currentChatUser || !currentRoomId){
-    return;
-  }
-
-  input.value="";
-  autoResizeChatInput(input);
-
-  try{
-
-    const res=await fetch(
-      MESSAGES_API,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          room_id:currentRoomId,
-          sender_id:currentUser.phone,
-          sender_name:currentUser.name,
-          recipient_phone:currentChatUser.phone,
-          message,
-          send_via_email:sendViaEmail,
-          created_at:new Date().toISOString()
-        })
-      }
-    );
-
-    const data=await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "Unable to send message.");
-    }
-
-    await loadMessages();
-
-    if(sendViaEmail){
-      showToast("Message sent with email alert.");
-    }
-
-  }catch(error){
-
-    input.value=message;
-    autoResizeChatInput(input);
-
-    showToast(
-      error.message || "Unable to send message."
-    );
-  }
-}
-
-function handleChatKeydown(event){
-
-  if(event.key==="Enter" && !event.shiftKey){
-
-    event.preventDefault();
-    sendMessage();
-  }
-}
-
-function autoResizeChatInput(element){
-
-  element.style.height="auto";
-
-  element.style.height=
-    Math.min(element.scrollHeight,120) + "px";
-}
-
-/* --------------------------------
-   SETTINGS
--------------------------------- */
-
-function openSettings(){
-
-  adminSettingsMode=false;
-
-  document.getElementById("settings-title").innerText=
-    "Appearance";
-
-  document.getElementById("admin-settings-actions").style.display=
-    "none";
-
-  switchScreen("settings-screen");
-
-  updateThemeOptionStates();
-}
-
-function closeSettings(){
-
-  adminSettingsMode=false;
-
-  document.getElementById("settings-title").innerText=
-    "Appearance";
-
-  document.getElementById("admin-settings-actions").style.display=
-    "none";
-
-  switchScreen(
-    adminPin
-      ? "admin-screen"
-      : "hub-screen"
-  );
-}
-
-function selectTheme(theme){
-
-  if(!VALID_THEMES.includes(theme)){
-    return;
-  }
-
-  applyTheme(theme);
-
-  showToast(
-    adminSettingsMode
-      ? `Selected ${theme} theme.`
-      : `Theme changed to ${theme}.`
-  );
-}
-
-function applyTheme(theme){
-
-  const themes={
-
-    emerald:{
-      primary:"#075e54",
-      primary2:"#128c7e",
-      accent:"#25d366",
-      bg:"#eef4f3",
-      card:"#ffffff",
-      text:"#17231f",
-      muted:"#71807b",
-      border:"#dce7e4",
-      soft:"#e8f4f1"
-    },
-
-    midnight:{
-      primary:"#111827",
-      primary2:"#374151",
-      accent:"#60a5fa",
-      bg:"#eef1f5",
-      card:"#ffffff",
-      text:"#151922",
-      muted:"#6b7280",
-      border:"#dce1e8",
-      soft:"#edf1f7"
-    },
-
-    ocean:{
-      primary:"#075985",
-      primary2:"#0ea5e9",
-      accent:"#38bdf8",
-      bg:"#eef7fb",
-      card:"#ffffff",
-      text:"#14232d",
-      muted:"#6c7f89",
-      border:"#d8e8ef",
-      soft:"#e7f4fa"
-    },
-
-    graphite:{
-      primary:"#262626",
-      primary2:"#525252",
-      accent:"#a3a3a3",
-      bg:"#f1f1f1",
-      card:"#ffffff",
-      text:"#202020",
-      muted:"#737373",
-      border:"#dedede",
-      soft:"#eeeeee"
-    },
-
-    royal:{
-      primary:"#312e81",
-      primary2:"#7c3aed",
-      accent:"#a78bfa",
-      bg:"#f3f1fb",
-      card:"#ffffff",
-      text:"#211d35",
-      muted:"#77728b",
-      border:"#dfdcf0",
-      soft:"#eeeafb"
-    },
-
-    ivory:{
-      primary:"#765c36",
-      primary2:"#a9824c",
-      accent:"#c29b62",
-      bg:"#f7f1e6",
-      card:"#fffdf8",
-      text:"#30291f",
-      muted:"#847866",
-      border:"#e6dccb",
-      soft:"#f4ecdd"
-    }
-
-  };
-
-  const t=themes[theme] || themes.emerald;
-
-  document.documentElement.style.setProperty(
-    "--theme-primary",t.primary
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-primary-2",t.primary2
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-accent",t.accent
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-bg",t.bg
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-card",t.card
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-text",t.text
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-muted",t.muted
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-border",t.border
-  );
-
-  document.documentElement.style.setProperty(
-    "--theme-soft",t.soft
-  );
-
-  localStorage.setItem("axtres_theme",theme);
-
-  updateThemeOptionStates();
-}
-
-function updateThemeOptionStates(){
-
-  const current=
-    localStorage.getItem("axtres_theme") ||
-    "emerald";
-
-  document.querySelectorAll(".theme-option").forEach(option=>{
-
-    option.classList.toggle(
-      "active",
-      option.dataset.theme===current
-    );
-  });
-}
-
-async function loadDefaultTheme(){
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?action=theme&_t=${Date.now()}`,
-      {
-        cache:"no-store"
-      }
-    );
-
-    const data=await res.json();
-
-    const saved=
-      localStorage.getItem("axtres_theme");
-
-    applyTheme(
-      saved ||
-      data.theme ||
-      "emerald"
-    );
-
-  }catch(error){
-
-    applyTheme(
-      localStorage.getItem("axtres_theme") ||
-      "emerald"
-    );
-  }
-}
-
-/* --------------------------------
-   ADMIN
--------------------------------- */
-
-function openAdmin(){
-
-  const overlay=document.getElementById("admin-pin-overlay");
-  const input=document.getElementById("admin-pin-input");
-  const error=document.getElementById("admin-pin-error");
-
-  error.textContent="";
-  input.value="";
-
-  overlay.classList.add("active");
-
-  setTimeout(()=>{
-    input.focus();
-  },50);
-}
-
-function closeAdminPin(){
-
-  document
-    .getElementById("admin-pin-overlay")
-    .classList.remove("active");
-}
-
-function handleAdminPinInput(){
-
-  const input=document.getElementById("admin-pin-input");
-  const error=document.getElementById("admin-pin-error");
-
-  input.value=input.value.replace(/\D/g,"");
-
-  if(input.value.length<3){
-    error.textContent="";
-    return;
-  }
-
-  if(input.value===ADMIN_PIN){
-
-    adminPin=ADMIN_PIN;
-
-    closeAdminPin();
-
-    switchScreen("admin-screen");
-
-    refreshAdminUsers();
-
-  }else{
-
-    error.textContent="Wrong PIN";
-
-    setTimeout(()=>{
-      input.value="";
-      error.textContent="";
-    },700);
-  }
-}
-
-async function refreshAdminUsers(){
-
-  if(!adminPin){
-    openAdmin();
-    return;
-  }
-
-  const list=document.getElementById("admin-users-list");
-
-  list.innerHTML=`
-    <div class="empty-state">
-      <div class="empty-icon">⏳</div>
-      <strong>Refreshing...</strong>
-    </div>
-  `;
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?action=admin-list&_t=${Date.now()}`,
-      {
-        method:"POST",
-        cache:"no-store",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          pin:adminPin
-        })
-      }
-    );
-
-    const data=await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "Unable to load admin users.");
-    }
-
-    renderAdminUsers(data.users || []);
-
-  }catch(error){
-
-    list.innerHTML=`
-      <div class="empty-state">
-        <div class="empty-icon">⚠</div>
-        <strong>Unable to load users</strong>
-        <p>${escapeHtml(error.message || "Please try again.")}</p>
-      </div>
-    `;
-  }
-}
-
-function renderAdminUsers(users){
-
-  const list=document.getElementById("admin-users-list");
-
-  if(!users.length){
-
-    list.innerHTML=`
-      <div class="empty-state">
-        <div class="empty-icon">👤</div>
-        <strong>No users</strong>
-        <p>The directory is currently empty.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-  list.innerHTML="";
-
-  users.forEach(user=>{
-
-    const row=document.createElement("div");
-
-    row.className="admin-user-row";
-
-    const initial=(user.name || "?")
-      .trim()
-      .charAt(0)
-      .toUpperCase();
-
-    row.innerHTML=`
-      <div class="directory-avatar">
-        ${escapeHtml(initial)}
-      </div>
-
-      <div class="admin-user-info">
-
-        <div class="admin-user-name">
-          ${escapeHtml(user.name || "Unknown")}
-        </div>
-
-        <div class="admin-user-phone">
-          ${escapeHtml(formatIndianPhone(user.phone))}
-        </div>
-
-        <div class="admin-user-email">
-          ${escapeHtml(user.email || "No email")}
-        </div>
-
-      </div>
-
-      <div class="admin-status">
-        ${Number(user.email_verified)===1 ? "Verified" : "Unverified"}
-      </div>
-    `;
-
-    row.onclick=()=>{
-      openAdminChat(user);
-    };
-
-    list.appendChild(row);
-  });
-}
-
-function openAdminChat(user){
-
-  if(!user){
-    return;
-  }
-
-  openChatWithUser({
-    name:user.name,
-    phone:user.phone,
-    email:user.email
-  });
-}
-
-function openAdminDirectoryEditor(){
-
-  if(!adminPin){
-    openAdmin();
-    return;
-  }
-
-  switchScreen("admin-editor-screen");
-
-  startNewAdminUser();
-}
-
-function startNewAdminUser(){
-
-  document.getElementById("admin-original-phone").value="";
-  document.getElementById("admin-name").value="";
-  document.getElementById("admin-phone").value="";
-  document.getElementById("admin-email").value="";
-}
-
-function editAdminUser(user){
-
-  document.getElementById("admin-original-phone").value=
-    user.phone || "";
-
-  document.getElementById("admin-name").value=
-    user.name || "";
-
-  document.getElementById("admin-phone").value=
-    user.phone || "";
-
-  document.getElementById("admin-email").value=
-    user.email || "";
-
-  switchScreen("admin-editor-screen");
-}
-
-function closeAdminEditor(){
-
-  switchScreen("admin-screen");
-}
-
-async function saveAdminUser(){
-
-  if(!adminPin){
-    showToast("Admin access required.");
-    return;
-  }
-
-  const originalPhone=
-    document.getElementById("admin-original-phone").value.trim();
-
-  const name=
-    document.getElementById("admin-name").value.trim();
-
-  const phone=
-    document.getElementById("admin-phone").value.trim();
-
-  const email=
-    document.getElementById("admin-email").value.trim();
-
-  if(!name){
-    showToast("Enter the user's name.");
-    return;
-  }
-
-  if(!/^\d{10}$/.test(phone)){
-    showToast("Enter a valid 10-digit phone number.");
-    return;
-  }
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?action=admin-save`,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          pin:adminPin,
-          original_phone:originalPhone,
-          name,
-          phone,
-          email
-        })
-      }
-    );
-
-    const data=await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "Unable to save user.");
-    }
-
-    showToast(
-      data.updated
-        ? "User updated successfully."
-        : "User added successfully."
-    );
-
-    switchScreen("admin-screen");
-
-    refreshAdminUsers();
-
-  }catch(error){
-
-    showToast(
-      error.message ||
-      "Unable to save user."
-    );
-  }
-}
-
-/* --------------------------------
-   ADMIN SETTINGS
--------------------------------- */
-
-function openAdminSettings(){
-
-  if(!adminPin){
-    showToast("Admin access required.");
-    return;
-  }
-
-  adminSettingsMode=true;
-
-  document.getElementById("settings-title").innerText=
-    "Admin Appearance";
-
-  document.getElementById("admin-settings-actions").style.display=
-    "flex";
-
-  switchScreen("settings-screen");
-
-  updateThemeOptionStates();
-}
-
-async function setCurrentThemeAsDefault(){
-
-  if(!adminPin){
-    showToast("Admin access required.");
-    return;
-  }
-
-  const theme=
-    localStorage.getItem("axtres_theme") ||
-    "emerald";
-
-  try{
-
-    const res=await fetch(
-      `${USERS_API}?action=admin-theme&_t=${Date.now()}`,
-      {
-        method:"POST",
-        cache:"no-store",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          pin:adminPin,
-          theme
-        })
-      }
-    );
-
-    const data=await res.json();
-
-    if(!res.ok){
-      throw new Error(
-        data.error ||
-        "Unable to save default theme"
-      );
-    }
-
-    showToast(
-      `Default theme set to ${theme}.`
-    );
-
-  }catch(error){
-
-    showToast(
-      error.message ||
-      "Unable to save default theme."
-    );
-  }
-}
-
-function closeAdmin(){
-
-  adminPin="";
-  adminSettingsMode=false;
-
-  stopMessagesPolling();
-
-  switchScreen("hub-screen");
-}
-
-/* --------------------------------
-   CLICK OUTSIDE PIN MODALS
--------------------------------- */
-
-document
-  .getElementById("directory-pin-overlay")
-  .addEventListener("click",function(event){
-
-    if(event.target===this){
-      closeDirectoryPin();
-    }
-  });
-
-document
-  .getElementById("admin-pin-overlay")
-  .addEventListener("click",function(event){
-
-    if(event.target===this){
-      closeAdminPin();
-    }
-  });
-
-/* --------------------------------
-   HELPERS
--------------------------------- */
-
-function formatIndianPhone(phone){
-
-  const digits=String(phone || "")
-    .replace(/\D/g,"");
-
-  if(digits.length===10){
-
-    return `+91 ${digits.slice(0,5)} ${digits.slice(5)}`;
-  }
-
-  if(digits.length===12 && digits.startsWith("91")){
-
-    const local=digits.slice(2);
-
-    return `+91 ${local.slice(0,5)} ${local.slice(5)}`;
-  }
-
-  return String(phone || "");
-}
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-/* --------------------------------
-   ADMIN ACCESS
--------------------------------- */
-
-/*
-  Hidden admin access:
-  Triple click the axtres header.
-*/
-let adminClickCount=0;
-let adminClickTimer=null;
-
-document
-  .querySelector("#hub-screen .app-header")
-  .addEventListener("click",function(){
-
-    adminClickCount++;
-
-    clearTimeout(adminClickTimer);
-
-    adminClickTimer=setTimeout(()=>{
-      adminClickCount=0;
-    },900);
-
-    if(adminClickCount>=3){
-
-      adminClickCount=0;
-      openAdmin();
-    }
-  });
-
-/* --------------------------------
-   STARTUP
--------------------------------- */
-
-window.addEventListener("DOMContentLoaded",()=>{
-
-  getDeviceId();
-
-  const savedUser=
-    localStorage.getItem("axtres_user");
-
-  if(savedUser){
-
-    try{
-
-      currentUser=JSON.parse(savedUser);
-
-    }catch(error){
-
-      currentUser=null;
-
-      localStorage.removeItem(
-        "axtres_user"
-      );
-    }
-  }
-
-  switchScreen("welcome-screen");
-
-  loadDefaultTheme();
-
-  /*
-    Keep loading page visible for exactly 1.7 seconds.
-  */
-  setTimeout(()=>{
-
-    if(
-      currentUser &&
-      currentUser.phone &&
-      currentUser.name
-    ){
-
-      navigateAfterAuth();
-
-    }else{
-
-      switchScreen("login-screen");
-    }
-
-  },1700);
-});
-</script>
-
+        async function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.querySelectorAll('.btn-install').forEach(btn => btn.style.display = 'none');
+                }
+                deferredPrompt = null;
+            } else {
+                alert("Open browser menu and select 'Add to Home Screen' or 'Install App'.");
+            }
+        }
+
+        const THEMES = {
+            emerald: { primary:'#075e54', secondary:'#128c7e', page:'linear-gradient(135deg,#063f38,#075e54,#0b806f,#128c7e)', soft:'#f0f2f5', card:'#ffffff', text:'#111b21' },
+            midnight: { primary:'#263b72', secondary:'#3f5fa8', page:'linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)', soft:'#151d2b', card:'#101827', text:'#eef3ff' },
+            ocean: { primary:'#087ea4', secondary:'#168aad', page:'linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)', soft:'#edf7fa', card:'#ffffff', text:'#102a43' },
+            graphite: { primary:'#374151', secondary:'#4b5563', page:'linear-gradient(-45deg,#111827,#202124,#374151,#111827)', soft:'#20242b', card:'#181b20', text:'#f1f5f9' },
+            royal: { primary:'#633bb8', secondary:'#7c3aed', page:'linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)', soft:'#f3effb', card:'#ffffff', text:'#211534' },
+            ivory: { primary:'#80613a', secondary:'#a37b4b', page:'linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)', soft:'#f6f1e9', card:'#fffdf8', text:'#2f271f' }
+        };
+
+        let adminSettingsMode = false;
+
+        function applyTheme(name, persist = true) {
+            const theme = THEMES[name] || THEMES.emerald;
+            const root = document.documentElement;
+            root.style.setProperty('--theme-primary', theme.primary);
+            root.style.setProperty('--theme-secondary', theme.secondary);
+            root.style.setProperty('--theme-page', theme.page);
+            root.style.setProperty('--theme-soft', theme.soft);
+            root.style.setProperty('--theme-card', theme.card);
+            root.style.setProperty('--theme-text', theme.text);
+            document.body.style.background = theme.page;
+            document.body.dataset.theme = name;
+            document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === name));
+            if (persist) localStorage.setItem('axtres_theme', name);
+        }
+
+        function openSettings() {
+            adminSettingsMode = false;
+            document.getElementById('settings-overlay').classList.add('active');
+            const current = localStorage.getItem('axtres_theme') || 'emerald';
+            document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
+            document.getElementById('admin-default-actions').style.display = 'none';
+            document.getElementById('settings-heading').innerText = 'Appearance';
+        }
+
+        function openAdminSettings() {
+            if (!adminPin) return;
+            adminSettingsMode = true;
+            document.getElementById('settings-overlay').classList.add('active');
+            const current = localStorage.getItem('axtres_theme') || 'emerald';
+            document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
+            document.getElementById('admin-default-actions').style.display = 'flex';
+            document.getElementById('settings-heading').innerText = 'Admin Appearance';
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-overlay').classList.remove('active');
+            document.getElementById('admin-default-actions').style.display = 'none';
+            document.getElementById('settings-heading').innerText = 'Appearance';
+            adminSettingsMode = false;
+        }
+
+        function handleSettingsBackdrop(e) {
+            if (e.target.id === 'settings-overlay') closeSettings();
+        }
+
+        function selectTheme(name) {
+            applyTheme(name, true);
+        }
+
+        async function setCurrentThemeAsDefault() {
+            if (!adminPin) { showToast('Admin access required.'); return; }
+            const theme = localStorage.getItem('axtres_theme') || 'emerald';
+            try {
+                const res = await fetch(`${USERS_API}?action=admin-theme&_t=${Date.now()}`, {
+                    method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({pin:adminPin, theme})
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unable to save default theme');
+                showToast(`Default theme set to ${theme}.`);
+            } catch (err) { showToast(err.message || 'Unable to save default theme.'); }
+        }
+
+        async function loadDefaultTheme() {
+            try {
+                const res = await fetch(`${USERS_API}?action=theme&_t=${Date.now()}`, {cache:'no-store'});
+                const data = await res.json();
+                const personal = localStorage.getItem('axtres_theme');
+                applyTheme(personal || data.theme || 'emerald', false);
+                if (!personal) localStorage.setItem('axtres_theme', data.theme || 'emerald');
+            } catch (err) {
+                applyTheme(localStorage.getItem('axtres_theme') || 'emerald', false);
+            }
+        }
+
+        function returnFromDirectory() {
+            if (contactsInterval) clearInterval(contactsInterval);
+            openHubScreen();
+        }
+
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('axtres_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('axtres_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            getDeviceId();
+
+            const savedUser = localStorage.getItem('axtres_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                } catch(e) {
+                    currentUser = null;
+                    localStorage.removeItem('axtres_user');
+                }
+            }
+
+            // Always show the axtres loading page first.
+            switchScreen('welcome-screen');
+            loadDefaultTheme();
+
+            setTimeout(() => {
+                if (currentUser && currentUser.phone && currentUser.name) {
+                    navigateAfterAuth();
+                } else {
+                    switchScreen('login-screen');
+                }
+            }, 1700);
+        });
+
+        function navigateAfterAuth() {
+            if (String(currentUser.phone).trim() === YADHU_PHONE) {
+                openContactsScreen();
+            } else {
+                openHubScreen();
+            }
+        }
+
+        function openHubScreen() {
+            switchScreen('hub-screen');
+            document.getElementById('hub-welcome-text').innerText = `Welcome, ${currentUser.name}!`;
+            document.getElementById('hub-user-name').innerText = 'Yadhu Krishna';
+            document.getElementById('hub-user-phone').innerText = '7025707720';
+            document.getElementById('hub-user-email').innerText = 'yadhukrishnabp777@gmail.com';
+        }
+
+        function chatWithYadhu() {
+            startChatWith({
+                name: "Yadhu Krishna",
+                phone: YADHU_PHONE,
+                has_email: 1
+            });
+        }
+
+        function openDirectoryWithPin() {
+            const input = document.getElementById('directory-pin-input');
+            const error = document.getElementById('directory-pin-error');
+            input.value = "";
+            error.innerText = "";
+            switchScreen('directory-pin-screen');
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closeDirectoryPin() {
+            switchScreen('hub-screen');
+        }
+
+        function handleDirectoryBackdrop(e) {
+            if (e.target.id === 'directory-pin-screen') closeDirectoryPin();
+        }
+
+        function handleDirectoryPinInput(e) {
+            const input = e.target;
+            const error = document.getElementById('directory-pin-error');
+            input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+            error.innerText = "";
+
+            if (input.value.length === 3) {
+                if (input.value === "257") {
+                    closeDirectoryPin();
+                    openContactsScreen();
+                } else {
+                    error.innerText = "Wrong PIN";
+                    input.value = "";
+                    setTimeout(() => input.focus(), 50);
+                }
+            }
+        }
+
+        function returnFromDirectory() {
+            if (contactsInterval) clearInterval(contactsInterval);
+            contactsInterval = null;
+            const input = document.getElementById('directory-pin-input');
+            const error = document.getElementById('directory-pin-error');
+            if (input) input.value = '';
+            if (error) error.innerText = '';
+            openHubScreen();
+        }
+
+        function handleChatBack() {
+            if (syncInterval) clearInterval(syncInterval);
+            if (adminMode) { openAdmin(); return; }
+            if (String(currentUser.phone).trim() === YADHU_PHONE) {
+                openContactsScreen();
+            } else {
+                openHubScreen();
+            }
+        }
+
+        function forceSyncOnWake() {
+            if (currentRoomId) pollChatMessages(false);
+            if (currentUser && document.getElementById('contacts-screen').classList.contains('active')) fetchContacts();
+        }
+
+        window.addEventListener('focus', forceSyncOnWake);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") forceSyncOnWake();
+        });
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function interceptEmailInput(e) {
+            const input = e.target;
+            if (input.value.includes('@') || input.value.includes('.')) {
+                input.value = input.value.replace(/[@\.gmailyout-]/gi, '').trim();
+                showToast("Email extension handled by dropdown.");
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
+
+        async function requestNotificationPermission() {
+            const statusDiv = document.getElementById('notif-status');
+            if (!("Notification" in window)) return;
+            const permission = await Notification.requestPermission();
+            statusDiv.innerText = permission === "granted" ? "Status: Notifications Enabled!" : "Status: Denied.";
+            statusDiv.style.color = permission === "granted" ? "#2e7d32" : "#d32f2f";
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const emailUser = document.getElementById('reg-email-user').value.trim();
+            const emailDomain = document.getElementById('reg-email-domain').value;
+            const email = emailUser ? (emailUser + emailDomain) : "";
+            const errDiv = document.getElementById('reg-error');
+            errDiv.innerText = "";
+
+            if (!name || !phone) {
+                errDiv.innerText = "Name and phone are required.";
+                return;
+            }
+            if (phone.length !== 10) {
+                errDiv.innerText = "Phone number must be 10 digits.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=register&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ name, phone, email, device_id: getDeviceId() })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Registration failed");
+
+                pendingPhone = phone;
+                if (data.requires_verification) {
+                    document.getElementById('verify-pin-input').value = "";
+                    document.getElementById('verify-error').innerText = "";
+                    switchScreen('verify-screen');
+                } else {
+                    document.getElementById('login-phone').value = phone;
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Registered successfully! Please log in.";
+                    document.getElementById('login-error').style.color = "#2e7d32";
+                }
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleAutoVerifyRegister(e) {
+            const input = e.target;
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const errDiv = document.getElementById('verify-error');
+            errDiv.innerText = "";
+
+            if (input.value.length === 3) {
+                try {
+                    const res = await fetch(`${USERS_API}?action=verify-register&_t=${Date.now()}`, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                        body: JSON.stringify({ phone: pendingPhone, pin: input.value })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Incorrect PIN");
+
+                    document.getElementById('login-phone').value = pendingPhone;
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Email verified successfully! Log in now.";
+                    document.getElementById('login-error').style.color = "#2e7d32";
+                } catch (err) {
+                    errDiv.innerText = err.message;
+                    input.value = "";
+                }
+            }
+        }
+
+        function openAddEmailModal() {
+            document.getElementById('ae-phone').value = "";
+            document.getElementById('ae-email-user').value = "";
+            document.getElementById('ae-error').innerText = "";
+            switchScreen('add-email-screen');
+        }
+
+        async function handleAddEmailInit() {
+            const phone = document.getElementById('ae-phone').value.trim();
+            const emailUser = document.getElementById('ae-email-user').value.trim();
+            const emailDomain = document.getElementById('ae-email-domain').value;
+            const errDiv = document.getElementById('ae-error');
+            errDiv.innerText = "";
+
+            if (!phone || phone.length !== 10 || !emailUser) {
+                errDiv.innerText = "Enter valid phone and email.";
+                return;
+            }
+
+            pendingPhone = phone;
+            const email = emailUser + emailDomain;
+
+            try {
+                const res = await fetch(`${USERS_API}?action=update-email-init&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ phone, email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to send PIN");
+
+                document.getElementById('ae-pin-input').value = "";
+                switchScreen('verify-email-screen');
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function handleAutoVerifyEmail(e) {
+            const input = e.target;
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const errDiv = document.getElementById('ae-verify-error');
+            errDiv.innerText = "";
+
+            if (input.value.length === 3) {
+                try {
+                    const res = await fetch(`${USERS_API}?action=verify-email-update&_t=${Date.now()}`, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                        body: JSON.stringify({ phone: pendingPhone, pin: input.value })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Incorrect PIN");
+
+                    switchScreen('login-screen');
+                    document.getElementById('login-error').innerText = "Email linked and verified!";
+                    document.getElementById('login-error').style.color = "#2e7d32";
+                } catch (err) {
+                    errDiv.innerText = err.message;
+                    input.value = "";
+                }
+            }
+        }
+
+        function openAdminWithPin() {
+            const input = document.getElementById('admin-pin-input');
+            const error = document.getElementById('admin-pin-error');
+            input.value = ''; error.innerText = '';
+            switchScreen('admin-pin-screen');
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closeAdminPin() { switchScreen('login-screen'); }
+        function handleAdminBackdrop(e) { if (e.target.id === 'admin-pin-screen') closeAdminPin(); }
+
+        async function handleAdminPinInput(e) {
+            const input = e.target;
+            const error = document.getElementById('admin-pin-error');
+            input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+            error.innerText = '';
+            if (input.value.length !== 3) return;
+            try {
+                const res = await fetch(`${USERS_API}?action=admin-list&_t=${Date.now()}`, {
+                    method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin:input.value})
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Wrong PIN');
+                adminPin = input.value;
+                adminMode = true;
+                currentUser = { name:'Yadhu Krishna', phone:YADHU_PHONE, email:'yadhukrishnabp777@gmail.com' };
+                localStorage.removeItem('axtres_user');
+                renderAdminUsers(data.users || []);
+                switchScreen('admin-screen');
+            } catch (err) {
+                error.innerText = err.message || 'Wrong PIN';
+                input.value = '';
+                setTimeout(() => input.focus(), 50);
+            }
+        }
+
+        function closeAdmin() {
+            adminPin = null; adminEditingPhone = null; adminMode = false;
+            switchScreen('login-screen');
+        }
+
+        function openAdmin() {
+            switchScreen('admin-screen');
+            refreshAdminUsers();
+        }
+
+        async function refreshAdminUsers() {
+            if (!adminPin) return;
+            try {
+                const res = await fetch(`${USERS_API}?action=admin-list&_t=${Date.now()}`, { method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin:adminPin}) });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unable to load users');
+                renderAdminUsers(data.users || []);
+            } catch (err) {
+                document.getElementById('admin-users-container').innerHTML = `<div class="admin-empty">${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function renderAdminUsers(users) {
+            const container = document.getElementById('admin-users-container');
+            container.innerHTML = '';
+            if (!users.length) { container.innerHTML = '<div class="admin-empty">No registered users found.</div>'; return; }
+            users.forEach(u => {
+                const item = document.createElement('div'); item.className='admin-user-item';
+                item.innerHTML = `<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(u.phone || '')} · ${escapeHtml(u.email || 'No email')}</div></div>`;
+                item.onclick = () => adminChatWithUser(u);
+                container.appendChild(item);
+            });
+        }
+
+        function adminChatWithUser(user) {
+            currentUser = { name:'Yadhu Krishna', phone:YADHU_PHONE, email:'yadhukrishnabp777@gmail.com' };
+            startChatWith(user);
+        }
+
+        async function openAdminDirectoryEditor() {
+            switchScreen('admin-edit-screen');
+            await refreshAdminDirectoryEditor();
+        }
+
+        async function refreshAdminDirectoryEditor() {
+            if (!adminPin) return;
+            try {
+                const res = await fetch(`${USERS_API}?action=admin-list&_t=${Date.now()}`, { method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin:adminPin}) });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unable to load users');
+                const container = document.getElementById('admin-edit-container'); container.innerHTML='';
+                (data.users || []).forEach(u => {
+                    const item=document.createElement('div'); item.className='admin-user-item';
+                    item.innerHTML=`<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(u.phone || '')} · ${escapeHtml(u.email || 'No email')}</div></div><button class="admin-small-btn edit" type="button">Edit</button>`;
+                    item.querySelector('button').onclick=()=>openAdminUserForm(u); container.appendChild(item);
+                });
+                if (!data.users || !data.users.length) container.innerHTML='<div class="admin-empty">No registered users found.</div>';
+            } catch (err) {
+                document.getElementById('admin-edit-container').innerHTML=`<div class="admin-empty">${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function openAdminUserForm(user=null) {
+            adminEditingPhone = user ? String(user.phone) : null;
+            document.getElementById('admin-form-title').innerText = user ? 'Edit User' : 'Add User';
+            document.getElementById('admin-form-heading').innerText = user ? 'Edit User' : 'Add User';
+            document.getElementById('admin-original-phone').value = user ? String(user.phone) : '';
+            document.getElementById('admin-name').value = user ? (user.name || '') : '';
+            document.getElementById('admin-phone').value = user ? (user.phone || '') : '';
+            document.getElementById('admin-email').value = user ? (user.email || '') : '';
+            document.getElementById('admin-form-error').innerText='';
+            switchScreen('admin-user-form-screen');
+        }
+
+        async function saveAdminUser() {
+            if (!adminPin) return;
+            const originalPhone=document.getElementById('admin-original-phone').value.trim();
+            const name=document.getElementById('admin-name').value.trim();
+            const phone=document.getElementById('admin-phone').value.trim();
+            const email=document.getElementById('admin-email').value.trim();
+            const err=document.getElementById('admin-form-error'); err.innerText='';
+            if (!name || phone.length!==10) { err.innerText='Name and valid 10-digit phone are required.'; return; }
+            try {
+                const res=await fetch(`${USERS_API}?action=admin-save&_t=${Date.now()}`, { method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pin:adminPin,original_phone:originalPhone,name,phone,email}) });
+                const data=await res.json(); if(!res.ok) throw new Error(data.error || 'Unable to save user');
+                showToast(originalPhone ? 'User updated.' : 'User added.');
+                await openAdminDirectoryEditor();
+            } catch(e) { err.innerText=e.message; }
+        }
+
+        async function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const errDiv = document.getElementById('login-error');
+            errDiv.innerText = "";
+            errDiv.style.color = "#d32f2f";
+
+            if (!phone || phone.length !== 10) {
+                errDiv.innerText = "Enter a valid 10-digit phone number.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${USERS_API}?action=login&_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Login failed");
+
+                currentUser = data.user;
+                localStorage.setItem('axtres_user', JSON.stringify(currentUser));
+                navigateAfterAuth();
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('axtres_user');
+            currentUser = null;
+            if (syncInterval) clearInterval(syncInterval);
+            if (contactsInterval) clearInterval(contactsInterval);
+            switchScreen('login-screen');
+        }
+
+        async function openContactsScreen() {
+            switchScreen('contacts-screen');
+            document.getElementById('my-name-display').innerText = currentUser.name;
+            startContactsPolling();
+        }
+
+        function startContactsPolling() {
+            if (contactsInterval) clearInterval(contactsInterval);
+            fetchContacts();
+            contactsInterval = setInterval(fetchContacts, 1000);
+        }
+
+        async function fetchContacts() {
+            try {
+                const res = await fetch(`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
+                const contacts = await res.json();
+                const container = document.getElementById('contacts-container');
+                container.innerHTML = "";
+
+                if (!Array.isArray(contacts) || contacts.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:#667781; font-size:0.9rem;">No other contacts found yet.</div>`;
+                    return;
+                }
+
+                contacts.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
+                    const emailStatusBadge = c.has_email === 1 
+                        ? `<span class="status-pill active">Email Verified 🟢</span>` 
+                        : `<span class="status-pill inactive">No Email ⚪</span>`;
+
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    item.onclick = () => startChatWith(c);
+                    container.appendChild(item);
+                });
+            } catch (e) {}
+        }
+
+        function startChatWith(recipient) {
+            activeRecipient = recipient;
+            if (contactsInterval) clearInterval(contactsInterval);
+
+            const sortedPhones = [currentUser.phone, recipient.phone].sort();
+            currentRoomId = `room_${sortedPhones[0]}_${sortedPhones[1]}`;
+
+            document.getElementById('chat-room-title').innerText = recipient.name;
+            switchScreen('chat-screen');
+            document.getElementById('email-toggle').checked = false;
+
+            const messagesDiv = document.getElementById('messages-container');
+            messagesDiv.innerHTML = "";
+            knownMessageIds.clear();
+
+            startChatPolling();
+        }
+
+        function startChatPolling() {
+            if (syncInterval) clearInterval(syncInterval);
+            pollChatMessages(true);
+            syncInterval = setInterval(() => pollChatMessages(false), 600);
+        }
+
+        async function pollChatMessages(isInitial) {
+            if (!currentRoomId) return;
+            try {
+                const res = await fetch(`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' } 
+                });
+                const history = await res.json();
+                
+                if (Array.isArray(history)) {
+                    const messagesDiv = document.getElementById('messages-container');
+                    
+                    if (isInitial) {
+                        messagesDiv.innerHTML = "";
+                        knownMessageIds.clear();
+                    }
+
+                    let shouldScroll = false;
+
+                    history.forEach(msg => {
+                        const sender = msg.sender_phone || msg.senderPhone || msg.sender_id || "";
+                        const msgText = msg.message || "";
+                        const createdAt = msg.created_at || "";
+                        const isEmergency = msg.is_emergency || 0;
+                        
+                        const uniqueId = msg.id ? String(msg.id) : `${sender}_${createdAt}_${msgText}`;
+                        
+                        if (knownMessageIds.has(uniqueId)) return;
+
+                        knownMessageIds.add(uniqueId);
+                        shouldScroll = true;
+
+                        if (!isInitial && String(sender).trim() !== String(currentUser.phone).trim()) {
+                            if (Notification.permission === "granted") {
+                                const alertTitle = isEmergency ? `📧 Email Sent by ${activeRecipient.name}` : `💬 New Message from ${activeRecipient.name}`;
+                                new Notification(alertTitle, { body: msgText });
+                            }
+                        }
+
+                        let timeStr = "";
+                        if (createdAt) {
+                            const parsedDate = new Date(createdAt);
+                            if (!isNaN(parsedDate.getTime())) {
+                                timeStr = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            }
+                        }
+                        if (!timeStr) {
+                            timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+
+                        const cleanSender = String(sender).trim();
+                        const cleanMyPhone = String(currentUser.phone).trim();
+                        const isMe = cleanSender === cleanMyPhone;
+
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'msg';
+                        if (isEmergency === 1 || isEmergency === true) msgEl.classList.add('email-alert');
+
+                        let badgeHTML = (isEmergency === 1 || isEmergency === true) ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>` : '';
+
+                        if (isMe) {
+                            msgEl.classList.add('me');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+                        } else {
+                            msgEl.classList.add('them');
+                            msgEl.innerHTML = `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
+                        }
+
+                        messagesDiv.appendChild(msgEl);
+                    });
+
+                    if (shouldScroll || isInitial) {
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            const sendViaEmail = document.getElementById('email-toggle').checked ? 1 : 0;
+            if (!text || !currentRoomId) return;
+
+            const timeNow = new Date().toISOString();
+            input.value = "";
+            input.focus();
+
+            try {
+                await fetch(`${MESSAGES_API}?_t=${Date.now()}`, {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' },
+                    body: JSON.stringify({
+                        room_id: currentRoomId,
+                        sender_id: currentUser.phone,
+                        sender_name: currentUser.name,
+                        recipient_phone: activeRecipient.phone,
+                        message: text,
+                        send_via_email: sendViaEmail,
+                        created_at: timeNow
+                    })
+                });
+                pollChatMessages(false);
+            } catch (err) {}
+        }
+
+        function checkEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+            return text.replace(/[\n&<>"']/g, function(m) { return map[m] || m; });
+        }
+    </script>
 </body>
 </html>
