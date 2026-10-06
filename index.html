@@ -62,8 +62,8 @@
         .login-entry .error-msg { min-height:17px; margin:0; }
         .login-panel-note { color:#667781; font-size:.76rem; margin-bottom:2px; }
         .login-action-stack { display:flex; flex-direction:column; gap:8px; margin-top:2px; }
-        .login-instruction-btn { background:linear-gradient(135deg,#eef6f5,#e5efee); color:#075e54; border:1px solid rgba(7,94,84,.14); box-shadow:0 5px 14px rgba(7,94,84,.07); }
-        .login-instruction-btn:hover { background:#dfecea; }
+        .login-instruction-btn { background:linear-gradient(135deg,#355c7d,#2f4858); color:#fff; border:1px solid rgba(47,72,88,.28); box-shadow:0 7px 18px rgba(47,72,88,.18); }
+        .login-instruction-btn:hover { background:linear-gradient(135deg,#2f4858,#243746); }
         .login-combo input::placeholder { font-size:.82rem; letter-spacing:0; }
         @media (max-width:390px) {
             .login-combo .btn { min-width:118px; padding-left:10px; padding-right:10px; font-size:.88rem; }
@@ -76,7 +76,7 @@
         .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
         .hub-card { background: linear-gradient(145deg, #ffffff, #f5f8fb); border: 1px solid rgba(7, 94, 84, 0.14); border-radius: 16px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 16px; box-shadow: 0 10px 28px rgba(15, 32, 39, 0.08); }
         .hub-user-name { font-size: 1.35rem; font-weight: 750; color: #111b21; margin-bottom: 2px; }
-        .hub-user-phone { font-size: 0.95rem; color: #53636d; font-weight: 500; }
+        .hub-user-phone { font-size: 0.95rem; color: #53636d; font-weight: 500; letter-spacing: .15px; }
         .hub-user-email { font-size: 0.9rem; color: #667781; font-weight: 500; word-break: break-word; }
         
         .hub-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 0; }
@@ -108,30 +108,57 @@
         .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
          .hub-card { background: var(--theme-card); color: var(--theme-text); }
         .yadhu-profile-card {
-            animation: profileCardIn .62s cubic-bezier(.22,1,.36,1) both;
-            border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent);
+            animation: profileCardIn 1.15s cubic-bezier(.16,1,.3,1) both;
+            border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 12px 28px color-mix(in srgb, var(--theme-primary) 9%, transparent);
+            isolation: isolate;
+            background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
+            box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
         }
         .yadhu-profile-card::before {
             content: "";
             position: absolute;
-            inset: 0;
-            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.58) 45%, transparent 70%);
-            transform: translateX(-120%);
-            animation: profileCardShine 1.1s .28s ease-out both;
+            inset: -25%;
+            background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.08) 42%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.08) 58%, transparent 68%);
+            transform: translateX(-125%) rotate(8deg);
+            animation: profileCardShine 2.25s 1.0s cubic-bezier(.2,.7,.2,1) both;
             pointer-events: none;
+            z-index: 0;
         }
+        .yadhu-profile-card::after {
+            content: "";
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            right: -55px;
+            top: -65px;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
+            filter: blur(2px);
+            animation: profileCardGlow 1.4s 0.45s ease-out both;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .yadhu-profile-card > * { position: relative; z-index: 1; }
         .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
         .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
         @keyframes profileCardIn {
-            from { opacity:0; transform:translateY(16px) scale(.97); }
-            to { opacity:1; transform:translateY(0) scale(1); }
+            0% { opacity:0; transform:translateY(28px) scale(.94); filter:blur(4px); }
+            55% { opacity:1; transform:translateY(-3px) scale(1.012); filter:blur(0); }
+            78% { transform:translateY(1px) scale(.998); }
+            100% { opacity:1; transform:translateY(0) scale(1); }
         }
         @keyframes profileCardShine {
-            from { transform:translateX(-120%); }
-            to { transform:translateX(120%); }
+            0% { transform:translateX(-125%) rotate(8deg); opacity:0; }
+            12% { opacity:1; }
+            72% { opacity:1; }
+            100% { transform:translateX(125%) rotate(8deg); opacity:0; }
+        }
+        @keyframes profileCardGlow {
+            0% { opacity:0; transform:scale(.55); }
+            55% { opacity:1; transform:scale(1); }
+            100% { opacity:.55; transform:scale(1.08); }
         }
         #contacts-container { background: var(--theme-soft); }
 
@@ -177,6 +204,18 @@
         .settings-head h2 { color:var(--theme-primary); font-size:1.25rem; }
         .settings-close { border:0; background:var(--theme-soft); color:var(--theme-text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.1rem; }
         .theme-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .chat-bg-section { margin-top:20px; padding-top:18px; border-top:1px solid rgba(102,119,129,.18); }
+        .chat-bg-title { color:var(--theme-text); font-size:.98rem; font-weight:800; margin-bottom:4px; }
+        .chat-bg-subtitle { color:#667781; font-size:.74rem; line-height:1.4; margin-bottom:12px; }
+        .chat-bg-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+        .chat-bg-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; transition:.18s ease; }
+        .chat-bg-option.selected { border-color:var(--theme-primary); box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary) 10%,transparent); }
+        .chat-bg-option:hover { transform:translateY(-1px); }
+        .chat-bg-preview { height:58px; border-radius:9px; padding:7px; display:flex; flex-direction:column; justify-content:flex-end; gap:5px; overflow:hidden; }
+        .chat-bg-preview span { display:block; height:11px; border-radius:7px; background:rgba(255,255,255,.9); width:58%; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+        .chat-bg-preview span:last-child { align-self:flex-end; width:48%; background:rgba(220,248,198,.94); }
+        .chat-bg-name { margin-top:6px; font-size:.72rem; font-weight:700; color:var(--theme-text); }
+        .chat-bg-note { margin-top:9px; font-size:.68rem; color:#7a878d; }
         .theme-option { border:2px solid transparent; border-radius:14px; padding:7px; background:var(--theme-soft); cursor:pointer; text-align:left; }
         .theme-option.selected { border-color:var(--theme-primary); }
         .theme-preview { height:72px; border-radius:10px; overflow:hidden; position:relative; padding:8px; display:flex; flex-direction:column; justify-content:space-between; }
@@ -200,15 +239,18 @@
         .contact-name { font-weight: 600; color: #111b21; font-size: 1.05rem; }
         .contact-phone { font-size: 0.85rem; color: #667781; }
         
-        .status-pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 3px; }
-        .status-pill.active { background: #e8f5e9; color: #2e7d32; }
-        .status-pill.inactive { background: #f5f5f5; color: #757575; }
+        .status-pill { display:inline-flex; align-items:center; gap:6px; font-size:.69rem; padding:5px 9px; border-radius:999px; font-weight:700; margin-top:6px; border:1px solid transparent; letter-spacing:.1px; }
+        .status-pill::before { content:""; width:7px; height:7px; border-radius:50%; display:inline-block; }
+        .status-pill.active { background:#edf9f1; color:#237a45; border-color:#ccebd7; }
+        .status-pill.active::before { background:#2e9d5b; box-shadow:0 0 0 3px rgba(46,157,91,.10); }
+        .status-pill.inactive { background:#f4f6f7; color:#68757d; border-color:#dfe4e7; }
+        .status-pill.inactive::before { background:#9aa5ab; }
 
-        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: #efeae2; background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px); background-size: 15px 15px; -webkit-overflow-scrolling: touch; }
+        #messages-container { flex: 1; padding: 15px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background: var(--chat-bg-color, #efeae2); background-image: var(--chat-bg-image, radial-gradient(#d1ccc0 0.75px, transparent 0.75px)); background-size: var(--chat-bg-size, 15px 15px); -webkit-overflow-scrolling: touch; }
         
         .msg { max-width: 78%; padding: 8px 12px 6px 12px; border-radius: 7.5px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); }
         .msg.me { background: #dcf8c6; align-self: flex-end; color: #111b21; border-top-right-radius: 0; }
-        .msg.them { background: #ffffff; align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
+        .msg.them { background: rgba(255,255,255,.96); align-self: flex-start; color: #111b21; border-top-left-radius: 0; }
         
         .msg.email-alert { background: #e3f2fd !important; border: 1.5px solid #1976d2 !important; color: #0d47a1 !important; }
         .email-badge { font-size: 0.65rem; background: #1976d2; color: white; padding: 1px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 3px; }
@@ -460,11 +502,10 @@
             <div class="header-bar">
                 <div style="display:flex;align-items:center;">
                     <span class="back-arrow" onclick="returnFromDirectory()">&#8592;</span>
-                    <div>Directory (<span id="my-name-display"></span>)</div>
+                    <div>Directory</div>
                 </div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
-            <div style="padding:10px 15px;background:#fff;font-size:0.85rem;color:#667781;border-bottom:1px solid #eee;">Select a contact to start chatting:</div>
             <div id="contacts-container"></div>
         </div>
 
@@ -550,6 +591,25 @@
                     <div class="theme-option" data-theme="royal" onclick="selectTheme('royal')"><div class="theme-preview" style="background:linear-gradient(135deg,#35205f,#7c3aed)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Royal</div></div>
                     <div class="theme-option" data-theme="ivory" onclick="selectTheme('ivory')"><div class="theme-preview" style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Ivory</div></div>
                 </div>
+                <div id="admin-chat-bg-section" class="chat-bg-section" style="display:none;">
+                    <div class="chat-bg-title">Chat Background</div>
+                    <div class="chat-bg-subtitle">Choose a WhatsApp-style background for every conversation. This setting is global and controlled by Admin.</div>
+                    <div class="chat-bg-grid">
+                        <div class="chat-bg-option" data-chat-bg="classic" onclick="selectChatBackground('classic')"><div class="chat-bg-preview" style="background:#efeae2"><span></span><span></span></div><div class="chat-bg-name">Classic</div></div>
+                        <div class="chat-bg-option" data-chat-bg="mint" onclick="selectChatBackground('mint')"><div class="chat-bg-preview" style="background:#e8f3ed"><span></span><span></span></div><div class="chat-bg-name">Mint</div></div>
+                        <div class="chat-bg-option" data-chat-bg="sky" onclick="selectChatBackground('sky')"><div class="chat-bg-preview" style="background:#eaf4f8"><span></span><span></span></div><div class="chat-bg-name">Sky</div></div>
+                        <div class="chat-bg-option" data-chat-bg="sand" onclick="selectChatBackground('sand')"><div class="chat-bg-preview" style="background:#f4eee4"><span></span><span></span></div><div class="chat-bg-name">Sand</div></div>
+                        <div class="chat-bg-option" data-chat-bg="rose" onclick="selectChatBackground('rose')"><div class="chat-bg-preview" style="background:#f7ecee"><span></span><span></span></div><div class="chat-bg-name">Rose</div></div>
+                        <div class="chat-bg-option" data-chat-bg="lavender" onclick="selectChatBackground('lavender')"><div class="chat-bg-preview" style="background:#f0edf7"><span></span><span></span></div><div class="chat-bg-name">Lavender</div></div>
+                        <div class="chat-bg-option" data-chat-bg="slate" onclick="selectChatBackground('slate')"><div class="chat-bg-preview" style="background:#e9edf1"><span></span><span></span></div><div class="chat-bg-name">Slate</div></div>
+                        <div class="chat-bg-option" data-chat-bg="cream" onclick="selectChatBackground('cream')"><div class="chat-bg-preview" style="background:#faf7ef"><span></span><span></span></div><div class="chat-bg-name">Cream</div></div>
+                        <div class="chat-bg-option" data-chat-bg="deep-emerald" onclick="selectChatBackground('deep-emerald')"><div class="chat-bg-preview" style="background:#dcebe7"><span></span><span></span></div><div class="chat-bg-name">Deep Emerald</div></div>
+                        <div class="chat-bg-option" data-chat-bg="navy" onclick="selectChatBackground('navy')"><div class="chat-bg-preview" style="background:#e5e9f1"><span></span><span></span></div><div class="chat-bg-name">Navy</div></div>
+                        <div class="chat-bg-option" data-chat-bg="pearl" onclick="selectChatBackground('pearl')"><div class="chat-bg-preview" style="background:#f3f4f5"><span></span><span></span></div><div class="chat-bg-name">Pearl</div></div>
+                        <div class="chat-bg-option" data-chat-bg="teal" onclick="selectChatBackground('teal')"><div class="chat-bg-preview" style="background:#e1f1f0"><span></span><span></span></div><div class="chat-bg-name">Teal</div></div>
+                    </div>
+                    <div class="chat-bg-note">Message bubbles stay high-contrast so the background never interferes with reading.</div>
+                </div>
             </div>
         </div>
 
@@ -624,7 +684,31 @@
             ivory: { primary:'#80613a', secondary:'#a37b4b', page:'linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)', soft:'#f6f1e9', card:'#fffdf8', text:'#2f271f' }
         };
 
+        const CHAT_BACKGROUNDS = {
+            classic: { color:'#efeae2', image:'radial-gradient(#d1ccc0 0.75px, transparent 0.75px)', size:'15px 15px' },
+            mint: { color:'#e8f3ed', image:'none', size:'auto' },
+            sky: { color:'#eaf4f8', image:'none', size:'auto' },
+            sand: { color:'#f4eee4', image:'none', size:'auto' },
+            rose: { color:'#f7ecee', image:'none', size:'auto' },
+            lavender: { color:'#f0edf7', image:'none', size:'auto' },
+            slate: { color:'#e9edf1', image:'none', size:'auto' },
+            cream: { color:'#faf7ef', image:'none', size:'auto' },
+            'deep-emerald': { color:'#dcebe7', image:'radial-gradient(rgba(7,94,84,.08) 0.7px, transparent 0.7px)', size:'14px 14px' },
+            navy: { color:'#e5e9f1', image:'none', size:'auto' },
+            pearl: { color:'#f3f4f5', image:'none', size:'auto' },
+            teal: { color:'#e1f1f0', image:'linear-gradient(135deg,rgba(7,94,84,.025) 25%,transparent 25%,transparent 50%,rgba(7,94,84,.025) 50%,rgba(7,94,84,.025) 75%,transparent 75%)', size:'18px 18px' }
+        };
+
         let adminSettingsMode = false;
+
+        function applyChatBackground(name) {
+            const bg = CHAT_BACKGROUNDS[name] || CHAT_BACKGROUNDS.classic;
+            const root = document.documentElement;
+            root.style.setProperty('--chat-bg-color', bg.color);
+            root.style.setProperty('--chat-bg-image', bg.image);
+            root.style.setProperty('--chat-bg-size', bg.size);
+            document.querySelectorAll('.chat-bg-option').forEach(el => el.classList.toggle('selected', el.dataset.chatBg === name));
+        }
 
         function applyTheme(name, persist = true) {
             const theme = THEMES[name] || THEMES.emerald;
@@ -647,6 +731,8 @@
             const current = localStorage.getItem('axtres_theme') || 'emerald';
             document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
             document.getElementById('settings-heading').innerText = 'Appearance';
+            const bgSection = document.getElementById('admin-chat-bg-section');
+            if (bgSection) bgSection.style.display = 'none';
         }
 
         function openAdminSettings() {
@@ -656,11 +742,17 @@
             const current = localStorage.getItem('axtres_theme') || 'emerald';
             document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
             document.getElementById('settings-heading').innerText = 'Admin Appearance';
+            const bgSection = document.getElementById('admin-chat-bg-section');
+            if (bgSection) bgSection.style.display = 'block';
+            const chatBg = localStorage.getItem('axtres_chat_bg') || 'classic';
+            applyChatBackground(chatBg);
         }
 
         function closeSettings() {
             document.getElementById('settings-overlay').classList.remove('active');
             document.getElementById('settings-heading').innerText = 'Appearance';
+            const bgSection = document.getElementById('admin-chat-bg-section');
+            if (bgSection) bgSection.style.display = 'none';
             adminSettingsMode = false;
         }
 
@@ -703,6 +795,23 @@
             }
         }
 
+        async function selectChatBackground(name) {
+            if (!CHAT_BACKGROUNDS[name] || !adminSettingsMode || !adminPin) return;
+            applyChatBackground(name);
+            try {
+                const res = await fetch(`${USERS_API}?action=admin-chat-background&_t=${Date.now()}`, {
+                    method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({pin:adminPin, background:name})
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unable to save chat background');
+                localStorage.setItem('axtres_chat_bg', name);
+                showToast('Chat background updated globally.');
+            } catch (err) {
+                showToast(err.message || 'Unable to save chat background.');
+            }
+        }
+
         async function loadDefaultTheme() {
             try {
                 const res = await fetch(`${USERS_API}?action=theme&_t=${Date.now()}`, {cache:'no-store'});
@@ -710,8 +819,12 @@
                 const personal = localStorage.getItem('axtres_theme');
                 applyTheme(personal || data.theme || 'emerald', false);
                 if (!personal) localStorage.setItem('axtres_theme', data.theme || 'emerald');
+                const chatBg = data.chat_background || 'classic';
+                localStorage.setItem('axtres_chat_bg', chatBg);
+                applyChatBackground(chatBg);
             } catch (err) {
                 applyTheme(localStorage.getItem('axtres_theme') || 'emerald', false);
+                applyChatBackground(localStorage.getItem('axtres_chat_bg') || 'classic');
             }
         }
 
@@ -1074,7 +1187,7 @@
             if (!users.length) { container.innerHTML = '<div class="admin-empty">No registered users found.</div>'; return; }
             users.forEach(u => {
                 const item = document.createElement('div'); item.className='admin-user-item';
-                item.innerHTML = `<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(u.phone || '')} · ${escapeHtml(u.email || 'No email')}</div></div>`;
+                item.innerHTML = `<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(formatPhoneDisplay(u.phone))} · ${escapeHtml(u.email || 'No email')}</div></div>`;
                 item.onclick = () => adminChatWithUser(u);
                 container.appendChild(item);
             });
@@ -1099,7 +1212,7 @@
                 const container = document.getElementById('admin-edit-container'); container.innerHTML='';
                 (data.users || []).forEach(u => {
                     const item=document.createElement('div'); item.className='admin-user-item';
-                    item.innerHTML=`<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(u.phone || '')} · ${escapeHtml(u.email || 'No email')}</div></div><button class="admin-small-btn edit" type="button">Edit</button>`;
+                    item.innerHTML=`<div class="admin-user-main"><div class="admin-user-name">${escapeHtml(u.name || 'Unnamed')}</div><div class="admin-user-meta">${escapeHtml(formatPhoneDisplay(u.phone))} · ${escapeHtml(u.email || 'No email')}</div></div><button class="admin-small-btn edit" type="button">Edit</button>`;
                     item.querySelector('button').onclick=()=>openAdminUserForm(u); container.appendChild(item);
                 });
                 if (!data.users || !data.users.length) container.innerHTML='<div class="admin-empty">No registered users found.</div>';
@@ -1173,9 +1286,15 @@
             switchScreen('login-screen');
         }
 
+        function formatPhoneDisplay(phone) {
+            const digits = String(phone || '').replace(/\D/g, '');
+            if (digits.length === 10) return `+91 ${digits.slice(0,5)} ${digits.slice(5)}`;
+            if (digits.length === 12 && digits.startsWith('91')) return `+91 ${digits.slice(2,7)} ${digits.slice(7)}`;
+            return String(phone || '');
+        }
+
         async function openContactsScreen() {
             switchScreen('contacts-screen');
-            document.getElementById('my-name-display').innerText = currentUser.name;
             startContactsPolling();
         }
 
@@ -1207,7 +1326,7 @@
                         ? `<span class="status-pill active">Email Verified 🟢</span>` 
                         : `<span class="status-pill inactive">No Email ⚪</span>`;
 
-                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
+                    item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(formatPhoneDisplay(c.phone))}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
                     item.onclick = () => startChatWith(c);
                     container.appendChild(item);
                 });
