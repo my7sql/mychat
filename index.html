@@ -162,7 +162,18 @@
         body { background: var(--theme-page); }
         .header-bar { background: var(--theme-primary); }
         .form-content h2, .hub-welcome { color: var(--theme-primary); }
-        .btn, .btn-hub-primary,
+        .btn, .btn-hub-primary, #send-btn { background: var(--theme-primary); }
+        .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
+         .hub-card { background: var(--theme-card); color: var(--theme-text); }
+        .yadhu-profile-card {
+            animation: profileCardPremiumLift 1.65s cubic-bezier(.16,1,.3,1) both;
+            border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(246,250,249,.96));
+            box-shadow: 0 16px 38px color-mix(in srgb, var(--theme-primary) 13%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
+        }
         .yadhu-profile-card::before {
             content: "";
             position: absolute;
@@ -339,16 +350,14 @@
             margin: 8px 0 7px;
             padding: 5px 10px;
             border-radius: 8px;
-            background: rgba(239, 234, 226, .92);
+            background: rgba(239,234,226,.94);
             color: #54656f;
             font-size: .69rem;
             line-height: 1.2;
             font-weight: 700;
             letter-spacing: .1px;
             box-shadow: 0 1px 1px rgba(0,0,0,.08);
-            text-transform: none;
-            position: sticky;
-            top: 4px;
+            position: relative;
             z-index: 2;
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
@@ -376,7 +385,6 @@
         }
         #send-btn:active {
             transform: scale(.94);
-            box-shadow: 0 1px 3px rgba(0,0,0,.14);
         }
         #send-btn svg {
             width: 21px;
@@ -385,6 +393,47 @@
             fill: currentColor;
             transform: translate(1px,-1px);
         }
+
+
+        /* Stable login layout: input + Log In to Chats button always visible */
+        .login-combo {
+            display: flex !important;
+            width: 100% !important;
+            align-items: stretch !important;
+            overflow: hidden !important;
+        }
+        .login-combo input {
+            flex: 1 1 auto !important;
+            width: 0 !important;
+            min-width: 0 !important;
+        }
+        .login-combo > .btn {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 132px !important;
+            position: relative !important;
+            z-index: 2 !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        @media (max-width:390px) {
+            .login-combo > .btn {
+                min-width: 118px !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+                font-size: .88rem !important;
+            }
+        }
+        @media (max-width:340px) {
+            .login-combo > .btn {
+                min-width: 108px !important;
+                font-size: .82rem !important;
+            }
+        }
+
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
         .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
@@ -1573,6 +1622,7 @@
             syncInterval = setInterval(() => pollChatMessages(false), 600);
         }
 
+
         const INDIA_TIME_ZONE = 'Asia/Kolkata';
 
         function getIndiaDateParts(value) {
@@ -1626,8 +1676,7 @@
             const date = new Date(value);
             if (isNaN(date.getTime())) return 'Date unavailable';
 
-            const current = new Date();
-            const todayStart = getIndiaDayStart(current);
+            const todayStart = getIndiaDayStart(new Date());
             const messageStart = getIndiaDayStart(date);
             if (todayStart === null || messageStart === null) return 'Date unavailable';
 
@@ -1636,7 +1685,6 @@
             if (dayDifference === 0) return 'Today';
             if (dayDifference === 1) return 'Yesterday';
 
-            // WhatsApp-style: show weekday for the recent week.
             if (dayDifference > 1 && dayDifference < 7) {
                 return new Intl.DateTimeFormat('en-IN', {
                     timeZone: INDIA_TIME_ZONE,
@@ -1653,11 +1701,10 @@
         }
 
         function appendChatDateDivider(container, dateValue) {
-            const label = formatChatDateLabel(dateValue);
             const divider = document.createElement('div');
             divider.className = 'chat-date-divider';
             divider.dataset.dateKey = getIndiaDateKey(dateValue) || '';
-            divider.textContent = label;
+            divider.textContent = formatChatDateLabel(dateValue);
             container.appendChild(divider);
         }
 
