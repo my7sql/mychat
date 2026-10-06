@@ -1,3193 +1,2851 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
-    <title>axtres</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        :root {
-            --theme-primary: #075e54;
-            --theme-secondary: #128c7e;
-            --theme-page: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43, #2c5364);
-            --theme-soft: #f0f2f5;
-            --theme-card: #ffffff;
-            --theme-text: #111b21;
-        }
-
-        body {
-            background: var(--theme-page);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-            overflow: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 420px;
-            height: 92vh;
-            max-height: 820px;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        #welcome-screen {
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #075e54, #128c7e);
-            color: white;
-        }
-
-        #welcome-screen h1 {
-            font-size: 2.3rem;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .header-bar {
-            background: var(--theme-primary);
-            color: white;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-bar span {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            font-weight: normal;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .form-content {
-            padding: 18px 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            justify-content: center;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .form-content h2 {
-            color: var(--theme-primary);
-            font-size: 1.35rem;
-            margin-bottom: 2px;
-        }
-
-        .form-content p.subtitle {
-            color: #666;
-            font-size: 0.82rem;
-            margin-bottom: 2px;
-        }
-
-        input,
-        select {
-            padding: 10px 14px;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            outline: none;
-            background: #fafafa;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: var(--theme-primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
-        }
-
-        .email-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .email-group input {
-            flex: 2;
-        }
-
-        .email-group select {
-            flex: 1.2;
-            font-size: 0.85rem;
-        }
-
-        .btn {
-            background: var(--theme-primary);
-            color: white;
-            border: none;
-            padding: 11px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn:hover {
-            background: var(--theme-secondary);
-        }
-
-        .btn-secondary {
-            background: #205081;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-secondary:hover {
-            background: #183d63;
-        }
-
-        .btn-accent {
-            background: #d84315;
-            color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-accent:hover {
-            background: #bf360c;
-        }
-
-        .btn-install {
-            background: linear-gradient(135deg, #ff9966, #ff5e62);
-            color: white;
-            border: none;
-            padding: 9px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: 700;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
-        }
-
-        /* =========================
-           HUB
-        ========================= */
-
-        .hub-top-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 8px;
-        }
-
-        .hub-welcome {
-            font-size: 1.65rem;
-            font-weight: 800;
-            color: var(--theme-primary);
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .settings-button {
-            border: 1px solid rgba(7,94,84,.16);
-            background: rgba(255,255,255,.88);
-            color: var(--theme-primary);
-            border-radius: 10px;
-            padding: 8px 13px;
-            font-size: .84rem;
-            font-weight: 650;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,.06);
-        }
-
-        .settings-button:hover {
-            background: white;
-        }
-
-        .hub-card {
-            background: var(--theme-card);
-            color: var(--theme-text);
-            border: 1px solid rgba(7, 94, 84, 0.14);
-            border-radius: 18px;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 8px;
-            margin-bottom: 18px;
-            box-shadow: 0 14px 32px rgba(15, 32, 39, 0.11);
-        }
-
-        .hub-user-name {
-            font-size: 1.4rem;
-            font-weight: 750;
-            color: var(--theme-text);
-        }
-
-        .hub-user-phone {
-            font-size: 0.95rem;
-            color: #667781;
-            font-weight: 500;
-        }
-
-        .hub-user-email {
-            font-size: 0.9rem;
-            color: #667781;
-            font-weight: 500;
-            word-break: break-word;
-        }
-
-        .hub-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .btn-hub {
-            width: 100%;
-            height: 48px;
-            padding: 12px 16px;
-            font-size: 0.98rem;
-            font-weight: 600;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-            transition: background 0.2s;
-        }
-
-        .btn-hub-primary {
-            background: var(--theme-primary);
-            color: white;
-        }
-
-        .btn-hub-primary:hover {
-            background: var(--theme-secondary);
-        }
-
-        .btn-hub-secondary {
-            background: var(--theme-soft);
-            color: var(--theme-text);
-            border: 1px solid #ccc;
-        }
-
-        .btn-hub-secondary:hover {
-            filter: brightness(.96);
-        }
-
-        /* =========================
-           DIRECTORY PIN
-        ========================= */
-
-        .directory-pin-card {
-            width: 100%;
-            max-width: 300px;
-            background: var(--theme-card);
-            color: var(--theme-text);
-            border-radius: 18px;
-            padding: 24px 22px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.22);
-            text-align: center;
-        }
-
-        .directory-pin-card h2 {
-            color: var(--theme-primary);
-            font-size: 1.25rem;
-            margin-bottom: 18px;
-        }
-
-        .directory-pin-card input {
-            width: 100%;
-            text-align: center;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            background: #f8fafb;
-        }
-
-        .directory-pin-card .error-msg {
-            min-height: 18px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-
-        /* =========================
-           DIRECTORY
-        ========================= */
-
-        #contacts-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: var(--theme-soft);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .directory-return {
-            margin: 10px 15px 0;
-            width: calc(100% - 30px);
-            height: 42px;
-            border: 1px solid #d9dfe3;
-            border-radius: 10px;
-            background: var(--theme-card);
-            color: var(--theme-primary);
-            font-weight: 650;
-            cursor: pointer;
-        }
-
-        .directory-return:hover {
-            filter: brightness(.97);
-        }
-
-        .contact-item {
-            background: var(--theme-card);
-            color: var(--theme-text);
-            padding: 14px 18px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            transition: background 0.2s;
-        }
-
-        .contact-item:hover {
-            filter: brightness(.97);
-        }
-
-        .contact-name {
-            font-weight: 600;
-            color: var(--theme-text);
-            font-size: 1.05rem;
-        }
-
-        .contact-phone {
-            font-size: 0.85rem;
-            color: #667781;
-        }
-
-        .status-pill {
-            font-size: 0.72rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .status-pill.active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-pill.inactive {
-            background: #f5f5f5;
-            color: #757575;
-        }
-
-        /* =========================
-           SETTINGS
-        ========================= */
-
-        .settings-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 60;
-            background: rgba(8,18,24,.52);
-            backdrop-filter: blur(10px);
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .settings-overlay.active {
-            display: flex;
-        }
-
-        .settings-panel {
-            width: 100%;
-            max-height: 88%;
-            overflow-y: auto;
-            background: var(--theme-card);
-            color: var(--theme-text);
-            border-radius: 22px 22px 0 0;
-            padding: 22px 18px 24px;
-            box-shadow: 0 -15px 50px rgba(0,0,0,.22);
-        }
-
-        .settings-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .settings-head h2 {
-            color: var(--theme-primary);
-            font-size: 1.25rem;
-        }
-
-        .settings-close {
-            border: 0;
-            background: var(--theme-soft);
-            color: var(--theme-text);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .theme-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .theme-option {
-            border: 2px solid transparent;
-            border-radius: 14px;
-            padding: 7px;
-            background: var(--theme-soft);
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .theme-option.selected {
-            border-color: var(--theme-primary);
-        }
-
-        .theme-preview {
-            height: 72px;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .preview-bar {
-            height: 9px;
-            width: 62%;
-            border-radius: 5px;
-            background: rgba(255,255,255,.9);
-        }
-
-        .preview-bubble {
-            align-self: flex-end;
-            width: 48%;
-            height: 20px;
-            border-radius: 8px;
-            background: rgba(255,255,255,.86);
-        }
-
-        .preview-name {
-            margin-top: 7px;
-            font-size: .78rem;
-            font-weight: 650;
-            color: var(--theme-text);
-        }
-
-        /* =========================
-           CHAT
-        ========================= */
-
-        #messages-container {
-            flex: 1;
-            padding: 15px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: #efeae2;
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px);
-            background-size: 15px 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .msg {
-            max-width: 78%;
-            padding: 8px 12px 6px 12px;
-            border-radius: 7.5px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        }
-
-        .msg.me {
-            background: #dcf8c6;
-            align-self: flex-end;
-            color: #111b21;
-            border-top-right-radius: 0;
-        }
-
-        .msg.them {
-            background: #ffffff;
-            align-self: flex-start;
-            color: #111b21;
-            border-top-left-radius: 0;
-        }
-
-        .msg.email-alert {
-            background: #e3f2fd !important;
-            border: 1.5px solid #1976d2 !important;
-            color: #0d47a1 !important;
-        }
-
-        .email-badge {
-            font-size: 0.65rem;
-            background: #1976d2;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 3px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            color: #667781;
-            float: right;
-            margin-left: 12px;
-            margin-top: 4px;
-        }
-
-        .email-toolbar {
-            background: #e3f2fd;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid #bbdefb;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1565c0;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 42px;
-            height: 22px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .3s;
-            border-radius: 22px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #1976d2;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        #input-toolbar {
-            display: flex;
-            padding: 10px 15px;
-            background: #f0f2f5;
-            gap: 10px;
-            align-items: center;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        #message-input {
-            flex: 1;
-            border-radius: 20px;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        #send-btn {
-            background: var(--theme-primary);
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .back-arrow {
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-right: 10px;
-        }
-
-        .error-msg {
-            color: #d32f2f;
-            font-size: 0.78rem;
-            text-align: center;
-        }
-
-        .notice-toast {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #323232;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            z-index: 99;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .switch-text {
-            text-align: center;
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        .switch-text a {
-            color: var(--theme-primary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .switch-text a:hover {
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+<title>axtres</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+
+:root{
+--theme-primary:#075e54;
+--theme-secondary:#128c7e;
+--theme-page:linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364);
+--theme-soft:#f0f2f5;
+--theme-card:#fff;
+--theme-text:#111b21;
+
+--theme-chat-bg:#efeae2;
+--theme-chat-dot:#d1ccc0;
+--theme-chat-surface:#fff;
+--theme-my-bubble:#dcf8c6;
+--theme-their-bubble:#fff;
+--theme-chat-text:#111b21;
+--theme-msg-time:#667781;
+--theme-chat-toolbar:#f0f2f5;
+--theme-chat-border:#e0e0e0;
+--theme-input-bg:#fff;
+--theme-input-border:#ccc;
+--theme-placeholder:#7a858c;
+--theme-email-bg:#e3f2fd;
+--theme-email-border:#bbdefb;
+--theme-email-text:#1565c0
+}
+
+body{
+background:var(--theme-page);
+background-size:400% 400%;
+animation:gradientShift 15s ease infinite;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#333;
+overflow:hidden
+}
+
+@keyframes gradientShift{
+0%{background-position:0 50%}
+50%{background-position:100% 50%}
+100%{background-position:0 50%}
+}
+
+.card{
+background:rgba(255,255,255,.95);
+backdrop-filter:blur(10px);
+width:100%;
+max-width:420px;
+height:92vh;
+max-height:820px;
+border-radius:20px;
+box-shadow:0 12px 40px rgba(0,0,0,.25);
+display:flex;
+flex-direction:column;
+overflow:hidden;
+position:relative
+}
+
+.screen{
+display:none;
+flex-direction:column;
+height:100%;
+width:100%
+}
+
+.screen.active{display:flex}
+
+#welcome-screen{
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:30px;
+background:linear-gradient(135deg,var(--theme-primary),var(--theme-secondary));
+color:#fff
+}
+
+#welcome-screen h1{
+font-size:2.3rem;
+margin-bottom:10px;
+font-weight:800
+}
+
+.spinner{
+width:40px;
+height:40px;
+border:4px solid rgba(255,255,255,.3);
+border-radius:50%;
+border-top-color:#fff;
+animation:spin 1s ease-in-out infinite;
+margin-top:20px
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.header-bar{
+background:var(--theme-primary);
+color:#fff;
+padding:15px 20px;
+font-size:1.1rem;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 5px rgba(0,0,0,.1)
+}
+
+.header-bar span{
+font-size:.85rem;
+opacity:.9;
+font-weight:normal;
+cursor:pointer;
+text-decoration:underline
+}
+
+.form-content{
+padding:18px 25px;
+display:flex;
+flex-direction:column;
+gap:8px;
+justify-content:center;
+flex:1;
+overflow-y:auto
+}
+
+.form-content h2{
+color:var(--theme-primary);
+font-size:1.35rem;
+margin-bottom:2px
+}
+
+.form-content p.subtitle{
+color:#666;
+font-size:.82rem;
+margin-bottom:2px
+}
+
+input,select{
+padding:10px 14px;
+border:1.5px solid #ddd;
+border-radius:10px;
+font-size:.95rem;
+outline:none;
+background:#fafafa
+}
+
+input:focus,select:focus{
+border-color:var(--theme-primary);
+background:#fff;
+box-shadow:0 0 0 3px rgba(7,94,84,.1)
+}
+
+.email-group{
+display:flex;
+gap:6px
+}
+
+.email-group input{flex:2}
+.email-group select{flex:1.2;font-size:.85rem}
+
+.btn{
+background:var(--theme-primary);
+color:#fff;
+border:none;
+padding:11px;
+border-radius:10px;
+font-size:.95rem;
+cursor:pointer;
+font-weight:600
+}
+
+.btn:hover{background:var(--theme-secondary)}
+
+.btn-secondary{
+background:#205081;
+color:#fff;
+border:none;
+padding:8px;
+border-radius:10px;
+font-size:.82rem;
+cursor:pointer;
+font-weight:600
+}
+
+.btn-accent{
+background:#d84315;
+color:#fff;
+border:none;
+padding:9px;
+border-radius:10px;
+font-size:.85rem;
+cursor:pointer;
+font-weight:600
+}
+
+.btn-install{
+background:linear-gradient(135deg,#ff9966,#ff5e62);
+color:#fff;
+border:none;
+padding:9px;
+border-radius:10px;
+font-size:.85rem;
+cursor:pointer;
+font-weight:700;
+display:none;
+align-items:center;
+justify-content:center;
+gap:8px;
+box-shadow:0 4px 10px rgba(255,94,98,.3)
+}
+
+/* HUB */
+
+.hub-welcome{
+font-size:1.55rem;
+font-weight:800;
+color:var(--theme-primary);
+margin:6px 0 18px;
+text-align:center
+}
+
+.hub-card{
+position:relative;
+background:var(--theme-card);
+border:1px solid rgba(7,94,84,.16);
+border-radius:18px;
+padding:24px 22px;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+gap:7px;
+margin-bottom:18px;
+box-shadow:0 14px 35px rgba(15,32,39,.1),0 2px 8px rgba(15,32,39,.05);
+overflow:hidden;
+opacity:0;
+transform:translateY(14px) scale(.985);
+transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1)
+}
+
+.hub-card::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+right:0;
+height:4px;
+background:linear-gradient(90deg,var(--theme-primary),var(--theme-secondary))
+}
+
+.hub-card.visible{
+opacity:1;
+transform:translateY(0) scale(1)
+}
+
+.hub-user-label{
+font-size:.70rem;
+text-transform:uppercase;
+letter-spacing:.13em;
+color:#7a8a93;
+font-weight:700;
+margin-top:3px
+}
+
+.hub-user-name{
+font-size:1.45rem;
+font-weight:800;
+color:var(--theme-text)
+}
+
+.hub-user-phone{
+font-size:.95rem;
+color:#53636d;
+font-weight:550
+}
+
+.hub-user-email{
+font-size:.87rem;
+color:#667781;
+font-weight:500;
+word-break:break-word
+}
+
+.hub-actions{
+display:flex;
+flex-direction:column;
+gap:10px;
+width:100%
+}
+
+.btn-hub{
+width:100%;
+height:48px;
+padding:12px 16px;
+border-radius:11px;
+border:none;
+font-size:.95rem;
+font-weight:650;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+transition:transform .18s ease,box-shadow .18s ease
+}
+
+.btn-hub:hover{
+transform:translateY(-1px);
+box-shadow:0 7px 18px rgba(0,0,0,.1)
+}
+
+.btn-hub-primary{
+background:var(--theme-primary);
+color:#fff
+}
+
+.btn-hub-secondary{
+background:var(--theme-soft);
+color:var(--theme-text);
+border:1px solid rgba(0,0,0,.08)
+}
+
+.settings-footer{
+margin-top:auto;
+padding-top:22px;
+width:100%
+}
+
+.settings-button{
+width:100%;
+height:43px;
+border:1px solid rgba(0,0,0,.08);
+background:var(--theme-card);
+color:var(--theme-primary);
+border-radius:11px;
+font-size:.84rem;
+font-weight:650;
+cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,.05);
+transition:background .2s ease,transform .18s ease
+}
+
+.settings-button:hover{
+background:var(--theme-soft);
+transform:translateY(-1px)
+}
+
+/* DIRECTORY PIN */
+
+#directory-pin-screen{
+position:absolute;
+inset:0;
+background:rgba(7,24,32,.48);
+backdrop-filter:blur(8px);
+align-items:center;
+justify-content:center;
+padding:24px;
+z-index:50
+}
+
+.directory-pin-card{
+width:100%;
+max-width:300px;
+background:#fff;
+border-radius:18px;
+padding:24px 22px;
+box-shadow:0 18px 50px rgba(0,0,0,.22);
+text-align:center
+}
+
+.directory-pin-card h2{
+color:#075e54;
+font-size:1.25rem;
+margin-bottom:18px
+}
+
+.directory-pin-card input{
+width:100%;
+text-align:center;
+font-size:1.8rem;
+letter-spacing:4px;
+background:#f8fafb
+}
+
+.directory-pin-card .error-msg{
+min-height:18px;
+margin-top:8px;
+font-weight:600
+}
+
+/* DIRECTORY */
+
+#contacts-container{
+flex:1;
+padding:15px;
+overflow-y:auto;
+background:var(--theme-soft);
+display:flex;
+flex-direction:column;
+gap:10px
+}
+
+.contact-item{
+background:var(--theme-card);
+padding:14px 18px;
+border-radius:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+cursor:pointer;
+box-shadow:0 1px 3px rgba(0,0,0,.08);
+transition:background .2s
+}
+
+.contact-name{
+font-weight:600;
+color:var(--theme-text);
+font-size:1.05rem
+}
+
+.contact-phone{
+font-size:.85rem;
+color:#667781
+}
+
+.status-pill{
+font-size:.72rem;
+padding:2px 8px;
+border-radius:10px;
+font-weight:600;
+display:inline-block;
+margin-top:3px
+}
+
+.status-pill.active{
+background:#e8f5e9;
+color:#2e7d32
+}
+
+.status-pill.inactive{
+background:#f5f5f5;
+color:#757575
+}
+
+/* SETTINGS */
+
+.settings-overlay{
+position:absolute;
+inset:0;
+z-index:60;
+background:rgba(8,18,24,.52);
+backdrop-filter:blur(10px);
+display:none;
+align-items:flex-end;
+justify-content:center
+}
+
+.settings-overlay.active{display:flex}
+
+.settings-panel{
+width:100%;
+max-height:88%;
+overflow-y:auto;
+background:var(--theme-card);
+border-radius:22px 22px 0 0;
+padding:22px 18px 24px;
+box-shadow:0 -15px 50px rgba(0,0,0,.22)
+}
+
+.settings-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:16px
+}
+
+.settings-head h2{
+color:var(--theme-primary);
+font-size:1.25rem
+}
+
+.settings-close{
+border:0;
+background:var(--theme-soft);
+color:var(--theme-text);
+width:34px;
+height:34px;
+border-radius:50%;
+cursor:pointer;
+font-size:1.1rem
+}
+
+.theme-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.theme-option{
+border:2px solid transparent;
+border-radius:14px;
+padding:7px;
+background:var(--theme-soft);
+cursor:pointer;
+text-align:left
+}
+
+.theme-option.selected{
+border-color:var(--theme-primary)
+}
+
+.theme-preview{
+height:72px;
+border-radius:10px;
+overflow:hidden;
+position:relative;
+padding:8px;
+display:flex;
+flex-direction:column;
+justify-content:space-between
+}
+
+.preview-bar{
+height:9px;
+width:62%;
+border-radius:5px;
+background:rgba(255,255,255,.9)
+}
+
+.preview-bubble{
+align-self:flex-end;
+width:48%;
+height:20px;
+border-radius:8px;
+background:rgba(255,255,255,.86)
+}
+
+.preview-name{
+margin-top:7px;
+font-size:.78rem;
+font-weight:650;
+color:var(--theme-text)
+}
+
+/* CHAT */
+
+#chat-screen{
+background:var(--theme-chat-surface)
+}
+
+.chat-back-button{
+border:0;
+background:rgba(255,255,255,.14);
+color:#fff;
+border-radius:8px;
+padding:5px 9px;
+margin-right:9px;
+font-size:.76rem;
+font-weight:650;
+cursor:pointer
+}
+
+.chat-back-button:hover{
+background:rgba(255,255,255,.23)
+}
+
+#messages-container{
+flex:1;
+padding:15px 20px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:6px;
+background:var(--theme-chat-bg);
+background-image:radial-gradient(var(--theme-chat-dot) .75px,transparent .75px);
+background-size:15px 15px;
+-webkit-overflow-scrolling:touch
+}
+
+.msg{
+max-width:78%;
+padding:8px 12px 6px;
+border-radius:8px;
+font-size:.95rem;
+line-height:1.4;
+word-wrap:break-word;
+box-shadow:0 1px .5px rgba(0,0,0,.13)
+}
+
+.msg.me{
+background:var(--theme-my-bubble);
+color:var(--theme-chat-text);
+align-self:flex-end;
+border-top-right-radius:0
+}
+
+.msg.them{
+background:var(--theme-their-bubble);
+color:var(--theme-chat-text);
+align-self:flex-start;
+border-top-left-radius:0
+}
+
+.msg-time{
+font-size:.65rem;
+color:var(--theme-msg-time);
+float:right;
+margin-left:12px;
+margin-top:4px
+}
+
+.msg.email-alert{
+background:var(--theme-email-bg)!important;
+border:1.5px solid var(--theme-email-text)!important;
+color:var(--theme-chat-text)!important
+}
+
+.email-badge{
+font-size:.65rem;
+background:var(--theme-email-text);
+color:#fff;
+padding:1px 6px;
+border-radius:4px;
+font-weight:bold;
+display:inline-block;
+margin-bottom:3px
+}
+
+.email-toolbar{
+background:var(--theme-email-bg);
+padding:8px 15px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-top:1px solid var(--theme-email-border);
+font-size:.82rem;
+font-weight:600;
+color:var(--theme-email-text)
+}
+
+.toggle-switch{
+position:relative;
+display:inline-block;
+width:42px;
+height:22px
+}
+
+.toggle-switch input{
+opacity:0;
+width:0;
+height:0
+}
+
+.slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+transition:.3s;
+border-radius:22px
+}
+
+.slider:before{
+position:absolute;
+content:"";
+height:16px;
+width:16px;
+left:3px;
+bottom:3px;
+background:#fff;
+transition:.3s;
+border-radius:50%
+}
+
+.toggle-switch input:checked+.slider{
+background:var(--theme-primary)
+}
+
+.toggle-switch input:checked+.slider:before{
+transform:translateX(20px)
+}
+
+#input-toolbar{
+display:flex;
+padding:10px 15px;
+background:var(--theme-chat-toolbar);
+gap:10px;
+align-items:center;
+border-top:1px solid var(--theme-chat-border)
+}
+
+#message-input{
+flex:1;
+border-radius:20px;
+padding:10px 16px;
+border:1px solid var(--theme-input-border);
+background:var(--theme-input-bg);
+color:var(--theme-chat-text);
+font-size:.95rem
+}
+
+#message-input::placeholder{
+color:var(--theme-placeholder)
+}
+
+#send-btn{
+background:var(--theme-primary);
+color:#fff;
+border:none;
+width:42px;
+height:42px;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+cursor:pointer;
+font-size:1.1rem
+}
+
+.switch-text{
+text-align:center;
+font-size:.82rem;
+color:#666;
+margin-top:2px
+}
+
+.switch-text a{
+color:var(--theme-primary);
+text-decoration:none;
+font-weight:600;
+cursor:pointer
+}
+
+.back-arrow{
+cursor:pointer;
+font-size:1.2rem;
+margin-right:10px
+}
+
+.error-msg{
+color:#d32f2f;
+font-size:.78rem;
+text-align:center
+}
+
+.notice-toast{
+position:absolute;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+background:#323232;
+color:#fff;
+padding:8px 16px;
+border-radius:20px;
+font-size:.78rem;
+z-index:99;
+display:none;
+box-shadow:0 4px 12px rgba(0,0,0,.2)
+}
+</style>
 </head>
 
 <body>
 
 <div class="card">
 
-    <div id="toast-notification" class="notice-toast">
-        Email extension is handled by the dropdown menu.
-    </div>
-
-    <!-- 1. SPLASH -->
-    <div id="welcome-screen" class="screen active">
-        <h1>axtres</h1>
-        <p>Secure Email & Chat Messenger</p>
-        <div class="spinner"></div>
-    </div>
-
-    <!-- 2. REGISTER -->
-    <div id="register-screen" class="screen">
-
-        <div class="header-bar">
-            Registration
-        </div>
-
-        <div class="form-content">
-
-            <h2>Sign Up</h2>
-
-            <p class="subtitle">
-                Email is optional. Add one to receive email alerts.
-            </p>
-
-            <input
-                type="text"
-                id="reg-name"
-                placeholder="Your Full Name"
-            >
-
-            <input
-                type="tel"
-                id="reg-phone"
-                placeholder="10-digit Phone Number"
-                maxlength="10"
-                inputmode="numeric"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            >
-
-            <div class="email-group">
-
-                <input
-                    type="text"
-                    id="reg-email-user"
-                    placeholder="Email username (optional)"
-                    oninput="interceptEmailInput(event)"
-                >
-
-                <select id="reg-email-domain">
-                    <option value="@gmail.com" selected>@gmail.com</option>
-                    <option value="@outlook.com">@outlook.com</option>
-                </select>
-
-            </div>
-
-            <button
-                class="btn-secondary"
-                onclick="requestNotificationPermission()"
-            >
-                1. Enable Notifications
-            </button>
-
-            <div
-                id="notif-status"
-                style="font-size:0.75rem;text-align:center;color:#666;"
-            >
-                Status: Not Enabled
-            </div>
-
-            <div class="error-msg" id="reg-error"></div>
-
-            <button
-                class="btn"
-                onclick="handleRegister()"
-            >
-                Complete Sign Up
-            </button>
-
-            <button
-                id="install-btn-reg"
-                class="btn-install"
-                onclick="installPWA()"
-            >
-                📲 Install App to Home Screen
-            </button>
-
-            <div class="switch-text">
-                Already registered?
-                <a onclick="switchScreen('login-screen')">
-                    Log In here
-                </a>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 2.5 REGISTER PIN -->
-    <div id="verify-screen" class="screen">
-
-        <div class="header-bar">
-            Verify Email
-        </div>
-
-        <div
-            class="form-content"
-            style="text-align:center;"
-        >
-
-            <h2>Enter 3-Digit PIN</h2>
-
-            <p class="subtitle">
-                Check your email inbox for the verification code.
-            </p>
-
-            <input
-                type="tel"
-                id="verify-pin-input"
-                placeholder="---"
-                maxlength="3"
-                inputmode="numeric"
-                style="text-align:center;font-size:1.8rem;letter-spacing:10px;"
-                oninput="handleAutoVerifyRegister(event)"
-            >
-
-            <div
-                class="error-msg"
-                id="verify-error"
-            ></div>
-
-            <button
-                class="btn-secondary"
-                onclick="switchScreen('register-screen')"
-            >
-                Back
-            </button>
-
-        </div>
-    </div>
-
-    <!-- 3. LOGIN -->
-    <div id="login-screen" class="screen">
-
-        <div class="header-bar">
-            Sign In
-        </div>
-
-        <div class="form-content">
-
-            <h2>Welcome Back</h2>
-
-            <input
-                type="tel"
-                id="login-phone"
-                placeholder="Enter your registered phone number"
-                maxlength="10"
-                inputmode="numeric"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            >
-
-            <div
-                class="error-msg"
-                id="login-error"
-            ></div>
-
-            <button
-                class="btn"
-                onclick="handleLogin()"
-            >
-                Log In to Chats
-            </button>
-
-            <button
-                class="btn-accent"
-                onclick="openAddEmailModal()"
-            >
-                ➕ Add / Link Email
-            </button>
-
-            <button
-                id="install-btn-login"
-                class="btn-install"
-                onclick="installPWA()"
-            >
-                📲 Install App to Home Screen
-            </button>
-
-            <div class="switch-text">
-                New user?
-                <a onclick="switchScreen('register-screen')">
-                    Register here
-                </a>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 3.5 ADD EMAIL -->
-    <div id="add-email-screen" class="screen">
-
-        <div class="header-bar">
-
-            <div style="display:flex;align-items:center;">
-
-                <span
-                    class="back-arrow"
-                    onclick="switchScreen('login-screen')"
-                >
-                    &#8592;
-                </span>
-
-                <div>
-                    Link Email
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="form-content">
-
-            <h2>
-                Update Email
-            </h2>
-
-            <p class="subtitle">
-                Enter phone and new email
-            </p>
-
-            <input
-                type="tel"
-                id="ae-phone"
-                placeholder="10-digit Phone Number"
-                maxlength="10"
-                inputmode="numeric"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            >
-
-            <div class="email-group">
-
-                <input
-                    type="text"
-                    id="ae-email-user"
-                    placeholder="Email username"
-                    oninput="interceptEmailInput(event)"
-                >
-
-                <select id="ae-email-domain">
-                    <option value="@gmail.com" selected>@gmail.com</option>
-                    <option value="@outlook.com">@outlook.com</option>
-                </select>
-
-            </div>
-
-            <div
-                class="error-msg"
-                id="ae-error"
-            ></div>
-
-            <button
-                class="btn"
-                onclick="handleAddEmailInit()"
-            >
-                Send Verification PIN
-            </button>
-
-        </div>
-    </div>
-
-    <!-- 3.6 VERIFY EMAIL -->
-    <div id="verify-email-screen" class="screen">
-
-        <div class="header-bar">
-            Confirm Email PIN
-        </div>
-
-        <div
-            class="form-content"
-            style="text-align:center;"
-        >
-
-            <h2>
-                Enter 3-Digit PIN
-            </h2>
-
-            <p class="subtitle">
-                Auto-submits when 3 digits are entered.
-            </p>
-
-            <input
-                type="tel"
-                id="ae-pin-input"
-                placeholder="---"
-                maxlength="3"
-                inputmode="numeric"
-                style="text-align:center;font-size:1.8rem;letter-spacing:10px;"
-                oninput="handleAutoVerifyEmail(event)"
-            >
-
-            <div
-                class="error-msg"
-                id="ae-verify-error"
-            ></div>
-
-            <button
-                class="btn-secondary"
-                onclick="switchScreen('login-screen')"
-            >
-                Cancel
-            </button>
-
-        </div>
-    </div>
-
-    <!-- 4. HUB -->
-    <div id="hub-screen" class="screen">
-
-        <div class="header-bar">
-
-            <div>
-                axtres
-            </div>
-
-            <span onclick="handleLogout()">
-                Sign Out
-            </span>
-
-        </div>
-
-        <div
-            class="form-content"
-            style="justify-content:flex-start;padding-top:32px;"
-        >
-
-            <div class="hub-top-row">
-
-                <button
-                    class="settings-button"
-                    onclick="openSettings()"
-                >
-                    ⚙ Settings
-                </button>
-
-            </div>
-
-            <div
-                class="hub-welcome"
-                id="hub-welcome-text"
-            >
-                Welcome, User!
-            </div>
-
-            <div class="hub-card">
-
-                <div class="hub-user-name">
-                    Yadhu Krishna
-                </div>
-
-                <div class="hub-user-phone">
-                    7025707720
-                </div>
-
-                <div class="hub-user-email">
-                    yadhukrishnabp777@gmail.com
-                </div>
-
-            </div>
-
-            <div class="hub-actions">
-
-                <button
-                    class="btn-hub btn-hub-primary"
-                    onclick="chatWithYadhu()"
-                >
-                    💬 Chat with Yadhu Krishna
-                </button>
-
-                <button
-                    class="btn-hub btn-hub-secondary"
-                    onclick="openDirectoryWithPin()"
-                >
-                    📖 Directory
-                </button>
-
-            </div>
-
-        </div>
-    </div>
-
-    <!-- DIRECTORY PIN -->
-    <div
-        id="directory-pin-screen"
-        class="screen"
-        onclick="handleDirectoryBackdrop(event)"
-        style="
-            position:absolute;
-            inset:0;
-            background:rgba(7,24,32,.48);
-            backdrop-filter:blur(8px);
-            align-items:center;
-            justify-content:center;
-            padding:24px;
-            z-index:50;
-        "
-    >
-
-        <div
-            class="directory-pin-card"
-            onclick="event.stopPropagation()"
-        >
-
-            <h2>
-                Directory
-            </h2>
-
-            <input
-                type="tel"
-                id="directory-pin-input"
-                maxlength="3"
-                inputmode="numeric"
-                autocomplete="off"
-                oninput="handleDirectoryPinInput(event)"
-                autofocus
-            >
-
-            <div
-                class="error-msg"
-                id="directory-pin-error"
-            ></div>
-
-        </div>
-
-    </div>
-
-    <!-- 5. DIRECTORY -->
-    <div id="contacts-screen" class="screen">
-
-        <div class="header-bar">
-
-            <div>
-                Directory
-                (<span id="my-name-display"></span>)
-            </div>
-
-            <span onclick="handleLogout()">
-                Sign Out
-            </span>
-
-        </div>
-
-        <div
-            style="
-                padding:10px 15px;
-                background:#fff;
-                font-size:.85rem;
-                color:#667781;
-                border-bottom:1px solid #eee;
-            "
-        >
-            Select a contact to start chatting:
-        </div>
-
-        <button
-            class="directory-return"
-            onclick="returnFromDirectory()"
-        >
-            &#8592; Return
-        </button>
-
-        <div id="contacts-container"></div>
-
-    </div>
-
-    <!-- SETTINGS -->
-    <div
-        id="settings-overlay"
-        class="settings-overlay"
-        onclick="handleSettingsBackdrop(event)"
-    >
-
-        <div
-            class="settings-panel"
-            onclick="event.stopPropagation()"
-        >
-
-            <div class="settings-head">
-
-                <h2>
-                    Appearance
-                </h2>
-
-                <button
-                    class="settings-close"
-                    onclick="closeSettings()"
-                >
-                    &#10005;
-                </button>
-
-            </div>
-
-            <div class="theme-grid">
-
-                <div
-                    class="theme-option"
-                    data-theme="emerald"
-                    onclick="selectTheme('emerald')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#075e54,#128c7e)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Emerald
-                    </div>
-                </div>
-
-                <div
-                    class="theme-option"
-                    data-theme="midnight"
-                    onclick="selectTheme('midnight')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#0b1020,#1d2745)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Midnight
-                    </div>
-                </div>
-
-                <div
-                    class="theme-option"
-                    data-theme="ocean"
-                    onclick="selectTheme('ocean')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#0b3d62,#168aad)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Ocean
-                    </div>
-                </div>
-
-                <div
-                    class="theme-option"
-                    data-theme="graphite"
-                    onclick="selectTheme('graphite')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#202124,#4b5563)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Graphite
-                    </div>
-                </div>
-
-                <div
-                    class="theme-option"
-                    data-theme="royal"
-                    onclick="selectTheme('royal')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#35205f,#7c3aed)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Royal
-                    </div>
-                </div>
-
-                <div
-                    class="theme-option"
-                    data-theme="ivory"
-                    onclick="selectTheme('ivory')"
-                >
-                    <div
-                        class="theme-preview"
-                        style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
-                    >
-                        <div class="preview-bar"></div>
-                        <div class="preview-bubble"></div>
-                    </div>
-                    <div class="preview-name">
-                        Ivory
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- 6. CHAT -->
-    <div id="chat-screen" class="screen">
-
-        <div class="header-bar">
-
-            <div style="display:flex;align-items:center;">
-
-                <span
-                    class="back-arrow"
-                    onclick="handleChatBack()"
-                >
-                    &#8592;
-                </span>
-
-                <div id="chat-room-title">
-                    Chat
-                </div>
-
-            </div>
-
-            <span onclick="handleLogout()">
-                Sign Out
-            </span>
-
-        </div>
-
-        <div id="messages-container"></div>
-
-        <div class="email-toolbar">
-
-            <span>
-                📧 Send via Email
-            </span>
-
-            <label class="toggle-switch">
-
-                <input
-                    type="checkbox"
-                    id="email-toggle"
-                >
-
-                <span class="slider"></span>
-
-            </label>
-
-        </div>
-
-        <div id="input-toolbar">
-
-            <input
-                type="text"
-                id="message-input"
-                placeholder="Type message..."
-                onkeypress="checkEnter(event)"
-            >
-
-            <button
-                id="send-btn"
-                onclick="sendMessage()"
-            >
-                &#9658;
-            </button>
-
-        </div>
-
-    </div>
+<div id="toast-notification" class="notice-toast">
+Email extension is handled by the dropdown menu.
+</div>
+
+<!-- WELCOME -->
+<div id="welcome-screen" class="screen active">
+<h1>axtres</h1>
+<p>Secure Email & Chat Messenger</p>
+<div class="spinner"></div>
+</div>
+
+<!-- REGISTER -->
+<div id="register-screen" class="screen">
+
+<div class="header-bar">Registration</div>
+
+<div class="form-content">
+
+<h2>Sign Up</h2>
+
+<p class="subtitle">
+Email is optional. Add one to receive email alerts.
+</p>
+
+<input
+type="text"
+id="reg-name"
+placeholder="Your Full Name"
+>
+
+<input
+type="tel"
+id="reg-phone"
+placeholder="10-digit Phone Number"
+maxlength="10"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+>
+
+<div class="email-group">
+
+<input
+type="text"
+id="reg-email-user"
+placeholder="Email username (optional)"
+oninput="interceptEmailInput(event)"
+>
+
+<select id="reg-email-domain">
+<option value="@gmail.com" selected>@gmail.com</option>
+<option value="@outlook.com">@outlook.com</option>
+</select>
+
+</div>
+
+<button
+class="btn-secondary"
+onclick="requestNotificationPermission()"
+>
+1. Enable Notifications
+</button>
+
+<div
+id="notif-status"
+style="font-size:.75rem;text-align:center;color:#666"
+>
+Status: Not Enabled
+</div>
+
+<div class="error-msg" id="reg-error"></div>
+
+<button class="btn" onclick="handleRegister()">
+Complete Sign Up
+</button>
+
+<button
+id="install-btn-reg"
+class="btn-install"
+onclick="installPWA()"
+>
+📲 Install App to Home Screen
+</button>
+
+<div class="switch-text">
+Already registered?
+<a onclick="switchScreen('login-screen')">Log In here</a>
+</div>
+
+</div>
+</div>
+
+<!-- VERIFY REGISTER -->
+<div id="verify-screen" class="screen">
+
+<div class="header-bar">Verify Email</div>
+
+<div class="form-content" style="text-align:center">
+
+<h2>Enter 3-Digit PIN</h2>
+
+<p class="subtitle">
+Check your email inbox for the verification code.
+</p>
+
+<input
+type="tel"
+id="verify-pin-input"
+placeholder="---"
+maxlength="3"
+inputmode="numeric"
+style="text-align:center;font-size:1.8rem;letter-spacing:10px"
+oninput="handleAutoVerifyRegister(event)"
+>
+
+<div class="error-msg" id="verify-error"></div>
+
+<button
+class="btn-secondary"
+onclick="switchScreen('register-screen')"
+>
+Back
+</button>
+
+</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen">
+
+<div class="header-bar">Sign In</div>
+
+<div class="form-content">
+
+<h2>Welcome Back</h2>
+
+<input
+type="tel"
+id="login-phone"
+placeholder="Enter your registered phone number"
+maxlength="10"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+>
+
+<div class="error-msg" id="login-error"></div>
+
+<button class="btn" onclick="handleLogin()">
+Log In to Chats
+</button>
+
+<button
+class="btn-accent"
+onclick="openAddEmailModal()"
+>
+➕ Add / Link Email
+</button>
+
+<button
+id="install-btn-login"
+class="btn-install"
+onclick="installPWA()"
+>
+📲 Install App to Home Screen
+</button>
+
+<div class="switch-text">
+New user?
+<a onclick="switchScreen('register-screen')">
+Register here
+</a>
+</div>
+
+</div>
+</div>
+
+<!-- LINK EMAIL -->
+<div id="add-email-screen" class="screen">
+
+<div class="header-bar">
+
+<div style="display:flex;align-items:center">
+
+<span
+class="back-arrow"
+onclick="switchScreen('login-screen')"
+>
+&#8592;
+</span>
+
+<div>Link Email</div>
+
+</div>
+
+</div>
+
+<div class="form-content">
+
+<h2>Update Email</h2>
+
+<p class="subtitle">
+Enter phone and new email
+</p>
+
+<input
+type="tel"
+id="ae-phone"
+placeholder="10-digit Phone Number"
+maxlength="10"
+inputmode="numeric"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+>
+
+<div class="email-group">
+
+<input
+type="text"
+id="ae-email-user"
+placeholder="Email username"
+oninput="interceptEmailInput(event)"
+>
+
+<select id="ae-email-domain">
+<option value="@gmail.com" selected>@gmail.com</option>
+<option value="@outlook.com">@outlook.com</option>
+</select>
+
+</div>
+
+<div class="error-msg" id="ae-error"></div>
+
+<button
+class="btn"
+onclick="handleAddEmailInit()"
+>
+Send Verification PIN
+</button>
+
+</div>
+</div>
+
+<!-- VERIFY EMAIL -->
+<div id="verify-email-screen" class="screen">
+
+<div class="header-bar">
+Confirm Email PIN
+</div>
+
+<div
+class="form-content"
+style="text-align:center"
+>
+
+<h2>Enter 3-Digit PIN</h2>
+
+<p class="subtitle">
+Auto-submits when 3 digits are entered.
+</p>
+
+<input
+type="tel"
+id="ae-pin-input"
+placeholder="---"
+maxlength="3"
+inputmode="numeric"
+style="text-align:center;font-size:1.8rem;letter-spacing:10px"
+oninput="handleAutoVerifyEmail(event)"
+>
+
+<div class="error-msg" id="ae-verify-error"></div>
+
+<button
+class="btn-secondary"
+onclick="switchScreen('login-screen')"
+>
+Cancel
+</button>
+
+</div>
+</div>
+
+<!-- HUB -->
+<div id="hub-screen" class="screen">
+
+<div class="header-bar">
+
+<div>axtres</div>
+
+<span onclick="handleLogout()">
+Sign Out
+</span>
+
+</div>
+
+<div
+class="form-content"
+style="justify-content:flex-start;padding-top:32px"
+>
+
+<div
+class="hub-welcome"
+id="hub-welcome-text"
+>
+Welcome
+</div>
+
+<div
+class="hub-card"
+id="hub-user-card"
+>
+
+<div class="hub-user-label">
+Signed in as
+</div>
+
+<div
+class="hub-user-name"
+id="hub-user-name"
+>
+User
+</div>
+
+<div
+class="hub-user-phone"
+id="hub-user-phone"
+></div>
+
+<div
+class="hub-user-email"
+id="hub-user-email"
+></div>
+
+</div>
+
+<div class="hub-actions">
+
+<button
+class="btn-hub btn-hub-primary"
+onclick="chatWithYadhu()"
+>
+💬 Chat with Yadhu Krishna
+</button>
+
+<button
+class="btn-hub btn-hub-secondary"
+onclick="openDirectoryWithPin()"
+>
+📖 Directory
+</button>
+
+</div>
+
+<div class="settings-footer">
+
+<button
+class="settings-button"
+onclick="openSettings()"
+>
+⚙ Settings
+</button>
+
+</div>
+
+</div>
+</div>
+
+<!-- DIRECTORY PIN -->
+<div
+id="directory-pin-screen"
+class="screen"
+onclick="handleDirectoryBackdrop(event)"
+>
+
+<div
+class="directory-pin-card"
+onclick="event.stopPropagation()"
+>
+
+<h2>Directory</h2>
+
+<input
+type="tel"
+id="directory-pin-input"
+maxlength="3"
+inputmode="numeric"
+autocomplete="off"
+oninput="handleDirectoryPinInput(event)"
+>
+
+<div
+class="error-msg"
+id="directory-pin-error"
+></div>
+
+</div>
+</div>
+
+<!-- DIRECTORY -->
+<div id="contacts-screen" class="screen">
+
+<div class="header-bar">
+
+<div>
+Directory
+(<span id="my-name-display"></span>)
+</div>
+
+<span onclick="handleLogout()">
+Sign Out
+</span>
+
+</div>
+
+<div
+style="
+padding:10px 15px;
+background:var(--theme-card);
+font-size:.85rem;
+color:var(--theme-text);
+border-bottom:1px solid var(--theme-chat-border)
+"
+>
+Select a contact to start chatting:
+</div>
+
+<div id="contacts-container"></div>
+
+</div>
+
+<!-- SETTINGS -->
+<div
+id="settings-overlay"
+class="settings-overlay"
+onclick="handleSettingsBackdrop(event)"
+>
+
+<div
+class="settings-panel"
+onclick="event.stopPropagation()"
+>
+
+<div class="settings-head">
+
+<h2>Appearance</h2>
+
+<button
+class="settings-close"
+onclick="closeSettings()"
+>
+&#10005;
+</button>
+
+</div>
+
+<div class="theme-grid">
+
+<div
+class="theme-option"
+data-theme="emerald"
+onclick="selectTheme('emerald')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#075e54,#128c7e)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Emerald</div>
+</div>
+
+<div
+class="theme-option"
+data-theme="midnight"
+onclick="selectTheme('midnight')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#0b1020,#1d2745)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Midnight</div>
+</div>
+
+<div
+class="theme-option"
+data-theme="ocean"
+onclick="selectTheme('ocean')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#0b3d62,#168aad)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Ocean</div>
+</div>
+
+<div
+class="theme-option"
+data-theme="graphite"
+onclick="selectTheme('graphite')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#202124,#4b5563)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Graphite</div>
+</div>
+
+<div
+class="theme-option"
+data-theme="royal"
+onclick="selectTheme('royal')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#35205f,#7c3aed)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Royal</div>
+</div>
+
+<div
+class="theme-option"
+data-theme="ivory"
+onclick="selectTheme('ivory')"
+>
+<div
+class="theme-preview"
+style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"
+>
+<div class="preview-bar"></div>
+<div class="preview-bubble"></div>
+</div>
+<div class="preview-name">Ivory</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- CHAT -->
+<div id="chat-screen" class="screen">
+
+<div class="header-bar">
+
+<div
+style="display:flex;align-items:center;min-width:0"
+>
+
+<button
+class="chat-back-button"
+onclick="handleChatBack()"
+>
+&#8592; Back
+</button>
+
+<div
+id="chat-room-title"
+style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+>
+Chat
+</div>
+
+</div>
+
+<span onclick="handleLogout()">
+Sign Out
+</span>
+
+</div>
+
+<div id="messages-container"></div>
+
+<div class="email-toolbar">
+
+<span>📧 Send via Email</span>
+
+<label class="toggle-switch">
+
+<input
+type="checkbox"
+id="email-toggle"
+>
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+<div id="input-toolbar">
+
+<input
+type="text"
+id="message-input"
+placeholder="Type message..."
+onkeypress="checkEnter(event)"
+>
+
+<button
+id="send-btn"
+onclick="sendMessage()"
+>
+&#9658;
+</button>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
 
-    const USERS_API = "/users";
-    const MESSAGES_API = "/messages";
-    const YADHU_PHONE = "7025707720";
-
-    let currentUser = null;
-    let activeRecipient = null;
-    let currentRoomId = null;
-    let pendingPhone = null;
-    let syncInterval = null;
-    let contactsInterval = null;
-    let knownMessageIds = new Set();
-    let deferredPrompt = null;
-
-    /* =========================
-       THEMES
-    ========================= */
-
-    const THEMES = {
-
-        emerald: {
-            primary: '#075e54',
-            secondary: '#128c7e',
-            page: 'linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364)',
-            soft: '#f0f2f5',
-            card: '#ffffff',
-            text: '#111b21'
-        },
-
-        midnight: {
-            primary: '#263b72',
-            secondary: '#3f5fa8',
-            page: 'linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)',
-            soft: '#151d2b',
-            card: '#101827',
-            text: '#eef3ff'
-        },
-
-        ocean: {
-            primary: '#087ea4',
-            secondary: '#168aad',
-            page: 'linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)',
-            soft: '#edf7fa',
-            card: '#ffffff',
-            text: '#102a43'
-        },
-
-        graphite: {
-            primary: '#374151',
-            secondary: '#4b5563',
-            page: 'linear-gradient(-45deg,#111827,#202124,#374151,#111827)',
-            soft: '#20242b',
-            card: '#181b20',
-            text: '#f1f5f9'
-        },
-
-        royal: {
-            primary: '#633bb8',
-            secondary: '#7c3aed',
-            page: 'linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)',
-            soft: '#f3effb',
-            card: '#ffffff',
-            text: '#211534'
-        },
-
-        ivory: {
-            primary: '#80613a',
-            secondary: '#a37b4b',
-            page: 'linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)',
-            soft: '#f6f1e9',
-            card: '#fffdf8',
-            text: '#2f271f'
-        }
-
-    };
-
-    function applyTheme(name) {
-
-        const theme =
-            THEMES[name] ||
-            THEMES.emerald;
-
-        const root =
-            document.documentElement;
-
-        root.style.setProperty(
-            '--theme-primary',
-            theme.primary
-        );
-
-        root.style.setProperty(
-            '--theme-secondary',
-            theme.secondary
-        );
-
-        root.style.setProperty(
-            '--theme-page',
-            theme.page
-        );
-
-        root.style.setProperty(
-            '--theme-soft',
-            theme.soft
-        );
+const USERS_API="/users";
+const MESSAGES_API="/messages";
+const YADHU_PHONE="7025707720";
+
+let currentUser=null;
+let activeRecipient=null;
+let currentRoomId=null;
+let pendingPhone=null;
+let syncInterval=null;
+let contactsInterval=null;
+let knownMessageIds=new Set();
+let deferredPrompt=null;
+
+/* PWA */
+
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();
+deferredPrompt=e;
+
+document.querySelectorAll(".btn-install")
+.forEach(btn=>btn.style.display="flex");
+});
+
+async function installPWA(){
+
+if(!deferredPrompt){
+alert("Open browser menu and select 'Add to Home Screen' or 'Install App'.");
+return;
+}
+
+deferredPrompt.prompt();
+
+const {outcome}=await deferredPrompt.userChoice;
+
+if(outcome==="accepted"){
+document.querySelectorAll(".btn-install")
+.forEach(btn=>btn.style.display="none");
+}
+
+deferredPrompt=null;
+}
+
+/* THEMES */
+
+const THEMES={
+
+emerald:{
+primary:"#075e54",
+secondary:"#128c7e",
+page:"linear-gradient(-45deg,#1e3c72,#2a5298,#0f2027,#203a43,#2c5364)",
+soft:"#f0f2f5",
+card:"#ffffff",
+text:"#111b21",
+chat:["#efeae2","#d1ccc0","#ffffff","#dcf8c6","#ffffff","#111b21","#667781","#f0f2f5","#e0e0e0","#ffffff","#cccccc","#7a858c","#e3f2fd","#bbdefb","#1565c0"]
+},
+
+midnight:{
+primary:"#263b72",
+secondary:"#3f5fa8",
+page:"linear-gradient(-45deg,#070b16,#101827,#18243d,#0b1020)",
+soft:"#151d2b",
+card:"#101827",
+text:"#eef3ff",
+chat:["#0d1422","#26344d","#101827","#1b6b63","#182338","#eef3ff","#9eacc3","#111927","#263247","#121b2a","#3a4a63","#9eacc3","#162b45","#28496b","#8fc7ff"]
+},
+
+ocean:{
+primary:"#087ea4",
+secondary:"#168aad",
+page:"linear-gradient(-45deg,#082f49,#0b4f6c,#087ea4,#164e63)",
+soft:"#edf7fa",
+card:"#ffffff",
+text:"#102a43",
+chat:["#e8f5f8","#b8dce5","#ffffff","#c7f0e6","#ffffff","#102a43","#627d98","#edf7fa","#c9e3ea","#ffffff","#b8cbd3","#627d98","#e3f2fd","#bbdefb","#1565c0"]
+},
+
+graphite:{
+primary:"#374151",
+secondary:"#4b5563",
+page:"linear-gradient(-45deg,#111827,#202124,#374151,#111827)",
+soft:"#20242b",
+card:"#181b20",
+text:"#f1f5f9",
+chat:["#171a20","#343a46","#1b1f26","#344b58","#272c35","#f1f5f9","#aeb8c6","#20242b","#343a46","#181b20","#414956","#aeb8c6","#202c3d","#3b4c61","#a8c7ff"]
+},
+
+royal:{
+primary:"#633bb8",
+secondary:"#7c3aed",
+page:"linear-gradient(-45deg,#24133f,#35205f,#5b21b6,#312e81)",
+soft:"#f3effb",
+card:"#ffffff",
+text:"#211534",
+chat:["#eee9f7","#c9b9e8","#ffffff","#e2d4ff","#ffffff","#211534","#76668a","#f3effb","#ddd2ee","#ffffff","#c8bdd8","#76668a","#eee7fb","#d8caee","#633bb8"]
+},
+
+ivory:{
+primary:"#80613a",
+secondary:"#a37b4b",
+page:"linear-gradient(-45deg,#3d2b1f,#6b4f2a,#a17c52,#4a3524)",
+soft:"#f6f1e9",
+card:"#fffdf8",
+text:"#2f271f",
+chat:["#f1ece4","#d2c2ad","#fffdf8","#eadfcf","#fffdf8","#2f271f","#776b5e","#f6f1e9","#ded3c5","#fffdf8","#cfc2b2","#776b5e","#f1eadf","#d9c9b5","#80613a"]
+}
+
+};
+
+function applyTheme(name){
+
+const theme=THEMES[name]||THEMES.emerald;
+const root=document.documentElement;
+
+root.style.setProperty("--theme-primary",theme.primary);
+root.style.setProperty("--theme-secondary",theme.secondary);
+root.style.setProperty("--theme-page",theme.page);
+root.style.setProperty("--theme-soft",theme.soft);
+root.style.setProperty("--theme-card",theme.card);
+root.style.setProperty("--theme-text",theme.text);
+
+const keys=[
+"--theme-chat-bg",
+"--theme-chat-dot",
+"--theme-chat-surface",
+"--theme-my-bubble",
+"--theme-their-bubble",
+"--theme-chat-text",
+"--theme-msg-time",
+"--theme-chat-toolbar",
+"--theme-chat-border",
+"--theme-input-bg",
+"--theme-input-border",
+"--theme-placeholder",
+"--theme-email-bg",
+"--theme-email-border",
+"--theme-email-text"
+];
+
+theme.chat.forEach((value,i)=>{
+root.style.setProperty(keys[i],value);
+});
+
+document.body.style.background=theme.page;
+document.body.dataset.theme=name;
 
-        root.style.setProperty(
-            '--theme-card',
-            theme.card
-        );
+document.querySelectorAll(".theme-option")
+.forEach(el=>{
+el.classList.toggle(
+"selected",
+el.dataset.theme===name
+);
+});
 
-        root.style.setProperty(
-            '--theme-text',
-            theme.text
-        );
+localStorage.setItem("axtres_theme",name);
+}
 
-        document.body.style.background =
-            theme.page;
+function openSettings(){
 
-        document.body.dataset.theme =
-            name;
+document
+.getElementById("settings-overlay")
+.classList.add("active");
 
-        document
-            .querySelectorAll('.theme-option')
-            .forEach(el => {
+const current=
+localStorage.getItem("axtres_theme")||"emerald";
 
-                el.classList.toggle(
-                    'selected',
-                    el.dataset.theme === name
-                );
+document.querySelectorAll(".theme-option")
+.forEach(el=>{
+el.classList.toggle(
+"selected",
+el.dataset.theme===current
+);
+});
+}
 
-            });
+function closeSettings(){
+document
+.getElementById("settings-overlay")
+.classList.remove("active");
+}
 
-        localStorage.setItem(
-            'axtres_theme',
-            name
-        );
-    }
+function handleSettingsBackdrop(e){
 
-    function openSettings() {
+if(e.target.id==="settings-overlay"){
+closeSettings();
+}
+}
 
-        document
-            .getElementById('settings-overlay')
-            .classList.add('active');
+function selectTheme(name){
+applyTheme(name);
+}
 
-        const current =
-            localStorage.getItem('axtres_theme') ||
-            'emerald';
+/* DEVICE */
 
-        document
-            .querySelectorAll('.theme-option')
-            .forEach(el => {
+function getDeviceId(){
 
-                el.classList.toggle(
-                    'selected',
-                    el.dataset.theme === current
-                );
+let deviceId=
+localStorage.getItem("axtres_device_id");
 
-            });
-    }
+if(!deviceId){
 
-    function closeSettings() {
+deviceId=
+"dev_"+
+Math.random().toString(36).substring(2)+
+Date.now().toString(36);
 
-        document
-            .getElementById('settings-overlay')
-            .classList.remove('active');
+localStorage.setItem(
+"axtres_device_id",
+deviceId
+);
+}
 
-    }
+return deviceId;
+}
 
-    function handleSettingsBackdrop(e) {
+/* STARTUP */
 
-        if (
-            e.target.id ===
-            'settings-overlay'
-        ) {
-            closeSettings();
-        }
+window.addEventListener("DOMContentLoaded",()=>{
 
-    }
+getDeviceId();
 
-    function selectTheme(name) {
+applyTheme(
+localStorage.getItem("axtres_theme")||"emerald"
+);
 
-        applyTheme(name);
+const savedUser=
+localStorage.getItem("axtres_user");
 
-    }
+if(savedUser){
 
-    /* =========================
-       PWA
-    ========================= */
+try{
 
-    window.addEventListener(
-        'beforeinstallprompt',
-        (e) => {
+currentUser=JSON.parse(savedUser);
+navigateAfterAuth();
+return;
 
-            e.preventDefault();
+}catch(e){}
 
-            deferredPrompt = e;
+}
 
-            document
-                .querySelectorAll('.btn-install')
-                .forEach(btn =>
-                    btn.style.display = 'flex'
-                );
+setTimeout(()=>{
+switchScreen("login-screen");
+},800);
 
-        }
-    );
+});
 
-    async function installPWA() {
+/* NAVIGATION */
 
-        if (deferredPrompt) {
+function navigateAfterAuth(){
 
-            deferredPrompt.prompt();
+if(
+String(currentUser.phone).trim()===YADHU_PHONE
+){
 
-            const { outcome } =
-                await deferredPrompt.userChoice;
+openContactsScreen();
 
-            if (outcome === 'accepted') {
+}else{
 
-                document
-                    .querySelectorAll('.btn-install')
-                    .forEach(btn =>
-                        btn.style.display = 'none'
-                    );
+openHubScreen();
 
-            }
+}
 
-            deferredPrompt = null;
+}
 
-        } else {
+function switchScreen(screenId){
 
-            alert(
-                "Open browser menu and select 'Add to Home Screen' or 'Install App'."
-            );
+document
+.querySelectorAll(".screen")
+.forEach(s=>s.classList.remove("active"));
 
-        }
+document
+.getElementById(screenId)
+.classList.add("active");
+}
 
-    }
+/* HUB */
 
-    /* =========================
-       DEVICE
-    ========================= */
+function openHubScreen(){
 
-    function getDeviceId() {
+switchScreen("hub-screen");
 
-        let deviceId =
-            localStorage.getItem(
-                'axtres_device_id'
-            );
+document.getElementById(
+"hub-welcome-text"
+).innerText=
+`Welcome, ${currentUser.name}!`;
 
-        if (!deviceId) {
+document.getElementById(
+"hub-user-name"
+).innerText=
+currentUser.name||"User";
 
-            deviceId =
-                'dev_' +
-                Math.random()
-                    .toString(36)
-                    .substring(2) +
-                Date.now().toString(36);
+document.getElementById(
+"hub-user-phone"
+).innerText=
+currentUser.phone||"";
 
-            localStorage.setItem(
-                'axtres_device_id',
-                deviceId
-            );
+document.getElementById(
+"hub-user-email"
+).innerText=
+currentUser.email||"No email linked";
 
-        }
+const card=
+document.getElementById("hub-user-card");
 
-        return deviceId;
+card.classList.remove("visible");
 
-    }
+requestAnimationFrame(()=>{
+requestAnimationFrame(()=>{
+card.classList.add("visible");
+});
+});
+}
 
-    /* =========================
-       STARTUP
-    ========================= */
+function chatWithYadhu(){
 
-    window.addEventListener(
-        'DOMContentLoaded',
-        () => {
+startChatWith({
+name:"Yadhu Krishna",
+phone:YADHU_PHONE,
+has_email:1
+});
 
-            applyTheme(
-                localStorage.getItem(
-                    'axtres_theme'
-                ) || 'emerald'
-            );
+}
 
-            getDeviceId();
+/* DIRECTORY PIN */
 
-            const savedUser =
-                localStorage.getItem(
-                    'axtres_user'
-                );
+function openDirectoryWithPin(){
 
-            if (savedUser) {
+const input=
+document.getElementById(
+"directory-pin-input"
+);
 
-                try {
+const error=
+document.getElementById(
+"directory-pin-error"
+);
 
-                    currentUser =
-                        JSON.parse(savedUser);
+input.value="";
+error.innerText="";
 
-                    navigateAfterAuth();
+switchScreen(
+"directory-pin-screen"
+);
 
-                    return;
+setTimeout(()=>{
+input.focus();
+},50);
 
-                } catch(e) {}
+}
 
-            }
+function closeDirectoryPin(){
+switchScreen("hub-screen");
+}
 
-            setTimeout(() => {
+function handleDirectoryBackdrop(e){
 
-                switchScreen(
-                    'login-screen'
-                );
+if(e.target.id==="directory-pin-screen"){
+closeDirectoryPin();
+}
 
-            }, 800);
+}
 
-        }
-    );
+function handleDirectoryPinInput(e){
 
-    function navigateAfterAuth() {
+const input=e.target;
 
-        if (
-            String(currentUser.phone).trim() ===
-            YADHU_PHONE
-        ) {
+const error=
+document.getElementById(
+"directory-pin-error"
+);
 
-            openContactsScreen();
+input.value=
+input.value
+.replace(/[^0-9]/g,"")
+.slice(0,3);
 
-        } else {
+error.innerText="";
 
-            openHubScreen();
+if(input.value.length===3){
 
-        }
+if(input.value==="257"){
 
-    }
+closeDirectoryPin();
+openContactsScreen();
 
-    function openHubScreen() {
+}else{
 
-        switchScreen(
-            'hub-screen'
-        );
+error.innerText="Wrong PIN";
+input.value="";
 
-        document
-            .getElementById('hub-welcome-text')
-            .innerText =
-            `Welcome, ${currentUser.name}!`;
+setTimeout(()=>{
+input.focus();
+},50);
 
-    }
+}
 
-    /* =========================
-       YADHU CHAT
-    ========================= */
+}
 
-    function chatWithYadhu() {
+}
 
-        startChatWith({
+/* CHAT BACK */
 
-            name: "Yadhu Krishna",
+function handleChatBack(){
 
-            phone: YADHU_PHONE,
+if(syncInterval){
+clearInterval(syncInterval);
+}
 
-            has_email: 1
+currentRoomId=null;
+activeRecipient=null;
 
-        });
+if(
+String(currentUser.phone).trim()===YADHU_PHONE
+){
 
-    }
+openContactsScreen();
 
-    /* =========================
-       DIRECTORY PIN
-    ========================= */
+}else{
 
-    function openDirectoryWithPin() {
+openHubScreen();
 
-        const input =
-            document.getElementById(
-                'directory-pin-input'
-            );
+}
 
-        const error =
-            document.getElementById(
-                'directory-pin-error'
-            );
+}
 
-        input.value = "";
+/* FOCUS / VISIBILITY */
 
-        error.innerText = "";
+function forceSyncOnWake(){
 
-        switchScreen(
-            'directory-pin-screen'
-        );
+if(currentRoomId){
+pollChatMessages(false);
+}
 
-        setTimeout(() => {
+if(
+currentUser &&
+document
+.getElementById("contacts-screen")
+.classList.contains("active")
+){
 
-            input.focus();
+fetchContacts();
 
-        }, 50);
+}
 
-    }
+}
 
-    function closeDirectoryPin() {
+window.addEventListener(
+"focus",
+forceSyncOnWake
+);
 
-        switchScreen(
-            'hub-screen'
-        );
+document.addEventListener(
+"visibilitychange",
+()=>{
+if(document.visibilityState==="visible"){
+forceSyncOnWake();
+}
+}
+);
 
-    }
+/* EMAIL INPUT */
 
-    function handleDirectoryBackdrop(e) {
+function interceptEmailInput(e){
 
-        if (
-            e.target.id ===
-            'directory-pin-screen'
-        ) {
+const input=e.target;
 
-            closeDirectoryPin();
+if(
+input.value.includes("@")||
+input.value.includes(".")
+){
 
-        }
+input.value=
+input.value
+.replace(/[@\.gmailyout-]/gi,"")
+.trim();
 
-    }
+showToast(
+"Email extension handled by dropdown."
+);
 
-    function handleDirectoryPinInput(e) {
+}
 
-        const input =
-            e.target;
+}
 
-        const error =
-            document.getElementById(
-                'directory-pin-error'
-            );
+function showToast(msg){
 
-        input.value =
-            input.value
-                .replace(/[^0-9]/g, '')
-                .slice(0, 3);
+const toast=
+document.getElementById(
+"toast-notification"
+);
 
-        error.innerText = "";
+toast.innerText=msg;
+toast.style.display="block";
 
-        if (
-            input.value.length === 3
-        ) {
+setTimeout(()=>{
+toast.style.display="none";
+},2500);
 
-            if (
-                input.value === "257"
-            ) {
+}
 
-                closeDirectoryPin();
+/* NOTIFICATIONS */
 
-                openContactsScreen();
+async function requestNotificationPermission(){
 
-            } else {
+const statusDiv=
+document.getElementById(
+"notif-status"
+);
 
-                error.innerText =
-                    "Wrong PIN";
+if(!("Notification" in window)){
+return;
+}
 
-                input.value = "";
+const permission=
+await Notification.requestPermission();
 
-                setTimeout(() => {
+statusDiv.innerText=
+permission==="granted"
+?"Status: Notifications Enabled!"
+:"Status: Denied.";
 
-                    input.focus();
+statusDiv.style.color=
+permission==="granted"
+?"#2e7d32"
+:"#d32f2f";
 
-                }, 50);
+}
 
-            }
+/* REGISTER */
 
-        }
+async function handleRegister(){
 
-    }
+const name=
+document.getElementById("reg-name")
+.value.trim();
 
-    /* =========================
-       DIRECTORY RETURN
-    ========================= */
+const phone=
+document.getElementById("reg-phone")
+.value.trim();
 
-    function returnFromDirectory() {
+const emailUser=
+document.getElementById("reg-email-user")
+.value.trim();
 
-        if (contactsInterval)
-            clearInterval(
-                contactsInterval
-            );
+const emailDomain=
+document.getElementById("reg-email-domain")
+.value;
 
-        openHubScreen();
+const email=
+emailUser?
+emailUser+emailDomain:"";
 
-    }
+const errDiv=
+document.getElementById("reg-error");
 
-    /* =========================
-       CHAT BACK
-    ========================= */
+errDiv.innerText="";
 
-    function handleChatBack() {
+if(!name||!phone){
 
-        if (syncInterval)
-            clearInterval(
-                syncInterval
-            );
+errDiv.innerText=
+"Name and phone are required.";
 
-        if (
-            String(currentUser.phone).trim() ===
-            YADHU_PHONE
-        ) {
+return;
 
-            openContactsScreen();
+}
 
-        } else {
+if(phone.length!==10){
 
-            openHubScreen();
+errDiv.innerText=
+"Phone number must be 10 digits.";
 
-        }
+return;
 
-    }
+}
 
-    /* =========================
-       SYNC
-    ========================= */
+try{
 
-    function forceSyncOnWake() {
+const res=
+await fetch(
+`${USERS_API}?action=register&_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({
+name,
+phone,
+email,
+device_id:getDeviceId()
+})
+}
+);
 
-        if (currentRoomId)
-            pollChatMessages(false);
+const data=await res.json();
 
-        if (
-            currentUser &&
-            document
-                .getElementById(
-                    'contacts-screen'
-                )
-                .classList
-                .contains('active')
-        ) {
+if(!res.ok){
+throw new Error(
+data.error||"Registration failed"
+);
+}
 
-            fetchContacts();
+pendingPhone=phone;
 
-        }
+if(data.requires_verification){
 
-    }
+document.getElementById(
+"verify-pin-input"
+).value="";
 
-    window.addEventListener(
-        'focus',
-        forceSyncOnWake
-    );
+document.getElementById(
+"verify-error"
+).innerText="";
 
-    document.addEventListener(
-        "visibilitychange",
-        () => {
+switchScreen("verify-screen");
 
-            if (
-                document.visibilityState ===
-                "visible"
-            ) {
+}else{
 
-                forceSyncOnWake();
+document.getElementById(
+"login-phone"
+).value=phone;
 
-            }
+switchScreen("login-screen");
 
-        }
-    );
+const loginError=
+document.getElementById(
+"login-error"
+);
 
-    /* =========================
-       SCREEN SWITCH
-    ========================= */
+loginError.innerText=
+"Registered successfully! Please log in.";
 
-    function switchScreen(screenId) {
+loginError.style.color="#2e7d32";
 
-        document
-            .querySelectorAll('.screen')
-            .forEach(s =>
-                s.classList.remove('active')
-            );
+}
 
-        document
-            .getElementById(screenId)
-            .classList.add('active');
+}catch(err){
 
-    }
+errDiv.innerText=err.message;
 
-    /* =========================
-       EMAIL INPUT
-    ========================= */
+}
 
-    function interceptEmailInput(e) {
+}
 
-        const input =
-            e.target;
+/* VERIFY REGISTER */
 
-        if (
-            input.value.includes('@') ||
-            input.value.includes('.')
-        ) {
+async function handleAutoVerifyRegister(e){
 
-            input.value =
-                input.value
-                    .replace(
-                        /[@\.gmailyout-]/gi,
-                        ''
-                    )
-                    .trim();
+const input=e.target;
 
-            showToast(
-                "Email extension handled by dropdown."
-            );
+input.value=
+input.value.replace(/[^0-9]/g,"");
 
-        }
+const errDiv=
+document.getElementById(
+"verify-error"
+);
 
-    }
+errDiv.innerText="";
 
-    function showToast(msg) {
+if(input.value.length===3){
 
-        const toast =
-            document.getElementById(
-                'toast-notification'
-            );
+try{
 
-        toast.innerText =
-            msg;
+const res=
+await fetch(
+`${USERS_API}?action=verify-register&_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({
+phone:pendingPhone,
+pin:input.value
+})
+}
+);
 
-        toast.style.display =
-            'block';
+const data=await res.json();
 
-        setTimeout(() => {
+if(!res.ok){
+throw new Error(
+data.error||"Incorrect PIN"
+);
+}
 
-            toast.style.display =
-                'none';
+document.getElementById(
+"login-phone"
+).value=pendingPhone;
 
-        }, 2500);
+switchScreen("login-screen");
 
-    }
+const loginError=
+document.getElementById(
+"login-error"
+);
 
-    /* =========================
-       NOTIFICATIONS
-    ========================= */
+loginError.innerText=
+"Email verified successfully! Log in now.";
 
-    async function requestNotificationPermission() {
+loginError.style.color="#2e7d32";
 
-        const statusDiv =
-            document.getElementById(
-                'notif-status'
-            );
+}catch(err){
 
-        if (
-            !("Notification" in window)
-        )
-            return;
+errDiv.innerText=err.message;
+input.value="";
 
-        const permission =
-            await Notification.requestPermission();
+}
 
-        statusDiv.innerText =
-            permission === "granted"
-                ? "Status: Notifications Enabled!"
-                : "Status: Denied.";
+}
 
-        statusDiv.style.color =
-            permission === "granted"
-                ? "#2e7d32"
-                : "#d32f2f";
+}
 
-    }
+/* ADD EMAIL */
 
-    /* =========================
-       REGISTER
-    ========================= */
+function openAddEmailModal(){
 
-    async function handleRegister() {
+document.getElementById(
+"ae-phone"
+).value="";
 
-        const name =
-            document
-                .getElementById(
-                    'reg-name'
-                )
-                .value
-                .trim();
+document.getElementById(
+"ae-email-user"
+).value="";
 
-        const phone =
-            document
-                .getElementById(
-                    'reg-phone'
-                )
-                .value
-                .trim();
+document.getElementById(
+"ae-error"
+).innerText="";
 
-        const emailUser =
-            document
-                .getElementById(
-                    'reg-email-user'
-                )
-                .value
-                .trim();
+switchScreen("add-email-screen");
 
-        const emailDomain =
-            document.getElementById(
-                'reg-email-domain'
-            ).value;
+}
 
-        const email =
-            emailUser
-                ? emailUser + emailDomain
-                : "";
+async function handleAddEmailInit(){
 
-        const errDiv =
-            document.getElementById(
-                'reg-error'
-            );
+const phone=
+document.getElementById("ae-phone")
+.value.trim();
 
-        errDiv.innerText = "";
+const emailUser=
+document.getElementById("ae-email-user")
+.value.trim();
 
-        if (!name || !phone) {
+const emailDomain=
+document.getElementById("ae-email-domain")
+.value;
 
-            errDiv.innerText =
-                "Name and phone are required.";
+const errDiv=
+document.getElementById("ae-error");
 
-            return;
+errDiv.innerText="";
 
-        }
+if(
+!phone||
+phone.length!==10||
+!emailUser
+){
 
-        if (phone.length !== 10) {
+errDiv.innerText=
+"Enter valid phone and email.";
 
-            errDiv.innerText =
-                "Phone number must be 10 digits.";
+return;
 
-            return;
+}
 
-        }
+pendingPhone=phone;
 
-        try {
+const email=
+emailUser+emailDomain;
 
-            const res =
-                await fetch(
-                    `${USERS_API}?action=register&_t=${Date.now()}`,
-                    {
-                        method: 'POST',
-                        cache: 'no-store',
-                        headers: {
-                            'Content-Type':
-                                'application/json',
-                            'Cache-Control':
-                                'no-cache, no-store'
-                        },
-                        body: JSON.stringify({
-                            name,
-                            phone,
-                            email,
-                            device_id:
-                                getDeviceId()
-                        })
-                    }
-                );
+try{
 
-            const data =
-                await res.json();
+const res=
+await fetch(
+`${USERS_API}?action=update-email-init&_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({
+phone,
+email
+})
+}
+);
 
-            if (!res.ok)
-                throw new Error(
-                    data.error ||
-                    "Registration failed"
-                );
+const data=await res.json();
 
-            pendingPhone =
-                phone;
+if(!res.ok){
+throw new Error(
+data.error||"Failed to send PIN"
+);
+}
 
-            if (
-                data.requires_verification
-            ) {
+document.getElementById(
+"ae-pin-input"
+).value="";
 
-                document.getElementById(
-                    'verify-pin-input'
-                ).value = "";
+switchScreen("verify-email-screen");
 
-                document.getElementById(
-                    'verify-error'
-                ).innerText = "";
+}catch(err){
 
-                switchScreen(
-                    'verify-screen'
-                );
+errDiv.innerText=err.message;
 
-            } else {
+}
 
-                document.getElementById(
-                    'login-phone'
-                ).value =
-                    phone;
+}
 
-                switchScreen(
-                    'login-screen'
-                );
+/* VERIFY EMAIL */
 
-                document.getElementById(
-                    'login-error'
-                ).innerText =
-                    "Registered successfully! Please log in.";
+async function handleAutoVerifyEmail(e){
 
-                document.getElementById(
-                    'login-error'
-                ).style.color =
-                    "#2e7d32";
+const input=e.target;
 
-            }
+input.value=
+input.value.replace(/[^0-9]/g,"");
 
-        } catch (err) {
+const errDiv=
+document.getElementById(
+"ae-verify-error"
+);
 
-            errDiv.innerText =
-                err.message;
+errDiv.innerText="";
 
-        }
+if(input.value.length===3){
 
-    }
+try{
 
-    /* =========================
-       REGISTER PIN
-    ========================= */
+const res=
+await fetch(
+`${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({
+phone:pendingPhone,
+pin:input.value
+})
+}
+);
 
-    async function handleAutoVerifyRegister(e) {
+const data=await res.json();
 
-        const input =
-            e.target;
+if(!res.ok){
+throw new Error(
+data.error||"Incorrect PIN"
+);
+}
 
-        input.value =
-            input.value.replace(
-                /[^0-9]/g,
-                ''
-            );
+switchScreen("login-screen");
 
-        const errDiv =
-            document.getElementById(
-                'verify-error'
-            );
+const loginError=
+document.getElementById(
+"login-error"
+);
 
-        errDiv.innerText = "";
+loginError.innerText=
+"Email linked and verified!";
 
-        if (
-            input.value.length === 3
-        ) {
+loginError.style.color="#2e7d32";
 
-            try {
+}catch(err){
 
-                const res =
-                    await fetch(
-                        `${USERS_API}?action=verify-register&_t=${Date.now()}`,
-                        {
-                            method: 'POST',
-                            cache: 'no-store',
-                            headers: {
-                                'Content-Type':
-                                    'application/json',
-                                'Cache-Control':
-                                    'no-cache, no-store'
-                            },
-                            body: JSON.stringify({
-                                phone:
-                                    pendingPhone,
-                                pin:
-                                    input.value
-                            })
-                        }
-                    );
+errDiv.innerText=err.message;
+input.value="";
 
-                const data =
-                    await res.json();
+}
 
-                if (!res.ok)
-                    throw new Error(
-                        data.error ||
-                        "Incorrect PIN"
-                    );
+}
 
-                document.getElementById(
-                    'login-phone'
-                ).value =
-                    pendingPhone;
+}
 
-                switchScreen(
-                    'login-screen'
-                );
+/* LOGIN */
 
-                document.getElementById(
-                    'login-error'
-                ).innerText =
-                    "Email verified successfully! Log in now.";
+async function handleLogin(){
 
-                document.getElementById(
-                    'login-error'
-                ).style.color =
-                    "#2e7d32";
+const phone=
+document.getElementById("login-phone")
+.value.trim();
 
-            } catch (err) {
+const errDiv=
+document.getElementById("login-error");
 
-                errDiv.innerText =
-                    err.message;
+errDiv.innerText="";
+errDiv.style.color="#d32f2f";
 
-                input.value = "";
+if(!phone||phone.length!==10){
 
-            }
+errDiv.innerText=
+"Enter a valid 10-digit phone number.";
 
-        }
+return;
 
-    }
+}
 
-    /* =========================
-       ADD EMAIL
-    ========================= */
+try{
 
-    function openAddEmailModal() {
+const res=
+await fetch(
+`${USERS_API}?action=login&_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({phone})
+}
+);
 
-        document.getElementById(
-            'ae-phone'
-        ).value = "";
+const data=await res.json();
 
-        document.getElementById(
-            'ae-email-user'
-        ).value = "";
+if(!res.ok){
+throw new Error(
+data.error||"Login failed"
+);
+}
 
-        document.getElementById(
-            'ae-error'
-        ).innerText = "";
+currentUser=data.user;
 
-        switchScreen(
-            'add-email-screen'
-        );
+localStorage.setItem(
+"axtres_user",
+JSON.stringify(currentUser)
+);
 
-    }
+navigateAfterAuth();
 
-    async function handleAddEmailInit() {
+}catch(err){
 
-        const phone =
-            document.getElementById(
-                'ae-phone'
-            ).value.trim();
+errDiv.innerText=err.message;
 
-        const emailUser =
-            document.getElementById(
-                'ae-email-user'
-            ).value.trim();
+}
 
-        const emailDomain =
-            document.getElementById(
-                'ae-email-domain'
-            ).value;
+}
 
-        const errDiv =
-            document.getElementById(
-                'ae-error'
-            );
+/* LOGOUT */
 
-        errDiv.innerText = "";
+function handleLogout(){
 
-        if (
-            !phone ||
-            phone.length !== 10 ||
-            !emailUser
-        ) {
+localStorage.removeItem(
+"axtres_user"
+);
 
-            errDiv.innerText =
-                "Enter valid phone and email.";
+currentUser=null;
+activeRecipient=null;
+currentRoomId=null;
 
-            return;
+if(syncInterval){
+clearInterval(syncInterval);
+}
 
-        }
+if(contactsInterval){
+clearInterval(contactsInterval);
+}
 
-        pendingPhone =
-            phone;
+switchScreen("login-screen");
 
-        const email =
-            emailUser +
-            emailDomain;
+}
 
-        try {
+/* DIRECTORY */
 
-            const res =
-                await fetch(
-                    `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
-                    {
-                        method: 'POST',
-                        cache: 'no-store',
-                        headers: {
-                            'Content-Type':
-                                'application/json',
-                            'Cache-Control':
-                                'no-cache, no-store'
-                        },
-                        body: JSON.stringify({
-                            phone,
-                            email
-                        })
-                    }
-                );
+async function openContactsScreen(){
 
-            const data =
-                await res.json();
+switchScreen("contacts-screen");
 
-            if (!res.ok)
-                throw new Error(
-                    data.error ||
-                    "Failed to send PIN"
-                );
+document.getElementById(
+"my-name-display"
+).innerText=currentUser.name;
 
-            document.getElementById(
-                'ae-pin-input'
-            ).value = "";
+startContactsPolling();
 
-            switchScreen(
-                'verify-email-screen'
-            );
+}
 
-        } catch (err) {
+function startContactsPolling(){
 
-            errDiv.innerText =
-                err.message;
+if(contactsInterval){
+clearInterval(contactsInterval);
+}
 
-        }
+fetchContacts();
 
-    }
+contactsInterval=
+setInterval(
+fetchContacts,
+1000
+);
 
-    /* =========================
-       VERIFY EMAIL
-    ========================= */
+}
 
-    async function handleAutoVerifyEmail(e) {
+async function fetchContacts(){
 
-        const input =
-            e.target;
+try{
 
-        input.value =
-            input.value.replace(
-                /[^0-9]/g,
-                ''
-            );
+const res=
+await fetch(
+`${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`,
+{
+cache:"no-store",
+headers:{
+"Cache-Control":"no-cache, no-store",
+"Pragma":"no-cache"
+}
+}
+);
 
-        const errDiv =
-            document.getElementById(
-                'ae-verify-error'
-            );
+const contacts=await res.json();
 
-        errDiv.innerText = "";
+const container=
+document.getElementById(
+"contacts-container"
+);
 
-        if (
-            input.value.length === 3
-        ) {
+container.innerHTML="";
 
-            try {
+if(
+!Array.isArray(contacts)||
+contacts.length===0
+){
 
-                const res =
-                    await fetch(
-                        `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
-                        {
-                            method: 'POST',
-                            cache: 'no-store',
-                            headers: {
-                                'Content-Type':
-                                    'application/json',
-                                'Cache-Control':
-                                    'no-cache, no-store'
-                            },
-                            body: JSON.stringify({
-                                phone:
-                                    pendingPhone,
-                                pin:
-                                    input.value
-                            })
-                        }
-                    );
+container.innerHTML=
+`
+<div style="
+text-align:center;
+padding:20px;
+color:#667781;
+font-size:.9rem
+">
+No other contacts found yet.
+</div>
+`;
 
-                const data =
-                    await res.json();
+return;
 
-                if (!res.ok)
-                    throw new Error(
-                        data.error ||
-                        "Incorrect PIN"
-                    );
+}
 
-                switchScreen(
-                    'login-screen'
-                );
+contacts.forEach(c=>{
 
-                document.getElementById(
-                    'login-error'
-                ).innerText =
-                    "Email linked and verified!";
+const item=
+document.createElement("div");
 
-                document.getElementById(
-                    'login-error'
-                ).style.color =
-                    "#2e7d32";
+item.className="contact-item";
 
-            } catch (err) {
+const emailStatusBadge=
+c.has_email===1
+?
+`<span class="status-pill active">Email Verified 🟢</span>`
+:
+`<span class="status-pill inactive">No Email ⚪</span>`;
 
-                errDiv.innerText =
-                    err.message;
+item.innerHTML=
+`
+<div>
+<div class="contact-name">
+${escapeHtml(c.name)}
+</div>
 
-                input.value = "";
+<div class="contact-phone">
+${escapeHtml(c.phone)}
+</div>
 
-            }
+${emailStatusBadge}
 
-        }
+</div>
 
-    }
+<span style="
+color:var(--theme-primary);
+font-weight:600;
+font-size:.9rem
+">
+Chat &rarr;
+</span>
+`;
 
-    /* =========================
-       LOGIN
-    ========================= */
+item.onclick=()=>{
+startChatWith(c);
+};
 
-    async function handleLogin() {
+container.appendChild(item);
 
-        const phone =
-            document.getElementById(
-                'login-phone'
-            ).value.trim();
+});
 
-        const errDiv =
-            document.getElementById(
-                'login-error'
-            );
+}catch(e){}
 
-        errDiv.innerText = "";
+}
 
-        errDiv.style.color =
-            "#d32f2f";
+/* CHAT */
 
-        if (
-            !phone ||
-            phone.length !== 10
-        ) {
+function startChatWith(recipient){
 
-            errDiv.innerText =
-                "Enter a valid 10-digit phone number.";
+activeRecipient=recipient;
 
-            return;
+if(contactsInterval){
+clearInterval(contactsInterval);
+}
 
-        }
+const sortedPhones=
+[
+currentUser.phone,
+recipient.phone
+].sort();
 
-        try {
+currentRoomId=
+`room_${sortedPhones[0]}_${sortedPhones[1]}`;
 
-            const res =
-                await fetch(
-                    `${USERS_API}?action=login&_t=${Date.now()}`,
-                    {
-                        method: 'POST',
-                        cache: 'no-store',
-                        headers: {
-                            'Content-Type':
-                                'application/json',
-                            'Cache-Control':
-                                'no-cache, no-store'
-                        },
-                        body: JSON.stringify({
-                            phone
-                        })
-                    }
-                );
+document.getElementById(
+"chat-room-title"
+).innerText=
+recipient.name;
 
-            const data =
-                await res.json();
+switchScreen("chat-screen");
 
-            if (!res.ok)
-                throw new Error(
-                    data.error ||
-                    "Login failed"
-                );
+document.getElementById(
+"email-toggle"
+).checked=false;
 
-            currentUser =
-                data.user;
+const messagesDiv=
+document.getElementById(
+"messages-container"
+);
 
-            localStorage.setItem(
-                'axtres_user',
-                JSON.stringify(
-                    currentUser
-                )
-            );
+messagesDiv.innerHTML="";
 
-            navigateAfterAuth();
+knownMessageIds.clear();
 
-        } catch (err) {
+startChatPolling();
 
-            errDiv.innerText =
-                err.message;
+}
 
-        }
+function startChatPolling(){
 
-    }
+if(syncInterval){
+clearInterval(syncInterval);
+}
 
-    /* =========================
-       LOGOUT
-    ========================= */
+pollChatMessages(true);
 
-    function handleLogout() {
+syncInterval=
+setInterval(
+()=>{
+pollChatMessages(false),
+600
+);
 
-        localStorage.removeItem(
-            'axtres_user'
-        );
+}
 
-        currentUser = null;
+async function pollChatMessages(isInitial){
 
-        if (syncInterval)
-            clearInterval(
-                syncInterval
-            );
+if(!currentRoomId)return;
 
-        if (contactsInterval)
-            clearInterval(
-                contactsInterval
-            );
+try{
 
-        switchScreen(
-            'login-screen'
-        );
+const res=
+await fetch(
+`${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`,
+{
+cache:"no-store",
+headers:{
+"Cache-Control":"no-cache, no-store",
+"Pragma":"no-cache"
+}
+}
+);
 
-    }
+const history=await res.json();
 
-    /* =========================
-       DIRECTORY
-    ========================= */
+if(!Array.isArray(history)){
+return;
+}
 
-    async function openContactsScreen() {
+const messagesDiv=
+document.getElementById(
+"messages-container"
+);
 
-        switchScreen(
-            'contacts-screen'
-        );
+if(isInitial){
 
-        document.getElementById(
-            'my-name-display'
-        ).innerText =
-            currentUser.name;
+messagesDiv.innerHTML="";
+knownMessageIds.clear();
 
-        startContactsPolling();
+}
 
-    }
+let shouldScroll=false;
 
-    function startContactsPolling() {
+history.forEach(msg=>{
 
-        if (contactsInterval)
-            clearInterval(
-                contactsInterval
-            );
+const sender=
+msg.sender_phone||
+msg.senderPhone||
+msg.sender_id||
+"";
 
-        fetchContacts();
+const msgText=
+msg.message||"";
 
-        contactsInterval =
-            setInterval(
-                fetchContacts,
-                1000
-            );
+const createdAt=
+msg.created_at||"";
 
-    }
+const isEmergency=
+msg.is_emergency||0;
 
-    async function fetchContacts() {
+const uniqueId=
+msg.id
+?String(msg.id)
+:`${sender}_${createdAt}_${msgText}`;
 
-        try {
+if(knownMessageIds.has(uniqueId)){
+return;
+}
 
-            const res =
-                await fetch(
-                    `${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`,
-                    {
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control':
-                                'no-cache, no-store',
-                            'Pragma':
-                                'no-cache'
-                        }
-                    }
-                );
+knownMessageIds.add(uniqueId);
+shouldScroll=true;
 
-            const contacts =
-                await res.json();
+if(
+!isInitial&&
+String(sender).trim()!==
+String(currentUser.phone).trim()
+){
 
-            const container =
-                document.getElementById(
-                    'contacts-container'
-                );
+if(
+"Notification" in window&&
+Notification.permission==="granted"
+){
 
-            container.innerHTML = "";
+const alertTitle=
+isEmergency
+?
+`📧 Email Sent by ${activeRecipient.name}`
+:
+`💬 New Message from ${activeRecipient.name}`;
 
-            if (
-                !Array.isArray(contacts) ||
-                contacts.length === 0
-            ) {
+new Notification(
+alertTitle,
+{body:msgText}
+);
 
-                container.innerHTML =
-                    `<div style="text-align:center;padding:20px;color:#667781;font-size:.9rem;">
-                        No other contacts found yet.
-                    </div>`;
+}
 
-                return;
+}
 
-            }
+let timeStr="";
 
-            contacts.forEach(c => {
+if(createdAt){
 
-                const item =
-                    document.createElement(
-                        'div'
-                    );
+const parsedDate=
+new Date(createdAt);
 
-                item.className =
-                    'contact-item';
+if(!isNaN(parsedDate.getTime())){
 
-                const emailStatusBadge =
-                    c.has_email === 1
-                        ? `<span class="status-pill active">Email Verified 🟢</span>`
-                        : `<span class="status-pill inactive">No Email ⚪</span>`;
+timeStr=
+parsedDate.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
 
-                item.innerHTML =
-                    `<div>
-                        <div class="contact-name">
-                            ${escapeHtml(c.name)}
-                        </div>
+}
 
-                        <div class="contact-phone">
-                            ${escapeHtml(c.phone)}
-                        </div>
+}
 
-                        ${emailStatusBadge}
-                    </div>
+if(!timeStr){
 
-                    <span style="color:var(--theme-primary);font-weight:600;font-size:.9rem;">
-                        Chat &rarr;
-                    </span>`;
+timeStr=
+new Date().toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
 
-                item.onclick =
-                    () => startChatWith(c);
+}
 
-                container.appendChild(
-                    item
-                );
+const cleanSender=
+String(sender).trim();
 
-            });
+const cleanMyPhone=
+String(currentUser.phone).trim();
 
-        } catch (e) {}
+const isMe=
+cleanSender===cleanMyPhone;
 
-    }
+const msgEl=
+document.createElement("div");
 
-    /* =========================
-       CHAT START
-    ========================= */
+msgEl.className="msg";
 
-    function startChatWith(recipient) {
+if(
+isEmergency===1||
+isEmergency===true
+){
 
-        activeRecipient =
-            recipient;
+msgEl.classList.add(
+"email-alert"
+);
 
-        if (contactsInterval)
-            clearInterval(
-                contactsInterval
-            );
+}
 
-        const sortedPhones =
-            [
-                currentUser.phone,
-                recipient.phone
-            ].sort();
+const badgeHTML=
+(
+isEmergency===1||
+isEmergency===true
+)
+?
+`<span class="email-badge">📧 SENT VIA EMAIL</span><br>`
+:"";
 
-        currentRoomId =
-            `room_${sortedPhones[0]}_${sortedPhones[1]}`;
+if(isMe){
 
-        document.getElementById(
-            'chat-room-title'
-        ).innerText =
-            recipient.name;
+msgEl.classList.add("me");
 
-        switchScreen(
-            'chat-screen'
-        );
+msgEl.innerHTML=
+`${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
 
-        document.getElementById(
-            'email-toggle'
-        ).checked = false;
+}else{
 
-        const messagesDiv =
-            document.getElementById(
-                'messages-container'
-            );
+msgEl.classList.add("them");
 
-        messagesDiv.innerHTML = "";
+msgEl.innerHTML=
+`${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
 
-        knownMessageIds.clear();
+}
 
-        startChatPolling();
+messagesDiv.appendChild(msgEl);
 
-    }
+});
 
-    function startChatPolling() {
+if(shouldScroll||isInitial){
 
-        if (syncInterval)
-            clearInterval(
-                syncInterval
-            );
+messagesDiv.scrollTop=
+messagesDiv.scrollHeight;
 
-        pollChatMessages(true);
+}
 
-        syncInterval =
-            setInterval(
-                () => pollChatMessages(false),
-                600
-            );
+}catch(e){}
 
-    }
+}
 
-    /* =========================
-       LOAD MESSAGES
-    ========================= */
+/* SEND MESSAGE */
 
-    async function pollChatMessages(
-        isInitial
-    ) {
+async function sendMessage(){
 
-        if (!currentRoomId)
-            return;
+const input=
+document.getElementById(
+"message-input"
+);
 
-        try {
+const text=
+input.value.trim();
 
-            const res =
-                await fetch(
-                    `${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`,
-                    {
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control':
-                                'no-cache, no-store',
-                            'Pragma':
-                                'no-cache'
-                        }
-                    }
-                );
+const sendViaEmail=
+document.getElementById(
+"email-toggle"
+).checked
+?1
+:0;
 
-            const history =
-                await res.json();
+if(!text||!currentRoomId){
+return;
+}
 
-            if (Array.isArray(history)) {
+const timeNow=
+new Date().toISOString();
 
-                const messagesDiv =
-                    document.getElementById(
-                        'messages-container'
-                    );
+input.value="";
+input.focus();
 
-                if (isInitial) {
+try{
 
-                    messagesDiv.innerHTML =
-                        "";
+await fetch(
+`${MESSAGES_API}?_t=${Date.now()}`,
+{
+method:"POST",
+cache:"no-store",
+headers:{
+"Content-Type":"application/json",
+"Cache-Control":"no-cache, no-store"
+},
+body:JSON.stringify({
 
-                    knownMessageIds.clear();
+room_id:currentRoomId,
 
-                }
+sender_id:
+currentUser.phone,
 
-                let shouldScroll =
-                    false;
+sender_name:
+currentUser.name,
 
-                history.forEach(msg => {
+recipient_phone:
+activeRecipient.phone,
 
-                    const sender =
-                        msg.sender_phone ||
-                        msg.senderPhone ||
-                        msg.sender_id ||
-                        "";
+message:text,
 
-                    const msgText =
-                        msg.message || "";
+send_via_email:
+sendViaEmail,
 
-                    const createdAt =
-                        msg.created_at || "";
+created_at:
+timeNow
 
-                    const isEmergency =
-                        msg.is_emergency || 0;
+})
+}
+);
 
-                    const uniqueId =
-                        msg.id
-                            ? String(msg.id)
-                            : `${sender}_${createdAt}_${msgText}`;
+pollChatMessages(false);
 
-                    if (
-                        knownMessageIds.has(
-                            uniqueId
-                        )
-                    )
-                        return;
+}catch(err){}
 
-                    knownMessageIds.add(
-                        uniqueId
-                    );
+}
 
-                    shouldScroll = true;
+function checkEnter(e){
 
-                    if (
-                        !isInitial &&
-                        String(sender).trim() !==
-                        String(currentUser.phone).trim()
-                    ) {
+if(e.key==="Enter"){
+sendMessage();
+}
 
-                        if (
-                            Notification.permission ===
-                            "granted"
-                        ) {
+}
 
-                            const alertTitle =
-                                isEmergency
-                                    ? `📧 Email Sent by ${activeRecipient.name}`
-                                    : `💬 New Message from ${activeRecipient.name}`;
+function escapeHtml(text){
 
-                            new Notification(
-                                alertTitle,
-                                {
-                                    body: msgText
-                                }
-                            );
+const map={
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&apos;"
+};
 
-                        }
+return String(text).replace(
+/[\n&<>"']/g,
+m=>map[m]||m
+);
 
-                    }
-
-                    let timeStr = "";
-
-                    if (createdAt) {
-
-                        const parsedDate =
-                            new Date(
-                                createdAt
-                            );
-
-                        if (
-                            !isNaN(
-                                parsedDate.getTime()
-                            )
-                        ) {
-
-                            timeStr =
-                                parsedDate.toLocaleTimeString(
-                                    [],
-                                    {
-                                        hour:
-                                            '2-digit',
-                                        minute:
-                                            '2-digit'
-                                    }
-                                );
-
-                        }
-
-                    }
-
-                    if (!timeStr) {
-
-                        timeStr =
-                            new Date()
-                                .toLocaleTimeString(
-                                    [],
-                                    {
-                                        hour:
-                                            '2-digit',
-                                        minute:
-                                            '2-digit'
-                                    }
-                                );
-
-                    }
-
-                    const cleanSender =
-                        String(sender)
-                            .trim();
-
-                    const cleanMyPhone =
-                        String(
-                            currentUser.phone
-                        ).trim();
-
-                    const isMe =
-                        cleanSender ===
-                        cleanMyPhone;
-
-                    const msgEl =
-                        document.createElement(
-                            'div'
-                        );
-
-                    msgEl.className =
-                        'msg';
-
-                    if (
-                        isEmergency === 1 ||
-                        isEmergency === true
-                    ) {
-
-                        msgEl.classList.add(
-                            'email-alert'
-                        );
-
-                    }
-
-                    let badgeHTML =
-                        (
-                            isEmergency === 1 ||
-                            isEmergency === true
-                        )
-                            ? `<span class="email-badge">📧 SENT VIA EMAIL</span><br>`
-                            : '';
-
-                    if (isMe) {
-
-                        msgEl.classList.add(
-                            'me'
-                        );
-
-                        msgEl.innerHTML =
-                            `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-
-                    } else {
-
-                        msgEl.classList.add(
-                            'them'
-                        );
-
-                        msgEl.innerHTML =
-                            `${badgeHTML}${escapeHtml(msgText)}<span class="msg-time">${timeStr}</span>`;
-
-                    }
-
-                    messagesDiv.appendChild(
-                        msgEl
-                    );
-
-                });
-
-                if (
-                    shouldScroll ||
-                    isInitial
-                ) {
-
-                    messagesDiv.scrollTop =
-                        messagesDiv.scrollHeight;
-
-                }
-
-            }
-
-        } catch (e) {}
-
-    }
-
-    /* =========================
-       SEND MESSAGE
-    ========================= */
-
-    async function sendMessage() {
-
-        const input =
-            document.getElementById(
-                'message-input'
-            );
-
-        const text =
-            input.value.trim();
-
-        const sendViaEmail =
-            document.getElementById(
-                'email-toggle'
-            ).checked
-                ? 1
-                : 0;
-
-        if (
-            !text ||
-            !currentRoomId
-        )
-            return;
-
-        const timeNow =
-            new Date().toISOString();
-
-        input.value = "";
-
-        input.focus();
-
-        try {
-
-            await fetch(
-                `${MESSAGES_API}?_t=${Date.now()}`,
-                {
-                    method: 'POST',
-                    cache: 'no-store',
-                    headers: {
-                        'Content-Type':
-                            'application/json',
-                        'Cache-Control':
-                            'no-cache, no-store'
-                    },
-                    body: JSON.stringify({
-
-                        room_id:
-                            currentRoomId,
-
-                        sender_id:
-                            currentUser.phone,
-
-                        sender_name:
-                            currentUser.name,
-
-                        recipient_phone:
-                            activeRecipient.phone,
-
-                        message:
-                            text,
-
-                        send_via_email:
-                            sendViaEmail,
-
-                        created_at:
-                            timeNow
-
-                    })
-                }
-            );
-
-            pollChatMessages(false);
-
-        } catch (err) {}
-
-    }
-
-    function checkEnter(e) {
-
-        if (
-            e.key === 'Enter'
-        ) {
-
-            sendMessage();
-
-        }
-
-    }
-
-    /* =========================
-       HTML ESCAPE
-    ========================= */
-
-    function escapeHtml(text) {
-
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&apos;'
-        };
-
-        return text.replace(
-            /[\n&<>"']/g,
-            function(m) {
-                return map[m] || m;
-            }
-        );
-
-    }
+}
 
 </script>
 
