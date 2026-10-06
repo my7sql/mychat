@@ -57,12 +57,6 @@
         .login-entry { display:flex; flex-direction:column; gap:5px; margin-top:2px; }
         .login-entry input { margin:0; border-radius:13px; }
         .login-entry .btn { margin:0; border-radius:13px; }
-        .login-profile-card { margin-top:13px; padding:15px 16px; align-items:flex-start; text-align:left; gap:4px; border-radius:15px; position:relative; overflow:hidden; }
-        .login-profile-card::after { content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:color-mix(in srgb,var(--theme-primary) 9%,transparent); }
-        .login-profile-label { font-size:.66rem; font-weight:800; color:#7a8a93; text-transform:uppercase; letter-spacing:.8px; }
-        .login-profile-card .hub-user-name { font-size:1.08rem; }
-        .login-profile-card .hub-user-phone { color:var(--theme-primary); font-size:.88rem; font-weight:700; }
-        .login-profile-card .hub-user-email { font-size:.77rem; }
         .login-panel-note { color:#667781; font-size:.76rem; margin-bottom:2px; }
 
         .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
@@ -98,26 +92,56 @@
         .btn, .btn-hub-primary, #send-btn { background: var(--theme-primary); }
         .btn:hover, .btn-hub-primary:hover { background: var(--theme-secondary); }
          .hub-card { background: var(--theme-card); color: var(--theme-text); }
-        .yadhu-profile-card { animation: profileCardIn .55s ease-out both; border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent); }
+        .yadhu-profile-card {
+            animation: profileCardIn .62s cubic-bezier(.22,1,.36,1) both;
+            border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 28px color-mix(in srgb, var(--theme-primary) 9%, transparent);
+        }
+        .yadhu-profile-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.58) 45%, transparent 70%);
+            transform: translateX(-120%);
+            animation: profileCardShine 1.1s .28s ease-out both;
+            pointer-events: none;
+        }
         .yadhu-profile-card .hub-user-name { font-weight: 800; letter-spacing: .2px; }
         .yadhu-profile-card .hub-user-phone, .yadhu-profile-card .hub-user-email { opacity: .82; }
-        @keyframes profileCardIn { from { opacity:0; transform:translateY(12px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes profileCardIn {
+            from { opacity:0; transform:translateY(16px) scale(.97); }
+            to { opacity:1; transform:translateY(0) scale(1); }
+        }
+        @keyframes profileCardShine {
+            from { transform:translateX(-120%); }
+            to { transform:translateX(120%); }
+        }
         #contacts-container { background: var(--theme-soft); }
 
         .hub-top-row {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             margin-bottom: 8px;
+        }
+
+        .settings-footer {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 14px;
         }
 
         .settings-button {
             border: 1px solid rgba(7,94,84,.16);
-            background: rgba(255,255,255,.85);
+            background: rgba(255,255,255,.88);
             color: var(--theme-primary);
-            border-radius: 10px;
-            padding: 8px 13px;
+            border-radius: 12px;
+            padding: 9px 18px;
+            min-width: 132px;
             font-size: .84rem;
-            font-weight: 650;
+            font-weight: 750;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,.06);
         }
@@ -276,13 +300,6 @@
                     <button class="btn" onclick="handleLogin()">Log In to Chats</button>
                 </div>
 
-                <div class="hub-card yadhu-profile-card login-profile-card">
-                    <div class="login-profile-label">axtres contact</div>
-                    <div class="hub-user-name">Yadhu Krishna</div>
-                    <div class="hub-user-phone">+91 70257 07720</div>
-                    <div class="hub-user-email">yadhukrishnabp777@gmail.com</div>
-                </div>
-
                 <button class="btn-secondary" onclick="openAdminWithPin()" style="margin-top:10px;">Admin</button>
                 <button class="btn-accent" onclick="openAddEmailModal()">➕ Add / Link Email</button>
                 <button id="install-btn-login" class="btn-install" onclick="installPWA()">📲 Install App to Home Screen</button>
@@ -341,7 +358,7 @@
                 
                 <div class="hub-card yadhu-profile-card">
                     <div class="hub-user-name" id="hub-user-name">Yadhu Krishna</div>
-                    <div class="hub-user-phone" id="hub-user-phone">7025707720</div>
+                    <div class="hub-user-phone" id="hub-user-phone">+91 70257 07720</div>
                     <div class="hub-user-email" id="hub-user-email">yadhukrishnabp777@gmail.com</div>
                 </div>
 
@@ -460,10 +477,6 @@
                     <div class="theme-option" data-theme="royal" onclick="selectTheme('royal')"><div class="theme-preview" style="background:linear-gradient(135deg,#35205f,#7c3aed)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Royal</div></div>
                     <div class="theme-option" data-theme="ivory" onclick="selectTheme('ivory')"><div class="theme-preview" style="background:linear-gradient(135deg,#6b4f2a,#c49a6c)"><div class="preview-bar"></div><div class="preview-bubble"></div></div><div class="preview-name">Ivory</div></div>
                 </div>
-                <div id="admin-default-actions" style="display:none;gap:9px;margin-top:14px;">
-                    <button class="btn" style="flex:1;" onclick="setCurrentThemeAsDefault()">Set as Default</button>
-                    <button class="btn-secondary" style="flex:1;" onclick="closeSettings()">Done</button>
-                </div>
             </div>
         </div>
 
@@ -560,7 +573,6 @@
             document.getElementById('settings-overlay').classList.add('active');
             const current = localStorage.getItem('axtres_theme') || 'emerald';
             document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
-            document.getElementById('admin-default-actions').style.display = 'none';
             document.getElementById('settings-heading').innerText = 'Appearance';
         }
 
@@ -570,13 +582,11 @@
             document.getElementById('settings-overlay').classList.add('active');
             const current = localStorage.getItem('axtres_theme') || 'emerald';
             document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === current));
-            document.getElementById('admin-default-actions').style.display = 'flex';
             document.getElementById('settings-heading').innerText = 'Admin Appearance';
         }
 
         function closeSettings() {
             document.getElementById('settings-overlay').classList.remove('active');
-            document.getElementById('admin-default-actions').style.display = 'none';
             document.getElementById('settings-heading').innerText = 'Appearance';
             adminSettingsMode = false;
         }
@@ -585,22 +595,39 @@
             if (e.target.id === 'settings-overlay') closeSettings();
         }
 
-        function selectTheme(name) {
-            applyTheme(name, true);
-        }
+        async function selectTheme(name) {
+            if (!THEMES[name]) return;
 
-        async function setCurrentThemeAsDefault() {
-            if (!adminPin) { showToast('Admin access required.'); return; }
-            const theme = localStorage.getItem('axtres_theme') || 'emerald';
+            applyTheme(name, true);
+
+            if (!adminSettingsMode) {
+                showToast(`Theme changed to ${name}.`);
+                return;
+            }
+
+            if (!adminPin) {
+                showToast('Admin access required.');
+                return;
+            }
+
             try {
                 const res = await fetch(`${USERS_API}?action=admin-theme&_t=${Date.now()}`, {
-                    method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({pin:adminPin, theme})
+                    method:'POST',
+                    cache:'no-store',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({pin:adminPin, theme:name})
                 });
+
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Unable to save default theme');
-                showToast(`Default theme set to ${theme}.`);
-            } catch (err) { showToast(err.message || 'Unable to save default theme.'); }
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Unable to save default theme');
+                }
+
+                showToast(`${name.charAt(0).toUpperCase() + name.slice(1)} is now the default theme.`);
+            } catch (err) {
+                showToast(err.message || 'Unable to save default theme.');
+            }
         }
 
         async function loadDefaultTheme() {
@@ -667,7 +694,7 @@
             switchScreen('hub-screen');
             document.getElementById('hub-welcome-text').innerText = `Welcome, ${currentUser.name}!`;
             document.getElementById('hub-user-name').innerText = 'Yadhu Krishna';
-            document.getElementById('hub-user-phone').innerText = '7025707720';
+            document.getElementById('hub-user-phone').innerText = '+91 70257 07720';
             document.getElementById('hub-user-email').innerText = 'yadhukrishnabp777@gmail.com';
         }
 
