@@ -1,7 +1,8 @@
-// functions/users.js - Cloudflare Pages Function for User Auth, Verification & Resend Integration
+// functions/users.js
+// Axtres user auth, email verification and Resend integration
 
 const NO_CACHE_HEADERS = {
-  "Content-Type": "application/json",
+  "Content-Type": "application/json; charset=utf-8",
   "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
   "Pragma": "no-cache",
   "Expires": "0",
@@ -10,155 +11,669 @@ const NO_CACHE_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-async function sendResendEmail(apiKey, recipientEmail, subject, bodyHtml) {
-  if (!apiKey || !recipientEmail) return;
-  try {
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: "axtres Messenger <onboarding@resend.dev>",
-        to: [recipientEmail],
-        subject: subject,
-        html: bodyHtml
-      })
-    });
-  } catch (err) {
-    console.error("Resend send error:", err);
-  }
+function json(data, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: NO_CACHE_HEADERS
+    }
+  );
 }
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  const url = new URL(request.url);
+function escapeHtml(value) {
 
-  // Handle CORS Preflight
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers: NO_CACHE_HEADERS });
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+async function sendResendEmail(
+  apiKey,
+  recipientEmail,
+  subject,
+  bodyHtml,
+  fromAddress
+) {
+
+  if (!apiKey) {
+
+    throw new Error(
+      "RESEND_API_KEY is not configured in Cloudflare."
+    );
+  }
+
+  if (!recipientEmail) {
+
+    throw new Error(
+      "Recipient email is missing."
+    );
+  }
+
+  const from =
+    fromAddress ||
+    "axtres Messenger <onboarding@resend.dev>";
+
+  const response =
+    await fetch(
+      "https://api.resend.com/emails",
+      {
+        method: "POST",
+
+        headers: {
+          "Authorization":
+            `Bearer ${apiKey}`,
+
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+            from,
+            to: [
+              recipientEmail
+            ],
+            subject,
+            html: bodyHtml
+          })
+      }
+    );
+
+  const responseText =
+    await response.text();
+
+  let data = {};
+
+  try {
+
+    data =
+      responseText
+        ? JSON.parse(
+            responseText
+          )
+        : {};
+
+  } catch (_) {}
+
+  if (!response.ok) {
+
+    console.error(
+      "Resend API error:",
+      response.status,
+      responseText
+    );
+
+    throw new Error(
+      data?.message ||
+      data?.error ||
+      `Resend rejected the email (${response.status}).`
+    );
+  }
+
+  return data;
+}
+
+export async function onRequest(
+  context
+) {
+
+  const {
+    request,
+    env
+  } = context;
+
+  const url =
+    new URL(request.url);
+
+  if (
+    request.method ===
+    "OPTIONS"
+  ) {
+
+    return new Response(
+      null,
+      {
+        status: 204,
+        headers:
+          NO_CACHE_HEADERS
+      }
+    );
   }
 
   try {
-    // GET Request: Fetch Contacts List
-    if (request.method === "GET") {
-      const myPhone = url.searchParams.get("phone");
-      if (!myPhone) {
-        return new Response(JSON.stringify({ error: "Phone number required" }), { status: 400, headers: NO_CACHE_HEADERS });
-      }
 
-      // Retrieve all other users except the logged-in user
-      const { results } = await env.DB.prepare(
-        "SELECT name, phone, CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END as has_email FROM users WHERE phone != ?"
-      ).bind(myPhone).all();
+    if (!env.DB) {
 
-      return new Response(JSON.stringify(results || []), { status: 200, headers: NO_CACHE_HEADERS });
+      return json(
+        {
+          error:
+            "Cloudflare D1 binding DB is missing."
+        },
+        500
+      );
     }
 
-    // POST Request: Handle Auth & Profile Actions
-    if (request.method === "POST") {
-      const action = url.searchParams.get("action");
-      const body = await request.json();
+    /*
+     * GET
+     * Contacts
+     */
+    if (
+      request.method ===
+      "GET"
+    ) {
 
-      // 1. REGISTER
-      if (action === "register") {
-        const { name, phone, email, device_id } = body;
-        if (!name || !phone || phone.length !== 10) {
-          return new Response(JSON.stringify({ error: "Valid name and 10-digit phone required" }), { status: 400, headers: NO_CACHE_HEADERS });
+      const myPhone =
+        url.searchParams.get(
+          "phone"
+        );
+
+      if (!myPhone) {
+
+        return json(
+          {
+            error:
+              "Phone number required"
+          },
+          400
+        );
+      }
+
+      const {
+        results
+      } =
+        await env.DB.prepare(
+          `SELECT
+             name,
+             phone,
+             CASE
+               WHEN email IS NOT NULL
+               AND email != ''
+               AND email_verified = 1
+               THEN 1
+               ELSE 0
+             END AS has_email
+           FROM users
+           WHERE phone != ?`
+        )
+        .bind(myPhone)
+        .all();
+
+      return json(
+        results || []
+      );
+    }
+
+    /*
+     * POST
+     */
+    if (
+      request.method ===
+      "POST"
+    ) {
+
+      const action =
+        url.searchParams.get(
+          "action"
+        );
+
+      let body;
+
+      try {
+
+        body =
+          await request.json();
+
+      } catch (_) {
+
+        return json(
+          {
+            error:
+              "Invalid JSON request body."
+          },
+          400
+        );
+      }
+
+      /*
+       * REGISTER
+       */
+      if (
+        action ===
+        "register"
+      ) {
+
+        const {
+          name,
+          phone,
+          email,
+          device_id
+        } = body;
+
+        if (
+          !name ||
+          !phone ||
+          String(phone).length !== 10
+        ) {
+
+          return json(
+            {
+              error:
+                "Valid name and 10-digit phone required"
+            },
+            400
+          );
         }
 
-        const requires_verification = email && email.length > 0 ? 1 : 0;
-        const pin = requires_verification ? Math.floor(100 + Math.random() * 900).toString() : null;
+        const cleanPhone =
+          String(phone).trim();
+
+        const cleanEmail =
+          String(email || "").trim();
+
+        const requiresVerification =
+          cleanEmail.length > 0
+            ? 1
+            : 0;
+
+        const pin =
+          requiresVerification
+            ? Math.floor(
+                100 +
+                Math.random() *
+                900
+              ).toString()
+            : null;
 
         await env.DB.prepare(
-          `INSERT INTO users (phone, name, email, email_verified, device_id, pin) 
-           VALUES (?, ?, ?, ?, ?, ?) 
-           ON CONFLICT(phone) DO UPDATE SET name=?, email=?, email_verified=?, device_id=?, pin=?`
-        ).bind(
-          phone, name, email || "", requires_verification ? 0 : 1, device_id || "", pin,
-          name, email || "", requires_verification ? 0 : 1, device_id || "", pin
-        ).run();
+          `INSERT INTO users
+            (
+              phone,
+              name,
+              email,
+              email_verified,
+              device_id,
+              pin
+            )
+           VALUES (?, ?, ?, ?, ?, ?)
 
-        if (requires_verification && email && env.RESEND_API_KEY) {
-          await sendResendEmail(
-            env.RESEND_API_KEY,
-            email,
-            "Your axtres Verification Code",
-            `<p>Hello <strong>${name}</strong>,</p><p>Your verification code for axtres messenger is: <strong style="font-size:1.4rem;">${pin}</strong></p>`
+           ON CONFLICT(phone)
+           DO UPDATE SET
+             name=?,
+             email=?,
+             email_verified=?,
+             device_id=?,
+             pin=?`
+        )
+        .bind(
+          cleanPhone,
+          name.trim(),
+          cleanEmail,
+          requiresVerification
+            ? 0
+            : 1,
+          device_id || "",
+          pin,
+
+          name.trim(),
+          cleanEmail,
+          requiresVerification
+            ? 0
+            : 1,
+          device_id || "",
+          pin
+        )
+        .run();
+
+        if (
+          requiresVerification
+        ) {
+
+          try {
+
+            await sendResendEmail(
+              env.RESEND_API_KEY,
+              cleanEmail,
+              "Your axtres Verification Code",
+
+              `<p>
+                Hello
+                <strong>
+                  ${escapeHtml(name)}
+                </strong>,
+              </p>
+
+              <p>
+                Your verification code for
+                axtres messenger is:
+              </p>
+
+              <p>
+                <strong style="font-size:1.4rem;">
+                  ${escapeHtml(pin)}
+                </strong>
+              </p>`,
+
+              env.RESEND_FROM_EMAIL
+            );
+
+          } catch (
+            emailError
+          ) {
+
+            console.error(
+              "Registration verification email failed:",
+              emailError
+            );
+
+            return json(
+              {
+                error:
+                  `Account saved, but verification email failed: ${emailError.message}`
+              },
+              502
+            );
+          }
+        }
+
+        return json(
+          {
+            success: true,
+            requires_verification:
+              !!requiresVerification
+          }
+        );
+      }
+
+      /*
+       * VERIFY REGISTER
+       */
+      if (
+        action ===
+        "verify-register"
+      ) {
+
+        const {
+          phone,
+          pin
+        } = body;
+
+        const user =
+          await env.DB.prepare(
+            "SELECT * FROM users WHERE phone = ?"
+          )
+          .bind(phone)
+          .first();
+
+        if (
+          !user ||
+          String(user.pin) !==
+            String(pin)
+        ) {
+
+          return json(
+            {
+              error:
+                "Invalid verification PIN"
+            },
+            400
           );
         }
 
-        return new Response(JSON.stringify({ success: true, requires_verification: !!requires_verification, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
+        await env.DB.prepare(
+          `UPDATE users
+           SET
+             email_verified = 1,
+             pin = NULL
+           WHERE phone = ?`
+        )
+        .bind(phone)
+        .run();
+
+        return json({
+          success: true
+        });
       }
 
-      // 2. VERIFY REGISTER PIN
-      if (action === "verify-register") {
-        const { phone, pin } = body;
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+      /*
+       * LOGIN
+       */
+      if (
+        action ===
+        "login"
+      ) {
 
-        if (!user || String(user.pin) !== String(pin)) {
-          return new Response(JSON.stringify({ error: "Invalid verification PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
-        }
+        const {
+          phone
+        } = body;
 
-        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
-      }
-
-      // 3. LOGIN
-      if (action === "login") {
-        const { phone } = body;
-        const user = await env.DB.prepare("SELECT phone, name, email FROM users WHERE phone = ?").bind(phone).first();
+        const user =
+          await env.DB.prepare(
+            `SELECT
+               phone,
+               name,
+               email
+             FROM users
+             WHERE phone = ?`
+          )
+          .bind(phone)
+          .first();
 
         if (!user) {
-          return new Response(JSON.stringify({ error: "User not found. Please register first." }), { status: 404, headers: NO_CACHE_HEADERS });
+
+          return json(
+            {
+              error:
+                "User not found. Please register first."
+            },
+            404
+          );
         }
 
-        return new Response(JSON.stringify({ success: true, user }), { status: 200, headers: NO_CACHE_HEADERS });
+        return json({
+          success: true,
+          user
+        });
       }
 
-      // 4. UPDATE EMAIL INITIALIZATION
-      if (action === "update-email-init") {
-        const { phone, email } = body;
-        const pin = Math.floor(100 + Math.random() * 900).toString();
+      /*
+       * UPDATE EMAIL
+       */
+      if (
+        action ===
+        "update-email-init"
+      ) {
 
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
-        if (!user) {
-          return new Response(JSON.stringify({ error: "Phone number not registered" }), { status: 404, headers: NO_CACHE_HEADERS });
+        const {
+          phone,
+          email
+        } = body;
+
+        const cleanEmail =
+          String(email || "").trim();
+
+        if (
+          !phone ||
+          !cleanEmail
+        ) {
+
+          return json(
+            {
+              error:
+                "Phone and email are required."
+            },
+            400
+          );
         }
 
-        await env.DB.prepare("UPDATE users SET email = ?, email_verified = 0, pin = ? WHERE phone = ?").bind(email, pin, phone).run();
+        const pin =
+          Math.floor(
+            100 +
+            Math.random() *
+            900
+          ).toString();
 
-        if (email && env.RESEND_API_KEY) {
+        const user =
+          await env.DB.prepare(
+            "SELECT * FROM users WHERE phone = ?"
+          )
+          .bind(phone)
+          .first();
+
+        if (!user) {
+
+          return json(
+            {
+              error:
+                "Phone number not registered"
+            },
+            404
+          );
+        }
+
+        await env.DB.prepare(
+          `UPDATE users
+           SET
+             email = ?,
+             email_verified = 0,
+             pin = ?
+           WHERE phone = ?`
+        )
+        .bind(
+          cleanEmail,
+          pin,
+          phone
+        )
+        .run();
+
+        try {
+
           await sendResendEmail(
             env.RESEND_API_KEY,
-            email,
+            cleanEmail,
             "Verify New Email - axtres",
-            `<p>Your email update verification code for axtres is: <strong style="font-size:1.4rem;">${pin}</strong></p>`
+
+            `<p>
+              Your email update verification
+              code for axtres is:
+            </p>
+
+            <p>
+              <strong style="font-size:1.4rem;">
+                ${escapeHtml(pin)}
+              </strong>
+            </p>`,
+
+            env.RESEND_FROM_EMAIL
+          );
+
+        } catch (
+          emailError
+        ) {
+
+          console.error(
+            "Email update verification failed:",
+            emailError
+          );
+
+          return json(
+            {
+              error:
+                `Email was saved, but verification email failed: ${emailError.message}`
+            },
+            502
           );
         }
 
-        return new Response(JSON.stringify({ success: true, pin_sent: pin }), { status: 200, headers: NO_CACHE_HEADERS });
+        return json({
+          success: true
+        });
       }
 
-      // 5. VERIFY EMAIL UPDATE PIN
-      if (action === "verify-email-update") {
-        const { phone, pin } = body;
-        const user = await env.DB.prepare("SELECT * FROM users WHERE phone = ?").bind(phone).first();
+      /*
+       * VERIFY EMAIL UPDATE
+       */
+      if (
+        action ===
+        "verify-email-update"
+      ) {
 
-        if (!user || String(user.pin) !== String(pin)) {
-          return new Response(JSON.stringify({ error: "Invalid PIN" }), { status: 400, headers: NO_CACHE_HEADERS });
+        const {
+          phone,
+          pin
+        } = body;
+
+        const user =
+          await env.DB.prepare(
+            "SELECT * FROM users WHERE phone = ?"
+          )
+          .bind(phone)
+          .first();
+
+        if (
+          !user ||
+          String(user.pin) !==
+            String(pin)
+        ) {
+
+          return json(
+            {
+              error:
+                "Invalid PIN"
+            },
+            400
+          );
         }
 
-        await env.DB.prepare("UPDATE users SET email_verified = 1, pin = NULL WHERE phone = ?").bind(phone).run();
-        return new Response(JSON.stringify({ success: true }), { status: 200, headers: NO_CACHE_HEADERS });
+        await env.DB.prepare(
+          `UPDATE users
+           SET
+             email_verified = 1,
+             pin = NULL
+           WHERE phone = ?`
+        )
+        .bind(phone)
+        .run();
+
+        return json({
+          success: true
+        });
       }
 
-      return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: NO_CACHE_HEADERS });
+      return json(
+        {
+          error:
+            "Invalid action"
+        },
+        400
+      );
     }
 
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: NO_CACHE_HEADERS });
+    return json(
+      {
+        error:
+          "Method not allowed"
+      },
+      405
+    );
+
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: NO_CACHE_HEADERS });
+
+    console.error(
+      "Axtres users function error:",
+      err
+    );
+
+    return json(
+      {
+        error:
+          err?.message ||
+          "Internal server error"
+      },
+      500
+    );
   }
 }
