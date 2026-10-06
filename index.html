@@ -45,14 +45,26 @@
         .email-group input { flex: 2; }
         .email-group select { flex: 1.2; font-size: 0.85rem; }
 
-        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; text-align: center; }
+        .btn { background: #075e54; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
         .btn:hover { background: #054c44; }
-        .btn-secondary { background: #205081; color: white; border: none; padding: 10px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; text-align: center; }
+        .btn-secondary { background: #205081; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
         .btn-secondary:hover { background: #183d63; }
-        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; text-align: center; }
+        .btn-accent { background: #d84315; color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .btn-accent:hover { background: #bf360c; }
         
         .btn-install { background: linear-gradient(135deg, #ff9966, #ff5e62); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3); }
+
+        .hub-welcome { font-size: 1.65rem; font-weight: 800; color: #075e54; margin-bottom: 12px; text-align: center; }
+        .hub-card { background: #f8f9fa; border: 1.5px solid #e0e0e0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 10px; }
+        .hub-user-name { font-size: 1.3rem; font-weight: 700; color: #111b21; margin-bottom: 2px; }
+        .hub-user-phone { font-size: 0.95rem; color: #667781; font-weight: 500; }
+        
+        .hub-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px; }
+        .btn-hub { width: 100%; height: 48px; padding: 12px 16px; font-size: 0.98rem; font-weight: 600; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.06); transition: background 0.2s; }
+        .btn-hub-primary { background: #075e54; color: white; }
+        .btn-hub-primary:hover { background: #054c44; }
+        .btn-hub-secondary { background: #f0f2f5; color: #111b21; border: 1px solid #ccc; }
+        .btn-hub-secondary:hover { background: #e4e6eb; }
 
         .switch-text { text-align: center; font-size: 0.82rem; color: #666; margin-top: 2px; }
         .switch-text a { color: #075e54; text-decoration: none; font-weight: 600; cursor: pointer; }
@@ -93,29 +105,6 @@
         .back-arrow { cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
         .error-msg { color: #d32f2f; font-size: 0.78rem; text-align: center; }
         .notice-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.78rem; z-index: 99; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-
-        /* Dedicated User Hub Cards */
-        .hub-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .hub-avatar {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #075e54, #128c7e);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 15px auto;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -123,7 +112,7 @@
     <div class="card">
         <div id="toast-notification" class="notice-toast">Email extension is handled by the dropdown menu.</div>
 
-        <!-- 1. SPLASH -->
+        <!-- 1. SPLASH SCREEN -->
         <div id="welcome-screen" class="screen active">
             <h1>axtres</h1>
             <p>Secure Email & Chat Messenger</p>
@@ -228,46 +217,42 @@
             </div>
         </div>
 
-        <!-- 3.7 DEFAULT USER LANDING SCREEN (For Non-Yadhu Users) -->
-        <div id="user-hub-screen" class="screen">
+        <!-- 4. HUB SCREEN (Default view for non-Yadhu users) -->
+        <div id="hub-screen" class="screen">
             <div class="header-bar">
                 <div>axtres Hub</div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
-            <div class="form-content" style="justify-content: flex-start; padding-top: 30px;">
-                <p style="font-size: 0.9rem; color: #555; text-align: center; margin-bottom: 20px;">
-                    Welcome, <strong id="hub-user-name">User</strong>!
-                </p>
-
+            <div class="form-content" style="justify-content: flex-start; padding-top: 25px;">
+                <div class="hub-welcome" id="hub-welcome-text">Welcome, User!</div>
+                
                 <div class="hub-card">
-                    <div class="hub-avatar">Y</div>
-                    <h2 style="font-size: 1.25rem; color: #111; margin-bottom: 4px;">Yadhu</h2>
-                    <p style="font-size: 0.85rem; color: #667781; margin-bottom: 18px;">Primary Contact (7025707720)</p>
-                    <button class="btn" style="width: 100%; font-size: 1rem; padding: 12px;" onclick="openYadhuChat()">💬 Chat with Yadhu</button>
+                    <div class="hub-user-name">Yadhu</div>
+                    <div class="hub-user-phone">7025707720</div>
+                    
+                    <div class="hub-actions">
+                        <button class="btn-hub btn-hub-primary" onclick="chatWithYadhu()">💬 Chat with Yadhu</button>
+                        <button class="btn-hub btn-hub-secondary" onclick="openContactsScreen()">📖 Directory</button>
+                    </div>
                 </div>
-
-                <button class="btn-secondary" style="width: 100%; padding: 12px; font-size: 0.95rem;" onclick="openContactsScreen()">📖 Directory</button>
             </div>
         </div>
 
-        <!-- 4. CONTACTS SCREEN (DIRECTORY) -->
+        <!-- 5. CONTACTS / DIRECTORY SCREEN -->
         <div id="contacts-screen" class="screen">
             <div class="header-bar">
-                <div style="display: flex; align-items: center;">
-                    <span id="directory-back-btn" class="back-arrow" onclick="handleDirectoryBack()" style="display: none;">&#8592;</span>
-                    <div>Directory (<span id="my-name-display"></span>)</div>
-                </div>
+                <div>Directory (<span id="my-name-display"></span>)</div>
                 <span onclick="handleLogout()">Sign Out</span>
             </div>
-            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact to chat:</div>
+            <div style="padding: 10px 15px; background: #fff; font-size: 0.85rem; color: #667781; border-bottom: 1px solid #eee;">Select a contact to start chatting:</div>
             <div id="contacts-container"></div>
         </div>
 
-        <!-- 5. CHAT ROOM SCREEN -->
+        <!-- 6. CHAT ROOM SCREEN -->
         <div id="chat-screen" class="screen">
             <div class="header-bar">
                 <div style="display: flex; align-items: center;">
-                    <span class="back-arrow" onclick="backFromChat()">&#8592;</span>
+                    <span class="back-arrow" onclick="handleChatBack()">&#8592;</span>
                     <div id="chat-room-title">Chat</div>
                 </div>
                 <span onclick="handleLogout()">Sign Out</span>
@@ -293,8 +278,7 @@
         const USERS_API = "/users";
         const MESSAGES_API = "/messages";
         const YADHU_PHONE = "7025707720";
-        const YADHU_USER = { name: "Yadhu", phone: YADHU_PHONE };
-
+        
         let currentUser = null;
         let activeRecipient = null;
         let currentRoomId = null;
@@ -303,7 +287,6 @@
         let contactsInterval = null;
         let knownMessageIds = new Set();
         let deferredPrompt = null;
-        let cameFromDirectory = false;
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -339,22 +322,40 @@
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
-                    routeUserOnLogin();
+                    navigateAfterAuth();
                     return;
                 } catch(e) {}
             }
             setTimeout(() => { switchScreen('login-screen'); }, 800);
         });
 
-        function routeUserOnLogin() {
-            if (!currentUser) return;
+        function navigateAfterAuth() {
             if (String(currentUser.phone).trim() === YADHU_PHONE) {
-                document.getElementById('directory-back-btn').style.display = 'none';
                 openContactsScreen();
             } else {
-                document.getElementById('directory-back-btn').style.display = 'inline-block';
-                document.getElementById('hub-user-name').innerText = currentUser.name;
-                switchScreen('user-hub-screen');
+                openHubScreen();
+            }
+        }
+
+        function openHubScreen() {
+            switchScreen('hub-screen');
+            document.getElementById('hub-welcome-text').innerText = `Welcome, ${currentUser.name}!`;
+        }
+
+        function chatWithYadhu() {
+            startChatWith({
+                name: "Yadhu",
+                phone: YADHU_PHONE,
+                has_email: 1
+            });
+        }
+
+        function handleChatBack() {
+            if (syncInterval) clearInterval(syncInterval);
+            if (String(currentUser.phone).trim() === YADHU_PHONE) {
+                openContactsScreen();
+            } else {
+                openHubScreen();
             }
         }
 
@@ -557,7 +558,7 @@
 
                 currentUser = data.user;
                 localStorage.setItem('axtres_user', JSON.stringify(currentUser));
-                routeUserOnLogin();
+                navigateAfterAuth();
             } catch (err) {
                 errDiv.innerText = err.message;
             }
@@ -569,17 +570,6 @@
             if (syncInterval) clearInterval(syncInterval);
             if (contactsInterval) clearInterval(contactsInterval);
             switchScreen('login-screen');
-        }
-
-        function openYadhuChat() {
-            cameFromDirectory = false;
-            startChatWith(YADHU_USER);
-        }
-
-        function handleDirectoryBack() {
-            if (currentUser && String(currentUser.phone).trim() !== YADHU_PHONE) {
-                switchScreen('user-hub-screen');
-            }
         }
 
         async function openContactsScreen() {
@@ -617,10 +607,7 @@
                         : `<span class="status-pill inactive">No Email ⚪</span>`;
 
                     item.innerHTML = `<div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-phone">${escapeHtml(c.phone)}</div>${emailStatusBadge}</div><span style="color:#075e54; font-weight:600; font-size:0.9rem;">Chat &rarr;</span>`;
-                    item.onclick = () => {
-                        cameFromDirectory = true;
-                        startChatWith(c);
-                    };
+                    item.onclick = () => startChatWith(c);
                     container.appendChild(item);
                 });
             } catch (e) {}
@@ -648,15 +635,6 @@
             if (syncInterval) clearInterval(syncInterval);
             pollChatMessages(true);
             syncInterval = setInterval(() => pollChatMessages(false), 600);
-        }
-
-        function backFromChat() {
-            if (syncInterval) clearInterval(syncInterval);
-            if (cameFromDirectory || (currentUser && String(currentUser.phone).trim() === YADHU_PHONE)) {
-                openContactsScreen();
-            } else {
-                switchScreen('user-hub-screen');
-            }
         }
 
         async function pollChatMessages(isInitial) {
