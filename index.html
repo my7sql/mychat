@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <title>axtres</title>
-
     <style>
         * {
             box-sizing: border-box;
@@ -41,14 +40,14 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255,255,255,.95);
             backdrop-filter: blur(10px);
             width: 100%;
             max-width: 420px;
             height: 92vh;
             max-height: 820px;
             border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 12px 40px rgba(0,0,0,.25);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -71,7 +70,7 @@
             align-items: center;
             text-align: center;
             padding: 30px;
-            background: linear-gradient(135deg, #075e54, #128c7e);
+            background: linear-gradient(135deg,#075e54,#128c7e);
             color: white;
         }
 
@@ -84,11 +83,10 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(255,255,255,.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-top: 15px;
         }
 
         @keyframes spin {
@@ -96,7 +94,7 @@
         }
 
         .header-bar {
-            background: #075e54;
+            background: linear-gradient(135deg,#075e54,#128c7e);
             color: white;
             padding: 15px 20px;
             font-size: 1.1rem;
@@ -104,12 +102,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
         }
 
         .header-bar span {
-            font-size: 0.85rem;
-            opacity: 0.9;
+            font-size: .85rem;
+            opacity: .9;
             font-weight: normal;
             cursor: pointer;
             text-decoration: underline;
@@ -133,7 +131,7 @@
 
         .form-content p.subtitle {
             color: #666;
-            font-size: 0.82rem;
+            font-size: .82rem;
             margin-bottom: 2px;
         }
 
@@ -142,7 +140,7 @@
             padding: 10px 14px;
             border: 1.5px solid #ddd;
             border-radius: 10px;
-            font-size: 0.95rem;
+            font-size: .95rem;
             outline: none;
             background: #fafafa;
         }
@@ -151,7 +149,7 @@
         select:focus {
             border-color: #075e54;
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
+            box-shadow: 0 0 0 3px rgba(7,94,84,.1);
         }
 
         .email-group {
@@ -165,7 +163,7 @@
 
         .email-group select {
             flex: 1.2;
-            font-size: 0.85rem;
+            font-size: .85rem;
         }
 
         .btn {
@@ -174,7 +172,7 @@
             border: none;
             padding: 11px;
             border-radius: 10px;
-            font-size: 0.95rem;
+            font-size: .95rem;
             cursor: pointer;
             font-weight: 600;
         }
@@ -189,7 +187,7 @@
             border: none;
             padding: 8px;
             border-radius: 10px;
-            font-size: 0.82rem;
+            font-size: .82rem;
             cursor: pointer;
             font-weight: 600;
         }
@@ -200,18 +198,18 @@
             border: none;
             padding: 9px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: .85rem;
             cursor: pointer;
             font-weight: 600;
         }
 
         .btn-install {
-            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            background: linear-gradient(135deg,#ff9966,#ff5e62);
             color: white;
             border: none;
             padding: 9px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: .85rem;
             cursor: pointer;
             font-weight: 700;
             display: none;
@@ -220,75 +218,175 @@
             gap: 8px;
         }
 
+        /* PROFESSIONAL HUB */
+
         .hub-welcome {
-            font-size: 1.65rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: #075e54;
-            margin-bottom: 12px;
+            color: #123b5d;
+            margin: 34px 0 6px;
             text-align: center;
+            letter-spacing: -.4px;
+        }
+
+        .hub-subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: .85rem;
+            margin-bottom: 24px;
         }
 
         .hub-card {
-            background: #f8f9fa;
-            border: 1.5px solid #e0e0e0;
-            border-radius: 14px;
-            padding: 18px;
+            background: rgba(255,255,255,.82);
+            border: 1px solid rgba(255,255,255,.9);
+            border-radius: 22px;
+            padding: 28px 20px 22px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 12px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin: 0 4px 10px;
+            box-shadow: 0 18px 45px rgba(31,70,100,.14);
+            backdrop-filter: blur(14px);
+        }
+
+        .profile-avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.35rem;
+            font-weight: 800;
+            background: linear-gradient(135deg,#176b87,#6c5ce7);
+            box-shadow: 0 10px 24px rgba(52,92,170,.25);
+            margin-bottom: 5px;
         }
 
         .hub-user-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #111b21;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #172b3a;
         }
 
         .hub-user-phone {
-            font-size: 0.95rem;
+            font-size: .9rem;
             color: #667781;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .hub-user-email {
+            font-size: .8rem;
+            color: #64748b;
+            margin-top: 2px;
+            word-break: break-all;
         }
 
         .hub-actions {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 11px;
             width: 100%;
-            margin-top: 8px;
+            margin-top: 18px;
         }
 
         .btn-hub {
             width: 100%;
-            height: 48px;
+            height: 50px;
             padding: 12px 16px;
-            font-size: 0.98rem;
-            font-weight: 600;
-            border-radius: 10px;
+            font-size: .96rem;
+            font-weight: 700;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             cursor: pointer;
             border: none;
+            box-shadow: 0 5px 14px rgba(31,55,72,.10);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .btn-hub:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(31,55,72,.15);
         }
 
         .btn-hub-primary {
-            background: #075e54;
+            background: linear-gradient(135deg,#075e54,#128c7e);
             color: white;
         }
 
         .btn-hub-secondary {
-            background: #f0f2f5;
-            color: #111b21;
-            border: 1px solid #ccc;
+            background: white;
+            color: #20364a;
+            border: 1px solid #dce4ea;
+        }
+
+        /* DIRECTORY PIN */
+
+        .directory-lock {
+            position: absolute;
+            inset: 0;
+            background: rgba(8,24,38,.35);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .directory-lock.show {
+            display: flex;
+        }
+
+        .pin-card {
+            width: calc(100% - 44px);
+            max-width: 340px;
+            background: white;
+            border-radius: 22px;
+            padding: 26px 22px 22px;
+            text-align: center;
+            box-shadow: 0 20px 55px rgba(0,0,0,.25);
+        }
+
+        .pin-card h3 {
+            color: #17324a;
+            margin-bottom: 6px;
+            font-size: 1.25rem;
+        }
+
+        .pin-card p {
+            color: #718096;
+            font-size: .82rem;
+            margin-bottom: 16px;
+        }
+
+        .pin-input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.55rem;
+            letter-spacing: 10px;
+            font-weight: 800;
+        }
+
+        .pin-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .pin-actions button {
+            flex: 1;
         }
 
         .switch-text {
             text-align: center;
-            font-size: 0.82rem;
+            font-size: .82rem;
             color: #666;
             margin-top: 2px;
         }
@@ -318,7 +416,7 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0,0,0,.08);
         }
 
         .contact-name {
@@ -328,12 +426,12 @@
         }
 
         .contact-phone {
-            font-size: 0.85rem;
+            font-size: .85rem;
             color: #667781;
         }
 
         .status-pill {
-            font-size: 0.72rem;
+            font-size: .72rem;
             padding: 2px 8px;
             border-radius: 10px;
             font-weight: 600;
@@ -359,7 +457,10 @@
             flex-direction: column;
             gap: 6px;
             background: #efeae2;
-            background-image: radial-gradient(#d1ccc0 0.75px, transparent 0.75px);
+            background-image: radial-gradient(
+                #d1ccc0 .75px,
+                transparent .75px
+            );
             background-size: 15px 15px;
         }
 
@@ -367,21 +468,23 @@
             max-width: 78%;
             padding: 8px 12px 6px;
             border-radius: 7.5px;
-            font-size: 0.95rem;
+            font-size: .95rem;
             line-height: 1.4;
             word-wrap: break-word;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+            box-shadow: 0 1px .5px rgba(0,0,0,.13);
         }
 
         .msg.me {
             background: #dcf8c6;
             align-self: flex-end;
+            color: #111b21;
             border-top-right-radius: 0;
         }
 
         .msg.them {
-            background: #fff;
+            background: white;
             align-self: flex-start;
+            color: #111b21;
             border-top-left-radius: 0;
         }
 
@@ -392,7 +495,7 @@
         }
 
         .email-badge {
-            font-size: 0.65rem;
+            font-size: .65rem;
             background: #1976d2;
             color: white;
             padding: 1px 6px;
@@ -403,7 +506,7 @@
         }
 
         .msg-time {
-            font-size: 0.65rem;
+            font-size: .65rem;
             color: #667781;
             float: right;
             margin-left: 12px;
@@ -417,7 +520,7 @@
             align-items: center;
             justify-content: space-between;
             border-top: 1px solid #bbdefb;
-            font-size: 0.82rem;
+            font-size: .82rem;
             font-weight: 600;
             color: #1565c0;
         }
@@ -479,7 +582,7 @@
             padding: 10px 16px;
             border: 1px solid #ccc;
             background: white;
-            font-size: 0.95rem;
+            font-size: .95rem;
         }
 
         #send-btn {
@@ -496,11 +599,6 @@
             font-size: 1.1rem;
         }
 
-        #send-btn:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
-
         .back-arrow {
             cursor: pointer;
             font-size: 1.2rem;
@@ -509,7 +607,7 @@
 
         .error-msg {
             color: #d32f2f;
-            font-size: 0.78rem;
+            font-size: .78rem;
             text-align: center;
         }
 
@@ -522,11 +620,9 @@
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.78rem;
+            font-size: .78rem;
             z-index: 99;
             display: none;
-            max-width: 90%;
-            text-align: center;
         }
     </style>
 </head>
@@ -535,9 +631,41 @@
 
 <div class="card">
 
-    <div id="toast-notification" class="notice-toast"></div>
+    <div id="toast-notification" class="notice-toast">
+        Email extension is handled by the dropdown menu.
+    </div>
 
-    <!-- WELCOME -->
+    <!-- DIRECTORY PIN -->
+    <div id="directory-lock" class="directory-lock">
+        <div class="pin-card">
+            <h3>Directory Locked</h3>
+            <p>Enter the 3-digit PIN to open the directory.</p>
+
+            <input
+                id="directory-pin"
+                class="pin-input"
+                type="tel"
+                inputmode="numeric"
+                maxlength="3"
+                placeholder="•••"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+            >
+
+            <div class="error-msg" id="directory-pin-error"></div>
+
+            <div class="pin-actions">
+                <button class="btn-secondary" onclick="closeDirectoryPin()">
+                    Cancel
+                </button>
+
+                <button class="btn" onclick="verifyDirectoryPin()">
+                    Unlock
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPLASH -->
     <div id="welcome-screen" class="screen active">
         <h1>axtres</h1>
         <p>Secure Email & Chat Messenger</p>
@@ -550,12 +678,15 @@
 
         <div class="form-content">
             <h2>Sign Up</h2>
-
             <p class="subtitle">
                 Email is optional. Add one to receive email alerts.
             </p>
 
-            <input type="text" id="reg-name" placeholder="Your Full Name">
+            <input
+                type="text"
+                id="reg-name"
+                placeholder="Your Full Name"
+            >
 
             <input
                 type="tel"
@@ -575,16 +706,22 @@
                 >
 
                 <select id="reg-email-domain">
-                    <option value="@gmail.com" selected>@gmail.com</option>
+                    <option value="@gmail.com">@gmail.com</option>
                     <option value="@outlook.com">@outlook.com</option>
                 </select>
             </div>
 
-            <button class="btn-secondary" onclick="requestNotificationPermission()">
+            <button
+                class="btn-secondary"
+                onclick="requestNotificationPermission()"
+            >
                 1. Enable Notifications
             </button>
 
-            <div id="notif-status" style="font-size:0.75rem;text-align:center;color:#666;">
+            <div
+                id="notif-status"
+                style="font-size:.75rem;text-align:center;color:#666;"
+            >
                 Status: Not Enabled
             </div>
 
@@ -604,12 +741,14 @@
 
             <div class="switch-text">
                 Already registered?
-                <a onclick="switchScreen('login-screen')">Log In here</a>
+                <a onclick="switchScreen('login-screen')">
+                    Log In here
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- REGISTER VERIFICATION -->
+    <!-- VERIFY REGISTER -->
     <div id="verify-screen" class="screen">
         <div class="header-bar">Verify Email</div>
 
@@ -667,7 +806,10 @@
                 Log In to Chats
             </button>
 
-            <button class="btn-accent" onclick="openAddEmailModal()">
+            <button
+                class="btn-accent"
+                onclick="openAddEmailModal()"
+            >
                 ➕ Add / Link Email
             </button>
 
@@ -698,16 +840,14 @@
                 >
                     &#8592;
                 </span>
+
                 <div>Link Email</div>
             </div>
         </div>
 
         <div class="form-content">
             <h2>Update Email</h2>
-
-            <p class="subtitle">
-                Enter phone and new email
-            </p>
+            <p class="subtitle">Enter phone and new email</p>
 
             <input
                 type="tel"
@@ -727,7 +867,7 @@
                 >
 
                 <select id="ae-email-domain">
-                    <option value="@gmail.com" selected>@gmail.com</option>
+                    <option value="@gmail.com">@gmail.com</option>
                     <option value="@outlook.com">@outlook.com</option>
                 </select>
             </div>
@@ -740,7 +880,7 @@
         </div>
     </div>
 
-    <!-- EMAIL VERIFICATION -->
+    <!-- VERIFY EMAIL UPDATE -->
     <div id="verify-email-screen" class="screen">
         <div class="header-bar">Confirm Email PIN</div>
 
@@ -774,62 +914,102 @@
 
     <!-- HUB -->
     <div id="hub-screen" class="screen">
+
         <div class="header-bar">
-            <div>axtres Hub</div>
-            <span onclick="handleLogout()">Sign Out</span>
+            <div>axtres</div>
+
+            <span onclick="handleLogout()">
+                Sign Out
+            </span>
         </div>
 
         <div
             class="form-content"
-            style="justify-content:flex-start;padding-top:25px;"
+            style="justify-content:flex-start;padding-top:10px;"
         >
-            <div class="hub-welcome" id="hub-welcome-text">
+
+            <div
+                class="hub-welcome"
+                id="hub-welcome-text"
+            >
                 Welcome, User!
             </div>
 
+            <div class="hub-subtitle">
+                Your secure axtres space
+            </div>
+
             <div class="hub-card">
-                <div class="hub-user-name">Yadhu</div>
+
+                <div class="profile-avatar">
+                    YK
+                </div>
+
+                <div class="hub-user-name">
+                    Yadhu Krishna
+                </div>
 
                 <div class="hub-user-phone">
                     7025707720
                 </div>
 
+                <div class="hub-user-email">
+                    yadhukrishnabp777@gmail.com
+                </div>
+
                 <div class="hub-actions">
+
                     <button
                         class="btn-hub btn-hub-primary"
                         onclick="chatWithYadhu()"
                     >
-                        💬 Chat with Yadhu
+                        💬 Chat with Yadhu Krishna
                     </button>
 
                     <button
                         class="btn-hub btn-hub-secondary"
-                        onclick="openContactsScreen()"
+                        onclick="openDirectoryWithPin()"
                     >
                         📖 Directory
                     </button>
+
                 </div>
+
             </div>
+
         </div>
     </div>
 
-    <!-- CONTACTS -->
+    <!-- DIRECTORY -->
     <div id="contacts-screen" class="screen">
+
         <div class="header-bar">
+
             <div>
-                Directory (<span id="my-name-display"></span>)
+                Directory
+                (<span id="my-name-display"></span>)
             </div>
 
-            <span onclick="handleLogout()">Sign Out</span>
+            <span onclick="handleLogout()">
+                Sign Out
+            </span>
+
         </div>
 
         <div
-            style="padding:10px 15px;background:#fff;font-size:0.85rem;color:#667781;border-bottom:1px solid #eee;"
+            style="
+                padding:10px 15px;
+                background:#fff;
+                font-size:.85rem;
+                color:#667781;
+                border-bottom:1px solid #eee;
+            "
         >
             Select a contact to start chatting:
         </div>
 
         <div id="contacts-container"></div>
+
     </div>
 
     <!-- CHAT -->
@@ -838,6 +1018,7 @@
         <div class="header-bar">
 
             <div style="display:flex;align-items:center;">
+
                 <span
                     class="back-arrow"
                     onclick="handleChatBack()"
@@ -848,26 +1029,34 @@
                 <div id="chat-room-title">
                     Chat
                 </div>
+
             </div>
 
             <span onclick="handleLogout()">
                 Sign Out
             </span>
+
         </div>
 
         <div id="messages-container"></div>
 
         <div class="email-toolbar">
-            <span>📧 Send via Email</span>
+
+            <span>
+                📧 Send via Email
+            </span>
 
             <label class="toggle-switch">
+
                 <input
                     type="checkbox"
                     id="email-toggle"
                 >
 
                 <span class="slider"></span>
+
             </label>
+
         </div>
 
         <div id="input-toolbar">
@@ -887,6 +1076,7 @@
             </button>
 
         </div>
+
     </div>
 
 </div>
@@ -901,13 +1091,12 @@ let currentUser = null;
 let activeRecipient = null;
 let currentRoomId = null;
 let pendingPhone = null;
-
 let syncInterval = null;
 let contactsInterval = null;
 let knownMessageIds = new Set();
 let deferredPrompt = null;
 
-window.addEventListener("beforeinstallprompt", (e) => {
+window.addEventListener("beforeinstallprompt", e => {
     e.preventDefault();
     deferredPrompt = e;
 
@@ -930,6 +1119,7 @@ async function installPWA() {
             document
                 .querySelectorAll(".btn-install")
                 .forEach(btn => btn.style.display = "none");
+
         }
 
         deferredPrompt = null;
@@ -939,6 +1129,7 @@ async function installPWA() {
         alert(
             "Open browser menu and select 'Add to Home Screen' or 'Install App'."
         );
+
     }
 }
 
@@ -981,15 +1172,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
             return;
 
-        } catch (e) {
+        } catch (e) {}
 
-            localStorage.removeItem("axtres_user");
-        }
     }
 
     setTimeout(() => {
         switchScreen("login-screen");
     }, 800);
+
 });
 
 function navigateAfterAuth() {
@@ -1004,6 +1194,7 @@ function navigateAfterAuth() {
     } else {
 
         openHubScreen();
+
     }
 }
 
@@ -1011,19 +1202,23 @@ function openHubScreen() {
 
     switchScreen("hub-screen");
 
-    document.getElementById(
-        "hub-welcome-text"
-    ).innerText =
+    document
+        .getElementById("hub-welcome-text")
+        .innerText =
         `Welcome, ${currentUser.name}!`;
+
 }
 
 function chatWithYadhu() {
 
     startChatWith({
-        name: "Yadhu",
+
+        name: "Yadhu Krishna",
         phone: YADHU_PHONE,
         has_email: 1
+
     });
+
 }
 
 function handleChatBack() {
@@ -1041,43 +1236,9 @@ function handleChatBack() {
     } else {
 
         openHubScreen();
+
     }
 }
-
-function forceSyncOnWake() {
-
-    if (currentRoomId)
-        pollChatMessages(false);
-
-    if (
-        currentUser &&
-        document
-            .getElementById("contacts-screen")
-            .classList.contains("active")
-    ) {
-
-        fetchContacts();
-    }
-}
-
-window.addEventListener(
-    "focus",
-    forceSyncOnWake
-);
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
-
-        if (
-            document.visibilityState ===
-            "visible"
-        ) {
-
-            forceSyncOnWake();
-        }
-    }
-);
 
 function switchScreen(screenId) {
 
@@ -1090,6 +1251,7 @@ function switchScreen(screenId) {
     document
         .getElementById(screenId)
         .classList.add("active");
+
 }
 
 function interceptEmailInput(e) {
@@ -1103,16 +1265,15 @@ function interceptEmailInput(e) {
 
         input.value =
             input.value
-                .replace(
-                    /[@\.gmailyout-]/gi,
-                    ""
-                )
+                .replace(/[@\.gmailyout-]/gi, "")
                 .trim();
 
         showToast(
             "Email extension handled by dropdown."
         );
+
     }
+
 }
 
 function showToast(msg) {
@@ -1125,14 +1286,10 @@ function showToast(msg) {
     toast.innerText = msg;
     toast.style.display = "block";
 
-    clearTimeout(window.toastTimer);
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 2500);
 
-    window.toastTimer =
-        setTimeout(() => {
-
-            toast.style.display = "none";
-
-        }, 3000);
 }
 
 async function requestNotificationPermission() {
@@ -1142,13 +1299,8 @@ async function requestNotificationPermission() {
             "notif-status"
         );
 
-    if (!("Notification" in window)) {
-
-        statusDiv.innerText =
-            "Status: Notifications not supported.";
-
+    if (!("Notification" in window))
         return;
-    }
 
     const permission =
         await Notification.requestPermission();
@@ -1158,71 +1310,24 @@ async function requestNotificationPermission() {
             ? "Status: Notifications Enabled!"
             : "Status: Denied.";
 
-    statusDiv.style.color =
-        permission === "granted"
-            ? "#2e7d32"
-            : "#d32f2f";
-}
-
-async function apiJson(url, options = {}) {
-
-    const response =
-        await fetch(url, {
-            cache: "no-store",
-            ...options,
-
-            headers: {
-                "Cache-Control":
-                    "no-cache, no-store",
-                "Pragma":
-                    "no-cache",
-                ...(options.headers || {})
-            }
-        });
-
-    let data = {};
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch (e) {}
-
-    if (!response.ok) {
-
-        throw new Error(
-            data.error ||
-            `Server error (${response.status})`
-        );
-    }
-
-    return data;
 }
 
 async function handleRegister() {
 
     const name =
-        document
-            .getElementById("reg-name")
-            .value
-            .trim();
+        document.getElementById("reg-name")
+            .value.trim();
 
     const phone =
-        document
-            .getElementById("reg-phone")
-            .value
-            .trim();
+        document.getElementById("reg-phone")
+            .value.trim();
 
     const emailUser =
-        document
-            .getElementById("reg-email-user")
-            .value
-            .trim();
+        document.getElementById("reg-email-user")
+            .value.trim();
 
     const emailDomain =
-        document
-            .getElementById("reg-email-domain")
+        document.getElementById("reg-email-domain")
             .value;
 
     const email =
@@ -1231,9 +1336,7 @@ async function handleRegister() {
             : "";
 
     const errDiv =
-        document.getElementById(
-            "reg-error"
-        );
+        document.getElementById("reg-error");
 
     errDiv.innerText = "";
 
@@ -1255,39 +1358,49 @@ async function handleRegister() {
 
     try {
 
-        const data =
-            await apiJson(
+        const res =
+            await fetch(
                 `${USERS_API}?action=register&_t=${Date.now()}`,
                 {
                     method: "POST",
-
+                    cache: "no-store",
                     headers: {
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "Cache-Control":
+                            "no-cache, no-store"
                     },
-
-                    body:
-                        JSON.stringify({
-                            name,
-                            phone,
-                            email,
-                            device_id:
-                                getDeviceId()
-                        })
+                    body: JSON.stringify({
+                        name,
+                        phone,
+                        email,
+                        device_id: getDeviceId()
+                    })
                 }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok)
+            throw new Error(
+                data.error ||
+                "Registration failed"
             );
 
         pendingPhone = phone;
 
         if (data.requires_verification) {
 
-            document.getElementById(
-                "verify-pin-input"
-            ).value = "";
+            document
+                .getElementById(
+                    "verify-pin-input"
+                ).value = "";
 
-            document.getElementById(
-                "verify-error"
-            ).innerText = "";
+            document
+                .getElementById(
+                    "verify-error"
+                ).innerText = "";
 
             switchScreen(
                 "verify-screen"
@@ -1295,25 +1408,24 @@ async function handleRegister() {
 
         } else {
 
-            document.getElementById(
-                "login-phone"
-            ).value = phone;
+            document
+                .getElementById(
+                    "login-phone"
+                ).value = phone;
 
             switchScreen(
                 "login-screen"
             );
 
-            showLoginMessage(
-                "Registered successfully! Please log in.",
-                true
-            );
         }
 
     } catch (err) {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 async function handleAutoVerifyRegister(e) {
@@ -1337,38 +1449,39 @@ async function handleAutoVerifyRegister(e) {
 
         try {
 
-            await apiJson(
-                `${USERS_API}?action=verify-register&_t=${Date.now()}`,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            phone:
-                                pendingPhone,
-                            pin:
-                                input.value
+            const res =
+                await fetch(
+                    `${USERS_API}?action=verify-register&_t=${Date.now()}`,
+                    {
+                        method: "POST",
+                        cache: "no-store",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+                            phone: pendingPhone,
+                            pin: input.value
                         })
-                }
-            );
+                    }
+                );
 
-            document.getElementById(
-                "login-phone"
-            ).value =
-                pendingPhone;
+            const data =
+                await res.json();
+
+            if (!res.ok)
+                throw new Error(
+                    data.error ||
+                    "Incorrect PIN"
+                );
+
+            document
+                .getElementById(
+                    "login-phone"
+                ).value = pendingPhone;
 
             switchScreen(
                 "login-screen"
-            );
-
-            showLoginMessage(
-                "Email verified successfully! Log in now.",
-                true
             );
 
         } catch (err) {
@@ -1377,8 +1490,11 @@ async function handleAutoVerifyRegister(e) {
                 err.message;
 
             input.value = "";
+
         }
+
     }
+
 }
 
 function openAddEmailModal() {
@@ -1398,35 +1514,33 @@ function openAddEmailModal() {
     switchScreen(
         "add-email-screen"
     );
+
 }
 
 async function handleAddEmailInit() {
 
     const phone =
-        document
-            .getElementById("ae-phone")
-            .value
-            .trim();
+        document.getElementById(
+            "ae-phone"
+        ).value.trim();
 
     const emailUser =
-        document
-            .getElementById("ae-email-user")
-            .value
-            .trim();
+        document.getElementById(
+            "ae-email-user"
+        ).value.trim();
 
     const emailDomain =
-        document
-            .getElementById("ae-email-domain")
-            .value;
+        document.getElementById(
+            "ae-email-domain"
+        ).value;
 
     const errDiv =
         document.getElementById(
             "ae-error"
         );
 
-    errDiv.innerText = "";
-
     if (
+        !phone ||
         phone.length !== 10 ||
         !emailUser
     ) {
@@ -1439,27 +1553,36 @@ async function handleAddEmailInit() {
 
     pendingPhone = phone;
 
+    const email =
+        emailUser + emailDomain;
+
     try {
 
-        await apiJson(
-            `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify({
+        const res =
+            await fetch(
+                `${USERS_API}?action=update-email-init&_t=${Date.now()}`,
+                {
+                    method: "POST",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
                         phone,
-                        email:
-                            emailUser +
-                            emailDomain
+                        email
                     })
-            }
-        );
+                }
+            );
+
+        const data =
+            await res.json();
+
+        if (!res.ok)
+            throw new Error(
+                data.error ||
+                "Failed to send PIN"
+            );
 
         document.getElementById(
             "ae-pin-input"
@@ -1473,7 +1596,9 @@ async function handleAddEmailInit() {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 async function handleAutoVerifyEmail(e) {
@@ -1486,81 +1611,61 @@ async function handleAutoVerifyEmail(e) {
             ""
         );
 
-    const errDiv =
-        document.getElementById(
-            "ae-verify-error"
-        );
-
-    errDiv.innerText = "";
-
     if (input.value.length === 3) {
 
         try {
 
-            await apiJson(
-                `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            phone:
-                                pendingPhone,
-                            pin:
-                                input.value
+            const res =
+                await fetch(
+                    `${USERS_API}?action=verify-email-update&_t=${Date.now()}`,
+                    {
+                        method: "POST",
+                        cache: "no-store",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+                            phone: pendingPhone,
+                            pin: input.value
                         })
-                }
-            );
+                    }
+                );
+
+            const data =
+                await res.json();
+
+            if (!res.ok)
+                throw new Error(
+                    data.error ||
+                    "Incorrect PIN"
+                );
 
             switchScreen(
                 "login-screen"
             );
 
-            showLoginMessage(
-                "Email linked and verified!",
-                true
-            );
-
         } catch (err) {
 
-            errDiv.innerText =
+            document.getElementById(
+                "ae-verify-error"
+            ).innerText =
                 err.message;
 
             input.value = "";
+
         }
+
     }
-}
 
-function showLoginMessage(
-    message,
-    success = false
-) {
-
-    const error =
-        document.getElementById(
-            "login-error"
-        );
-
-    error.innerText = message;
-
-    error.style.color =
-        success
-            ? "#2e7d32"
-            : "#d32f2f";
 }
 
 async function handleLogin() {
 
     const phone =
-        document
-            .getElementById("login-phone")
-            .value
-            .trim();
+        document.getElementById(
+            "login-phone"
+        ).value.trim();
 
     const errDiv =
         document.getElementById(
@@ -1568,8 +1673,6 @@ async function handleLogin() {
         );
 
     errDiv.innerText = "";
-    errDiv.style.color =
-        "#d32f2f";
 
     if (
         !phone ||
@@ -1584,32 +1687,36 @@ async function handleLogin() {
 
     try {
 
-        const data =
-            await apiJson(
+        const res =
+            await fetch(
                 `${USERS_API}?action=login&_t=${Date.now()}`,
                 {
                     method: "POST",
-
+                    cache: "no-store",
                     headers: {
                         "Content-Type":
                             "application/json"
                     },
-
-                    body:
-                        JSON.stringify({
-                            phone
-                        })
+                    body: JSON.stringify({
+                        phone
+                    })
                 }
             );
 
-        currentUser =
-            data.user;
+        const data =
+            await res.json();
+
+        if (!res.ok)
+            throw new Error(
+                data.error ||
+                "Login failed"
+            );
+
+        currentUser = data.user;
 
         localStorage.setItem(
             "axtres_user",
-            JSON.stringify(
-                currentUser
-            )
+            JSON.stringify(currentUser)
         );
 
         navigateAfterAuth();
@@ -1618,7 +1725,9 @@ async function handleLogin() {
 
         errDiv.innerText =
             err.message;
+
     }
+
 }
 
 function handleLogout() {
@@ -1635,12 +1744,80 @@ function handleLogout() {
     if (contactsInterval)
         clearInterval(contactsInterval);
 
-    currentRoomId = null;
-    activeRecipient = null;
-
     switchScreen(
         "login-screen"
     );
+
+}
+
+/* DIRECTORY PIN */
+
+function openDirectoryWithPin() {
+
+    const lock =
+        document.getElementById(
+            "directory-lock"
+        );
+
+    const input =
+        document.getElementById(
+            "directory-pin"
+        );
+
+    document.getElementById(
+        "directory-pin-error"
+    ).innerText = "";
+
+    input.value = "";
+
+    lock.classList.add("show");
+
+    setTimeout(
+        () => input.focus(),
+        50
+    );
+
+}
+
+function closeDirectoryPin() {
+
+    document
+        .getElementById(
+            "directory-lock"
+        )
+        .classList.remove("show");
+
+}
+
+function verifyDirectoryPin() {
+
+    const input =
+        document.getElementById(
+            "directory-pin"
+        );
+
+    const error =
+        document.getElementById(
+            "directory-pin-error"
+        );
+
+    if (input.value === "257") {
+
+        closeDirectoryPin();
+
+        openContactsScreen();
+
+    } else {
+
+        error.innerText =
+            "Incorrect PIN. Try again.";
+
+        input.value = "";
+
+        input.focus();
+
+    }
+
 }
 
 async function openContactsScreen() {
@@ -1655,6 +1832,7 @@ async function openContactsScreen() {
         currentUser.name;
 
     startContactsPolling();
+
 }
 
 function startContactsPolling() {
@@ -1669,20 +1847,25 @@ function startContactsPolling() {
     contactsInterval =
         setInterval(
             fetchContacts,
-            1500
+            1000
         );
+
 }
 
 async function fetchContacts() {
 
     try {
 
-        const contacts =
-            await apiJson(
-                `${USERS_API}?phone=${encodeURIComponent(
-                    currentUser.phone
-                )}&_t=${Date.now()}`
+        const res =
+            await fetch(
+                `${USERS_API}?phone=${currentUser.phone}&_t=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
             );
+
+        const contacts =
+            await res.json();
 
         const container =
             document.getElementById(
@@ -1697,75 +1880,63 @@ async function fetchContacts() {
         ) {
 
             container.innerHTML =
-                `<div style="text-align:center;padding:20px;color:#667781;font-size:0.9rem;">
+                `<div style="text-align:center;padding:20px;color:#667781;">
                     No other contacts found yet.
                 </div>`;
 
             return;
         }
 
-        contacts.forEach(contact => {
+        contacts.forEach(c => {
 
             const item =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             item.className =
                 "contact-item";
 
             const emailStatusBadge =
-                contact.has_email === 1
-                    ? `<span class="status-pill active">Email Verified 🟢</span>`
-                    : `<span class="status-pill inactive">No Email ⚪</span>`;
+                c.has_email === 1
+                    ? `<span class="status-pill active">
+                        Email Verified 🟢
+                       </span>`
+                    : `<span class="status-pill inactive">
+                        No Email ⚪
+                       </span>`;
 
             item.innerHTML =
                 `<div>
                     <div class="contact-name">
-                        ${escapeHtml(
-                            String(
-                                contact.name || ""
-                            )
-                        )}
+                        ${escapeHtml(c.name)}
                     </div>
 
                     <div class="contact-phone">
-                        ${escapeHtml(
-                            String(
-                                contact.phone || ""
-                            )
-                        )}
+                        ${escapeHtml(c.phone)}
                     </div>
 
                     ${emailStatusBadge}
                 </div>
 
-                <span style="color:#075e54;font-weight:600;font-size:0.9rem;">
+                <span style="
+                    color:#075e54;
+                    font-weight:600;
+                    font-size:.9rem;
+                ">
                     Chat →
                 </span>`;
 
             item.onclick =
-                () => startChatWith(
-                    contact
-                );
+                () => startChatWith(c);
 
-            container.appendChild(
-                item
-            );
+            container.appendChild(item);
+
         });
 
-    } catch (err) {
+    } catch (e) {}
 
-        console.error(
-            "Contacts error:",
-            err
-        );
-    }
 }
 
-function startChatWith(
-    recipient
-) {
+function startChatWith(recipient) {
 
     activeRecipient =
         recipient;
@@ -1775,10 +1946,11 @@ function startChatWith(
             contactsInterval
         );
 
-    const sortedPhones = [
-        String(currentUser.phone),
-        String(recipient.phone)
-    ].sort();
+    const sortedPhones =
+        [
+            currentUser.phone,
+            recipient.phone
+        ].sort();
 
     currentRoomId =
         `room_${sortedPhones[0]}_${sortedPhones[1]}`;
@@ -1796,17 +1968,17 @@ function startChatWith(
         "email-toggle"
     ).checked = false;
 
-    document.getElementById(
-        "message-input"
-    ).value = "";
+    const messagesDiv =
+        document.getElementById(
+            "messages-container"
+        );
 
-    document.getElementById(
-        "messages-container"
-    ).innerHTML = "";
+    messagesDiv.innerHTML = "";
 
     knownMessageIds.clear();
 
     startChatPolling();
+
 }
 
 function startChatPolling() {
@@ -1820,27 +1992,29 @@ function startChatPolling() {
 
     syncInterval =
         setInterval(
-            () =>
-                pollChatMessages(false),
-            800
+            () => pollChatMessages(false),
+            600
         );
+
 }
 
-async function pollChatMessages(
-    isInitial
-) {
+async function pollChatMessages(isInitial) {
 
     if (!currentRoomId)
         return;
 
     try {
 
-        const history =
-            await apiJson(
-                `${MESSAGES_API}?room_id=${encodeURIComponent(
-                    currentRoomId
-                )}&_t=${Date.now()}`
+        const res =
+            await fetch(
+                `${MESSAGES_API}?room_id=${currentRoomId}&_t=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
             );
+
+        const history =
+            await res.json();
 
         if (!Array.isArray(history))
             return;
@@ -1852,21 +2026,18 @@ async function pollChatMessages(
 
         if (isInitial) {
 
-            messagesDiv.innerHTML =
-                "";
+            messagesDiv.innerHTML = "";
 
             knownMessageIds.clear();
+
         }
 
-        let shouldScroll =
-            false;
+        let shouldScroll = false;
 
         history.forEach(msg => {
 
             const sender =
                 msg.sender_phone ||
-                msg.senderPhone ||
-                msg.sender_id ||
                 "";
 
             const msgText =
@@ -1876,9 +2047,7 @@ async function pollChatMessages(
                 msg.created_at || "";
 
             const isEmergency =
-                Number(
-                    msg.is_emergency || 0
-                ) === 1;
+                msg.is_emergency || 0;
 
             const uniqueId =
                 msg.id
@@ -1898,42 +2067,12 @@ async function pollChatMessages(
 
             shouldScroll = true;
 
-            if (
-                !isInitial &&
-                String(sender).trim() !==
-                    String(
-                        currentUser.phone
-                    ).trim()
-            ) {
-
-                if (
-                    "Notification" in window &&
-                    Notification.permission ===
-                        "granted"
-                ) {
-
-                    new Notification(
-                        isEmergency
-                            ? `📧 Email Sent by ${activeRecipient.name}`
-                            : `💬 New Message from ${activeRecipient.name}`,
-                        {
-                            body:
-                                String(
-                                    msgText
-                                )
-                        }
-                    );
-                }
-            }
-
             let timeStr = "";
 
             if (createdAt) {
 
                 const parsedDate =
-                    new Date(
-                        createdAt
-                    );
+                    new Date(createdAt);
 
                 if (
                     !isNaN(
@@ -1945,35 +2084,26 @@ async function pollChatMessages(
                         parsedDate.toLocaleTimeString(
                             [],
                             {
-                                hour:
-                                    "2-digit",
-                                minute:
-                                    "2-digit"
+                                hour: "2-digit",
+                                minute: "2-digit"
                             }
                         );
+
                 }
+
             }
 
-            if (!timeStr) {
+            const cleanSender =
+                String(sender).trim();
 
-                timeStr =
-                    new Date()
-                        .toLocaleTimeString(
-                            [],
-                            {
-                                hour:
-                                    "2-digit",
-                                minute:
-                                    "2-digit"
-                            }
-                        );
-            }
-
-            const isMe =
-                String(sender).trim() ===
+            const cleanMyPhone =
                 String(
                     currentUser.phone
                 ).trim();
+
+            const isMe =
+                cleanSender ===
+                cleanMyPhone;
 
             const msgEl =
                 document.createElement(
@@ -1981,29 +2111,38 @@ async function pollChatMessages(
                 );
 
             msgEl.className =
-                `msg ${
-                    isMe
-                        ? "me"
-                        : "them"
-                }`;
+                "msg";
 
-            if (isEmergency)
+            if (
+                isEmergency === 1 ||
+                isEmergency === true
+            ) {
+
                 msgEl.classList.add(
                     "email-alert"
                 );
 
-            const badgeHTML =
-                isEmergency
-                    ? `<span class="email-badge">
-                        📧 SENT VIA EMAIL
-                       </span><br>`
-                    : "";
+            }
+
+            let badgeHTML =
+                (
+                    isEmergency === 1 ||
+                    isEmergency === true
+                )
+                ? `<span class="email-badge">
+                    📧 SENT VIA EMAIL
+                   </span><br>`
+                : "";
+
+            msgEl.classList.add(
+                isMe
+                    ? "me"
+                    : "them"
+            );
 
             msgEl.innerHTML =
                 `${badgeHTML}
-                 ${escapeHtml(
-                     String(msgText)
-                 )}
+                 ${escapeHtml(msgText)}
                  <span class="msg-time">
                     ${timeStr}
                  </span>`;
@@ -2011,6 +2150,7 @@ async function pollChatMessages(
             messagesDiv.appendChild(
                 msgEl
             );
+
         });
 
         if (
@@ -2020,23 +2160,11 @@ async function pollChatMessages(
 
             messagesDiv.scrollTop =
                 messagesDiv.scrollHeight;
+
         }
 
-    } catch (err) {
+    } catch (e) {}
 
-        console.error(
-            "Message fetch error:",
-            err
-        );
-
-        if (isInitial) {
-
-            showToast(
-                "Could not load messages: " +
-                err.message
-            );
-        }
-    }
 }
 
 async function sendMessage() {
@@ -2044,11 +2172,6 @@ async function sendMessage() {
     const input =
         document.getElementById(
             "message-input"
-        );
-
-    const button =
-        document.getElementById(
-            "send-btn"
         );
 
     const text =
@@ -2067,116 +2190,111 @@ async function sendMessage() {
     )
         return;
 
-    button.disabled = true;
+    const timeNow =
+        new Date().toISOString();
 
     input.value = "";
 
+    input.focus();
+
     try {
 
-        const result =
-            await apiJson(
+        const res =
+            await fetch(
                 `${MESSAGES_API}?_t=${Date.now()}`,
                 {
                     method: "POST",
-
+                    cache: "no-store",
                     headers: {
                         "Content-Type":
                             "application/json"
                     },
+                    body: JSON.stringify({
 
-                    body:
-                        JSON.stringify({
-                            room_id:
-                                currentRoomId,
+                        room_id:
+                            currentRoomId,
 
-                            sender_id:
-                                currentUser.phone,
+                        sender_id:
+                            currentUser.phone,
 
-                            sender_name:
-                                currentUser.name,
+                        sender_name:
+                            currentUser.name,
 
-                            recipient_phone:
-                                activeRecipient.phone,
+                        recipient_phone:
+                            activeRecipient.phone,
 
-                            message:
-                                text,
+                        message:
+                            text,
 
-                            send_via_email:
-                                sendViaEmail,
+                        send_via_email:
+                            sendViaEmail,
 
-                            created_at:
-                                new Date()
-                                    .toISOString()
-                        })
+                        created_at:
+                            timeNow
+
+                    })
                 }
             );
 
-        if (!result.success) {
+        const data =
+            await res.json();
 
-            throw new Error(
-                result.error ||
-                "Message was not saved."
+        if (!res.ok) {
+
+            showToast(
+                "Message failed: " +
+                (
+                    data.error ||
+                    "Server error"
+                )
             );
+
+            return;
         }
 
-        await pollChatMessages(
-            false
-        );
-
-        if (
-            sendViaEmail &&
-            result.email
-        ) {
-
-            if (result.email.sent) {
-
-                showToast(
-                    "Message sent and email delivered."
-                );
-
-            } else {
-
-                showToast(
-                    "Message saved, but email failed: " +
-                    (
-                        result.email.error ||
-                        "Unknown email error"
-                    )
-                );
-            }
-        }
+        pollChatMessages(false);
 
     } catch (err) {
-
-        input.value = text;
-
-        console.error(
-            "Send message error:",
-            err
-        );
 
         showToast(
             "Message failed: " +
             err.message
         );
 
-    } finally {
-
-        button.disabled = false;
-
-        input.focus();
     }
+
 }
 
 function checkEnter(e) {
 
-    if (e.key === "Enter") {
-
-        e.preventDefault();
-
+    if (e.key === "Enter")
         sendMessage();
-    }
+
 }
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        const lock =
+            document.getElementById(
+                "directory-lock"
+            );
+
+        if (
+            e.key === "Enter" &&
+            lock &&
+            lock.classList.contains(
+                "show"
+            )
+        ) {
+
+            verifyDirectoryPin();
+
+        }
+
+    }
+);
 
 function escapeHtml(text) {
 
@@ -2185,16 +2303,14 @@ function escapeHtml(text) {
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#39;"
+        "'": "&#039;"
     };
 
-    return text.replace(
-        /[\n&<>"']/g,
-        m => map[m] || m
-    ).replace(
-        /\n/g,
-        "<br>"
+    return String(text).replace(
+        /[&<>"']/g,
+        m => map[m]
     );
+
 }
 
 </script>
