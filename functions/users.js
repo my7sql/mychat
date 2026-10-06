@@ -33,6 +33,11 @@ const VALID_THEMES = new Set([
   "ivory"
 ]);
 
+const VALID_CHAT_BACKGROUNDS = new Set([
+  "classic", "mint", "sky", "sand", "rose", "lavender",
+  "slate", "cream", "deep-emerald", "navy", "pearl", "teal"
+]);
+
 async function ensureSettingsTable(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS app_settings (
@@ -77,9 +82,13 @@ export async function onRequest(context) {
     if (request.method === "GET" && url.searchParams.get("action") === "theme") {
       await ensureSettingsTable(env.DB);
       const row = await env.DB.prepare(
-        `SELECT value FROM app_settings WHERE key = 'default_theme'`
-      ).first();
-      return json({ theme: VALID_THEMES.has(row?.value) ? row.value : "emerald" });
+        `SELECT key, value FROM app_settings WHERE key IN ('default_theme','default_chat_background')`
+      ).all();
+      const settings = Object.fromEntries((row.results || []).map(item => [item.key, item.value]));
+      return json({
+        theme: VALID_THEMES.has(settings.default_theme) ? settings.default_theme : "emerald",
+        chat_background: VALID_CHAT_BACKGROUNDS.has(settings.default_chat_background) ? settings.default_chat_background : "classic"
+      });
     }
 
     // Public directory/contact list used by the normal app.
@@ -124,6 +133,25 @@ export async function onRequest(context) {
       `).bind(theme).run();
 
       return json({ success: true, theme });
+    }
+
+    // ADMIN GLOBAL CHAT BACKGROUND
+    if (action === "admin-chat-background") {
+      if (!validAdminPin(body.pin)) return json({ error: "Wrong PIN" }, 401);
+
+      const background = String(body.background || "").trim();
+      if (!VALID_CHAT_BACKGROUNDS.has(background)) {
+        return json({ error: "Invalid chat background" }, 400);
+      }
+
+      await ensureSettingsTable(env.DB);
+      await env.DB.prepare(`
+        INSERT INTO app_settings (key, value)
+        VALUES ('default_chat_background', ?)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value
+      `).bind(background).run();
+
+      return json({ success: true, chat_background: background });
     }
 
     // ADMIN: verify PIN and return every registered user.
